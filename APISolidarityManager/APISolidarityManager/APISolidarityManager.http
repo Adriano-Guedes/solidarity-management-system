@@ -1,0 +1,6 @@
+@APISolidarityManager_HostAddress = http://localhost:5210
+
+GET {{APISolidarityManager_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
