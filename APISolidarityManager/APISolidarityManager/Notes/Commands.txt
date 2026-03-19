@@ -1,0 +1,12 @@
+//----------MySQL Migration Command
+dotnet ef migrations add InitialMySql --context AppDbContext --output-dir Migrations/MySql
+
+//----------SQL Server Migration Command
+dotnet ef migrations add InitialSqlServer --context AppDbContext --output-dir Migrations/SqlServer
+
+
+//----------Migrations Commands
+//----------Add a new migration
+dotnet ef migrations add InitialCreate
+//----------Update the database to the latest migration
+dotnet ef database update
