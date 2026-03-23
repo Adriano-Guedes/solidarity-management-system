@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.14" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.14">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -18,16 +17,41 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.1.5" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-    <Folder Include="DTOs\" />
+    <Folder Include="Controllers\Beneficiaries\" />
+    <Folder Include="Controllers\Deliveries\" />
+    <Folder Include="Controllers\DeliveryInventoryItems\" />
+    <Folder Include="Controllers\DonationInventoryItems\" />
+    <Folder Include="Controllers\Donations\" />
+    <Folder Include="Controllers\Donors\" />
+    <Folder Include="Controllers\InventoryBatches\" />
+    <Folder Include="Controllers\Roles\" />
+    <Folder Include="Controllers\Users\" />
     <Folder Include="Data\" />
+    <Folder Include="DTOs\Beneficiaries\Response\" />
+    <Folder Include="DTOs\Beneficiaries\Request\" />
+    <Folder Include="DTOs\Deliveries\Request\" />
+    <Folder Include="DTOs\Deliveries\Response\" />
+    <Folder Include="DTOs\DeliveryInventoryItems\Request\" />
+    <Folder Include="DTOs\DeliveryInventoryItems\Response\" />
+    <Folder Include="DTOs\DonationInventoryItems\Request\" />
+    <Folder Include="DTOs\DonationInventoryItems\Response\" />
+    <Folder Include="DTOs\Donations\Request\" />
+    <Folder Include="DTOs\Donations\Response\" />
+    <Folder Include="DTOs\Donors\Request\" />
+    <Folder Include="DTOs\Donors\Response\" />
+    <Folder Include="DTOs\InventoryBatches\Request\" />
+    <Folder Include="DTOs\InventoryBatches\Response\" />
+    <Folder Include="DTOs\Items\Request\" />
+    <Folder Include="DTOs\Roles\Request\" />
+    <Folder Include="DTOs\Roles\Response\" />
+    <Folder Include="DTOs\Users\Request\" />
+    <Folder Include="DTOs\Users\Response\" />
     <Folder Include="Notes\" />
     <Folder Include="Repositories\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>
