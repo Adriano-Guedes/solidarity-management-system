@@ -21,6 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Common\Helpers\" />
+    <Folder Include="Common\Enums\" />
     <Folder Include="Controllers\Beneficiaries\" />
     <Folder Include="Controllers\Deliveries\" />
     <Folder Include="Controllers\DeliveryInventoryItems\" />
@@ -31,25 +33,6 @@
     <Folder Include="Controllers\Roles\" />
     <Folder Include="Controllers\Users\" />
     <Folder Include="Data\" />
-    <Folder Include="DTOs\Beneficiaries\Response\" />
-    <Folder Include="DTOs\Beneficiaries\Request\" />
-    <Folder Include="DTOs\Deliveries\Request\" />
-    <Folder Include="DTOs\Deliveries\Response\" />
-    <Folder Include="DTOs\DeliveryInventoryItems\Request\" />
-    <Folder Include="DTOs\DeliveryInventoryItems\Response\" />
-    <Folder Include="DTOs\DonationInventoryItems\Request\" />
-    <Folder Include="DTOs\DonationInventoryItems\Response\" />
-    <Folder Include="DTOs\Donations\Request\" />
-    <Folder Include="DTOs\Donations\Response\" />
-    <Folder Include="DTOs\Donors\Request\" />
-    <Folder Include="DTOs\Donors\Response\" />
-    <Folder Include="DTOs\InventoryBatches\Request\" />
-    <Folder Include="DTOs\InventoryBatches\Response\" />
-    <Folder Include="DTOs\Items\Request\" />
-    <Folder Include="DTOs\Roles\Request\" />
-    <Folder Include="DTOs\Roles\Response\" />
-    <Folder Include="DTOs\Users\Request\" />
-    <Folder Include="DTOs\Users\Response\" />
     <Folder Include="Notes\" />
     <Folder Include="Repositories\" />
   </ItemGroup>

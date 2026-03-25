@@ -32,7 +32,7 @@ namespace APISolidarityManager.Context
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(100);
+                    .HasMaxLength(30);
 
                 entity.Property(e => e.Description)
                     .HasMaxLength(500);
@@ -55,11 +55,11 @@ namespace APISolidarityManager.Context
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(150);
+                    .HasMaxLength(100);
 
                 entity.Property(e => e.Email)
                     .IsRequired()
-                    .HasMaxLength(150);
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.PasswordHash)
                     .IsRequired()
@@ -88,11 +88,11 @@ namespace APISolidarityManager.Context
 
                 entity.Property(e => e.DocumentNumber)
                     .IsRequired()
-                    .HasMaxLength(50);
+                    .HasMaxLength(30);
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(150);
+                    .HasMaxLength(100);
 
                 entity.Property(e => e.BirthDate)
                     .IsRequired();
@@ -121,16 +121,16 @@ namespace APISolidarityManager.Context
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(150);
+                    .HasMaxLength(100);
 
                 entity.Property(e => e.DocumentNumber)
-                    .HasMaxLength(50);
+                    .HasMaxLength(30);
 
                 entity.Property(e => e.PhoneNumber)
                     .HasMaxLength(20);
 
                 entity.Property(e => e.Email)
-                    .HasMaxLength(150);
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.Notes)
                     .HasMaxLength(500);
@@ -153,13 +153,10 @@ namespace APISolidarityManager.Context
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(150);
-
-                entity.Property(e => e.TotalQuantity)
-                    .IsRequired();
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.Brand)
-                    .HasMaxLength(100);
+                    .HasMaxLength(20);
 
                 entity.Property(e => e.Notes)
                     .HasMaxLength(500);
@@ -179,6 +176,9 @@ namespace APISolidarityManager.Context
                 entity.ToTable("inventory_batches");
 
                 entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Tag)
+                    .HasMaxLength(20);
 
                 entity.Property(e => e.QuantityAvailable)
                     .IsRequired();

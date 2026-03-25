@@ -1,11 +1,10 @@
-﻿namespace APISolidarityManager.DTOs.Items.Response
+﻿namespace APISolidarityManager.DTOs.Roles.Response
 {
-    public class ItemResponse
+    public class RoleResponse
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = null!;
-        public string? Brand { get; set; }
-        public string? Notes { get; set; }
+        public string? Description { get; set; }
         public bool Active { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

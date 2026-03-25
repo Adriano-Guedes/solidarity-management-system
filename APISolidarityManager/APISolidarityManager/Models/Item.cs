@@ -4,7 +4,6 @@
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = null!;
-        public int TotalQuantity { get; set; }
         public string? Brand { get; set; }
         public string? Notes { get; set; }
         public bool Active { get; set; }

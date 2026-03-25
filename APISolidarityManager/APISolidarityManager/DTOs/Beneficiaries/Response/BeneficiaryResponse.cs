@@ -1,10 +1,12 @@
-﻿namespace APISolidarityManager.DTOs.Items.Response
+﻿namespace APISolidarityManager.DTOs.Beneficiaries.Response
 {
-    public class ItemResponse
+    public class BeneficiaryResponse
     {
         public Guid Id { get; set; }
+        public string DocumentNumber { get; set; } = null!;
         public string Name { get; set; } = null!;
-        public string? Brand { get; set; }
+        public DateTime BirthDate { get; set; }
+        public string? PhoneNumber { get; set; }
         public string? Notes { get; set; }
         public bool Active { get; set; }
         public DateTime CreatedAt { get; set; }

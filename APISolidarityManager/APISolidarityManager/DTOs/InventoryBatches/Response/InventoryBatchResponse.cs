@@ -1,6 +1,8 @@
-﻿namespace APISolidarityManager.Models
+﻿using APISolidarityManager.Models;
+
+namespace APISolidarityManager.DTOs.InventoryBatches.Response
 {
-    public class InventoryBatch
+    public class InventoryBatchResponse
     {
         public Guid Id { get; set; }
         public Guid ItemId { get; set; }
