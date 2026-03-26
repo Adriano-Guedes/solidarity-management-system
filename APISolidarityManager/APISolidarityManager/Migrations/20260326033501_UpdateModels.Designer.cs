@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APISolidarityManager.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260322022737_UpdateModels")]
+    [Migration("20260326033501_UpdateModels")]
     partial class UpdateModels
     {
         /// <inheritdoc />
@@ -42,13 +42,13 @@ namespace APISolidarityManager.Migrations
 
                     b.Property<string>("DocumentNumber")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("varchar(150)");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(500)
@@ -186,17 +186,17 @@ namespace APISolidarityManager.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("DocumentNumber")
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
+
+                    b.Property<string>("Email")
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
-                    b.Property<string>("Email")
-                        .HasMaxLength(150)
-                        .HasColumnType("varchar(150)");
-
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("varchar(150)");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(500)
@@ -232,12 +232,19 @@ namespace APISolidarityManager.Migrations
                     b.Property<int>("QuantityAvailable")
                         .HasColumnType("int");
 
+                    b.Property<string>("Tag")
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ItemId");
+
+                    b.HasIndex("Tag")
+                        .IsUnique();
 
                     b.ToTable("inventory_batches", (string)null);
                 });
@@ -252,30 +259,28 @@ namespace APISolidarityManager.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Brand")
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("varchar(150)");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
-
-                    b.Property<int>("TotalQuantity")
-                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("Name", "Brand")
                         .IsUnique();
 
                     b.ToTable("items", (string)null);
@@ -299,8 +304,8 @@ namespace APISolidarityManager.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)");
@@ -327,13 +332,13 @@ namespace APISolidarityManager.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("varchar(150)");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("varchar(150)");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()

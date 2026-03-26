@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace APISolidarityManager.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class UpdateModels : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,13 +15,13 @@ namespace APISolidarityManager.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Beneficiaries",
+                name: "beneficiaries",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Name = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
+                    DocumentNumber = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    DocumentNumber = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                    Name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     BirthDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: true)
@@ -34,61 +34,23 @@ namespace APISolidarityManager.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Beneficiaries", x => x.Id);
+                    table.PrimaryKey("PK_beneficiaries", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Donors",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Name = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    DocumentNumber = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    PhoneNumber = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Email = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Notes = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Active = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Donors", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Items",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Name = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Notes = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Active = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Items", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Roles",
+                name: "donors",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     Name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    DocumentNumber = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    PhoneNumber = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Email = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Notes = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Active = table.Column<bool>(type: "tinyint(1)", nullable: false),
@@ -97,60 +59,104 @@ namespace APISolidarityManager.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Roles", x => x.Id);
+                    table.PrimaryKey("PK_donors", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Inventories",
-                columns: table => new
-                {
-                    ItemId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    QuantityAvailable = table.Column<int>(type: "int", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Inventories", x => x.ItemId);
-                    table.ForeignKey(
-                        name: "FK_Inventories_Items_ItemId",
-                        column: x => x.ItemId,
-                        principalTable: "Items",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Users",
+                name: "items",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Name = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
+                    Name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Email = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
+                    Brand = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    PasswordHash = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
+                    Notes = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Active = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    RoleId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.PrimaryKey("PK_items", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "roles",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Name = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Description = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Active = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_roles", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "inventory_batches",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    ItemId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Tag = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ExpirationDate = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    QuantityAvailable = table.Column<int>(type: "int", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_inventory_batches", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Users_Roles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "Roles",
+                        name: "FK_inventory_batches_items_ItemId",
+                        column: x => x.ItemId,
+                        principalTable: "items",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Deliveries",
+                name: "users",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    RoleId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Email = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    PasswordHash = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Active = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_users_roles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "deliveries",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
@@ -164,24 +170,24 @@ namespace APISolidarityManager.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Deliveries", x => x.Id);
+                    table.PrimaryKey("PK_deliveries", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Deliveries_Beneficiaries_BeneficiaryId",
+                        name: "FK_deliveries_beneficiaries_BeneficiaryId",
                         column: x => x.BeneficiaryId,
-                        principalTable: "Beneficiaries",
+                        principalTable: "beneficiaries",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Deliveries_Users_CreatedBy",
+                        name: "FK_deliveries_users_CreatedBy",
                         column: x => x.CreatedBy,
-                        principalTable: "Users",
+                        principalTable: "users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Donations",
+                name: "donations",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
@@ -195,113 +201,148 @@ namespace APISolidarityManager.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Donations", x => x.Id);
+                    table.PrimaryKey("PK_donations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Donations_Donors_DonorId",
+                        name: "FK_donations_donors_DonorId",
                         column: x => x.DonorId,
-                        principalTable: "Donors",
+                        principalTable: "donors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Donations_Users_CreatedBy",
+                        name: "FK_donations_users_CreatedBy",
                         column: x => x.CreatedBy,
-                        principalTable: "Users",
+                        principalTable: "users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "DeliveryItems",
+                name: "delivery_inventory_items",
                 columns: table => new
                 {
                     DeliveryId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    ItemId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    InventoryBatchId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     Quantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DeliveryItems", x => new { x.DeliveryId, x.ItemId });
+                    table.PrimaryKey("PK_delivery_inventory_items", x => new { x.DeliveryId, x.InventoryBatchId });
                     table.ForeignKey(
-                        name: "FK_DeliveryItems_Deliveries_DeliveryId",
+                        name: "FK_delivery_inventory_items_deliveries_DeliveryId",
                         column: x => x.DeliveryId,
-                        principalTable: "Deliveries",
+                        principalTable: "deliveries",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_DeliveryItems_Items_ItemId",
-                        column: x => x.ItemId,
-                        principalTable: "Items",
+                        name: "FK_delivery_inventory_items_inventory_batches_InventoryBatchId",
+                        column: x => x.InventoryBatchId,
+                        principalTable: "inventory_batches",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "DonationItems",
+                name: "donation_inventory_items",
                 columns: table => new
                 {
                     DonationId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    ItemId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    InventoryBatchId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     Quantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DonationItems", x => new { x.DonationId, x.ItemId });
+                    table.PrimaryKey("PK_donation_inventory_items", x => new { x.DonationId, x.InventoryBatchId });
                     table.ForeignKey(
-                        name: "FK_DonationItems_Donations_DonationId",
+                        name: "FK_donation_inventory_items_donations_DonationId",
                         column: x => x.DonationId,
-                        principalTable: "Donations",
+                        principalTable: "donations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_DonationItems_Items_ItemId",
-                        column: x => x.ItemId,
-                        principalTable: "Items",
+                        name: "FK_donation_inventory_items_inventory_batches_InventoryBatchId",
+                        column: x => x.InventoryBatchId,
+                        principalTable: "inventory_batches",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Deliveries_BeneficiaryId",
-                table: "Deliveries",
+                name: "IX_beneficiaries_DocumentNumber",
+                table: "beneficiaries",
+                column: "DocumentNumber",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_deliveries_BeneficiaryId",
+                table: "deliveries",
                 column: "BeneficiaryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Deliveries_CreatedBy",
-                table: "Deliveries",
+                name: "IX_deliveries_CreatedBy",
+                table: "deliveries",
                 column: "CreatedBy");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DeliveryItems_ItemId",
-                table: "DeliveryItems",
-                column: "ItemId");
+                name: "IX_delivery_inventory_items_InventoryBatchId",
+                table: "delivery_inventory_items",
+                column: "InventoryBatchId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DonationItems_ItemId",
-                table: "DonationItems",
-                column: "ItemId");
+                name: "IX_donation_inventory_items_InventoryBatchId",
+                table: "donation_inventory_items",
+                column: "InventoryBatchId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Donations_CreatedBy",
-                table: "Donations",
+                name: "IX_donations_CreatedBy",
+                table: "donations",
                 column: "CreatedBy");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Donations_DonorId",
-                table: "Donations",
+                name: "IX_donations_DonorId",
+                table: "donations",
                 column: "DonorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_Email",
-                table: "Users",
+                name: "IX_donors_DocumentNumber",
+                table: "donors",
+                column: "DocumentNumber",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_inventory_batches_ItemId",
+                table: "inventory_batches",
+                column: "ItemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_inventory_batches_Tag",
+                table: "inventory_batches",
+                column: "Tag",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_items_Name_Brand",
+                table: "items",
+                columns: new[] { "Name", "Brand" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_roles_Name",
+                table: "roles",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_users_Email",
+                table: "users",
                 column: "Email",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_RoleId",
-                table: "Users",
+                name: "IX_users_RoleId",
+                table: "users",
                 column: "RoleId");
         }
 
@@ -309,34 +350,34 @@ namespace APISolidarityManager.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "DeliveryItems");
+                name: "delivery_inventory_items");
 
             migrationBuilder.DropTable(
-                name: "DonationItems");
+                name: "donation_inventory_items");
 
             migrationBuilder.DropTable(
-                name: "Inventories");
+                name: "deliveries");
 
             migrationBuilder.DropTable(
-                name: "Deliveries");
+                name: "donations");
 
             migrationBuilder.DropTable(
-                name: "Donations");
+                name: "inventory_batches");
 
             migrationBuilder.DropTable(
-                name: "Items");
+                name: "beneficiaries");
 
             migrationBuilder.DropTable(
-                name: "Beneficiaries");
+                name: "donors");
 
             migrationBuilder.DropTable(
-                name: "Donors");
+                name: "users");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "items");
 
             migrationBuilder.DropTable(
-                name: "Roles");
+                name: "roles");
         }
     }
 }
