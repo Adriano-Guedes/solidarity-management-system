@@ -28,7 +28,6 @@ namespace APISolidarityManager.Controllers.Items
                     {
                         Id = i.Id,
                         Name = i.Name,
-                        TotalQuantity = i.TotalQuantity,
                         Brand = i.Brand,
                         Notes = i.Notes,
                         Active = i.Active,
@@ -57,7 +56,6 @@ namespace APISolidarityManager.Controllers.Items
                     {
                         Id = i.Id,
                         Name = i.Name,
-                        TotalQuantity = i.TotalQuantity,
                         Brand = i.Brand,
                         Notes = i.Notes,
                         Active = i.Active,

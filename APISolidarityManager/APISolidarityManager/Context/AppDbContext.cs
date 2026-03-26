@@ -156,6 +156,7 @@ namespace APISolidarityManager.Context
                     .HasMaxLength(50);
 
                 entity.Property(e => e.Brand)
+                    .IsRequired()
                     .HasMaxLength(20);
 
                 entity.Property(e => e.Notes)
@@ -167,7 +168,7 @@ namespace APISolidarityManager.Context
                 entity.Property(e => e.CreatedAt)
                     .IsRequired();
 
-                entity.HasIndex(e => e.Name)
+                entity.HasIndex(e => new { e.Name, e.Brand })
                     .IsUnique();
             });
 
@@ -177,16 +178,26 @@ namespace APISolidarityManager.Context
 
                 entity.HasKey(e => e.Id);
 
+                entity.Property(e => e.ItemId)
+                    .IsRequired();
+
                 entity.Property(e => e.Tag)
                     .HasMaxLength(20);
 
+                entity.Property(e => e.ExpirationDate);
+
                 entity.Property(e => e.QuantityAvailable)
                     .IsRequired();
+
+                entity.Property(e => e.UpdatedAt);
 
                 entity.HasOne(e => e.Item)
                     .WithMany()
                     .HasForeignKey(e => e.ItemId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(e => e.Tag)
+                    .IsUnique();
             });
 
             modelBuilder.Entity<Donation>(entity =>
