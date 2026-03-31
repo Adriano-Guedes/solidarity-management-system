@@ -1,4 +1,5 @@
 using APISolidarityManager.Context;
+using APISolidarityManager.Extensions;
 using APISolidarityManager.Extentions;
 using Microsoft.AspNetCore.Builder;
 
@@ -10,6 +11,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddApplicationServices();
+builder.Services.AddApiFilters();
 
 var app = builder.Build();
 
@@ -17,6 +19,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.ConfigureExceptionHandler();
 }
 
 app.UseHttpsRedirection();
