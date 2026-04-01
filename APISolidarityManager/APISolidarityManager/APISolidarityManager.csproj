@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="16.1.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.14">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -24,19 +26,7 @@
     <Folder Include="Common\Helpers\" />
     <Folder Include="Common\Enums\" />
     <Folder Include="Data\" />
-    <Folder Include="DTOs\Deliveries\Request\" />
-    <Folder Include="DTOs\DeliveryInventoryItems\Request\" />
-    <Folder Include="DTOs\DonationInventoryItems\Request\" />
-    <Folder Include="DTOs\Donations\Request\" />
-    <Folder Include="DTOs\Families\" />
-    <Folder Include="DTOs\FamilyMembers\" />
-    <Folder Include="DTOs\InventoryBatches\Request\" />
-    <Folder Include="DTOs\InventoryBatches\Response\" />
-    <Folder Include="DTOs\ItemCategories\" />
-    <Folder Include="DTOs\Items\Request\" />
-    <Folder Include="DTOs\Logs\" />
-    <Folder Include="DTOs\Users\Request\" />
-    <Folder Include="DTOs\Users\Response\" />
+    <Folder Include="DTOs\Logs\Requests\" />
     <Folder Include="Notes\" />
   </ItemGroup>
 

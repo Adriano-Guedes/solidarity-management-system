@@ -12,6 +12,7 @@ builder.Services
     .AddDatabase(builder.Configuration)
     .AddRepositories()
     .AddServices()
+    .AddAutoMapperProfiles()
     .AddApiFilters();
 
 var app = builder.Build();

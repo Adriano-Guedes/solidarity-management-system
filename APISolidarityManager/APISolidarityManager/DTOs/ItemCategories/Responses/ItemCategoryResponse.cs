@@ -1,14 +1,12 @@
-﻿namespace APISolidarityManager.Models
+﻿namespace APISolidarityManager.DTOs.ItemCategories.Responses
 {
-    public class ItemCategory
+    public class ItemCategoryResponse
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
-        public bool Active { get; set; } = true;
+        public bool Active { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-
-        public ICollection<Item> Items { get; set; } = new List<Item>();
     }
 }

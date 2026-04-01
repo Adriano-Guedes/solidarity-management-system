@@ -1,6 +1,6 @@
-﻿namespace APISolidarityManager.Models
+﻿namespace APISolidarityManager.DTOs.FamilyMembers.Responses
 {
-    public class FamilyMember
+    public class FamilyMemberResponse
     {
         public Guid Id { get; set; }
         public Guid FamilyId { get; set; }
@@ -9,13 +9,11 @@
         public DateTime? BirthDate { get; set; }
         public string? Gender { get; set; }
         public string? Relationship { get; set; }
-        public bool HasDisability { get; set; } = false;
-        public bool HasChronicDisease { get; set; } = false;
-        public bool IsResponsible { get; set; } = false;
-        public bool Active { get; set; } = true;
+        public bool HasDisability { get; set; }
+        public bool HasChronicDisease { get; set; }
+        public bool IsResponsible { get; set; }
+        public bool Active { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-
-        public Family Family { get; set; } = null!;
     }
 }

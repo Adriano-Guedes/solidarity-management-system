@@ -1,6 +1,6 @@
-﻿namespace APISolidarityManager.Models
+﻿namespace APISolidarityManager.DTOs.Families.Responses
 {
-    public class Family
+    public class FamilyResponse
     {
         public Guid Id { get; set; }
         public string ResponsibleName { get; set; } = null!;
@@ -9,11 +9,8 @@
         public string? Address { get; set; }
         public decimal? MonthlyIncome { get; set; }
         public string? Notes { get; set; }
-        public bool Active { get; set; } = true;
+        public bool Active { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-
-        public ICollection<FamilyMember> FamilyMembers { get; set; } = new List<FamilyMember>();
-        public ICollection<Delivery> Deliveries { get; set; } = new List<Delivery>();
     }
 }

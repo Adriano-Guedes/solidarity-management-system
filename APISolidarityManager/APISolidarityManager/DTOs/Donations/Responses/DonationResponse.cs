@@ -1,6 +1,6 @@
-﻿namespace APISolidarityManager.Models
+﻿namespace APISolidarityManager.DTOs.Donations.Responses
 {
-    public class Donation
+    public class DonationResponse
     {
         public Guid Id { get; set; }
         public DateTime ReceivedDate { get; set; }
@@ -8,8 +8,7 @@
         public string? Notes { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public User CreatedByUser { get; set; } = null!;
 
-        public ICollection<DonationInventoryItem> DonationInventoryItems { get; set; } = new List<DonationInventoryItem>();
+        public ICollection<DonationItemResponse> Items { get; set; } = new List<DonationItemResponse>();
     }
 }
