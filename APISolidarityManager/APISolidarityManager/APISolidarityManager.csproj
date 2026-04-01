@@ -23,15 +23,6 @@
   <ItemGroup>
     <Folder Include="Common\Helpers\" />
     <Folder Include="Common\Enums\" />
-    <Folder Include="Controllers\Beneficiaries\" />
-    <Folder Include="Controllers\Deliveries\" />
-    <Folder Include="Controllers\DeliveryInventoryItems\" />
-    <Folder Include="Controllers\DonationInventoryItems\" />
-    <Folder Include="Controllers\Donations\" />
-    <Folder Include="Controllers\Donors\" />
-    <Folder Include="Controllers\InventoryBatches\" />
-    <Folder Include="Controllers\Roles\" />
-    <Folder Include="Controllers\Users\" />
     <Folder Include="Data\" />
     <Folder Include="DTOs\Deliveries\Request\" />
     <Folder Include="DTOs\DeliveryInventoryItems\Request\" />

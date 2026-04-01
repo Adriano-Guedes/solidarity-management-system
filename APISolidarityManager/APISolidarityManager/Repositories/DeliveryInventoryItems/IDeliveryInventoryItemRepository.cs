@@ -1,6 +1,9 @@
-﻿namespace APISolidarityManager.Repositories.DeliveryInventoryItems
+﻿using APISolidarityManager.Models;
+using APISolidarityManager.Repositories.Base;
+
+namespace APISolidarityManager.Repositories.DeliveryInventoryItems
 {
-    public interface IDeliveryInventoryItemRepository
+    public interface IDeliveryInventoryItemRepository : IRepository<DeliveryInventoryItem>
     {
     }
 }
