@@ -1,6 +1,9 @@
-﻿namespace APISolidarityManager.Repositories.Deliveries
+﻿using APISolidarityManager.Models;
+using APISolidarityManager.Repositories.Base;
+
+namespace APISolidarityManager.Repositories.Deliveries
 {
-    public interface IDeliveryRepository
+    public interface IDeliveryRepository : IRepository<Delivery>
     {
     }
 }

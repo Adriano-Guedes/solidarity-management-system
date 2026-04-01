@@ -1,6 +1,6 @@
 ﻿namespace APISolidarityManager.Services.ItemCategories
 {
-    public class ItemCategory : IItemCategory
+    public interface IItemCategoryService
     {
     }
 }

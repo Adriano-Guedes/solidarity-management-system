@@ -1,15 +1,16 @@
 ﻿using APISolidarityManager.Context;
+using APISolidarityManager.Repositories.Items;
 using Microsoft.EntityFrameworkCore;
 
 namespace APISolidarityManager.Services.Items
 {
     public class ItemService : IItemService
     {
-        public readonly AppDbContext _context;
+        private readonly IItemRepository _itemRepository;
 
-        public ItemService(AppDbContext context)
+        public ItemService(IItemRepository itemRepository)
         {
-            _context = context;
+            _itemRepository = itemRepository;
         }
 
     }

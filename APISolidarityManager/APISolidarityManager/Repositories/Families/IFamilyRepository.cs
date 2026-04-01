@@ -1,6 +1,9 @@
-﻿namespace APISolidarityManager.Repositories.Families
+﻿using APISolidarityManager.Models;
+using APISolidarityManager.Repositories.Base;
+
+namespace APISolidarityManager.Repositories.Families
 {
-    public interface IFamilyRepository
+    public interface IFamilyRepository : IRepository<Family>
     {
     }
 }

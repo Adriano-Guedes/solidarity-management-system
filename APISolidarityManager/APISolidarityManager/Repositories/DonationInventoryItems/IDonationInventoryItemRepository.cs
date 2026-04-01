@@ -1,6 +1,9 @@
-﻿namespace APISolidarityManager.Repositories.DonationInventoryItems
+﻿using APISolidarityManager.Models;
+using APISolidarityManager.Repositories.Base;
+
+namespace APISolidarityManager.Repositories.DonationInventoryItems
 {
-    public interface IDonationInventoryItemRepository
+    public interface IDonationInventoryItemRepository : IRepository<DonationInventoryItem>
     {
     }
 }

@@ -1,6 +1,14 @@
-﻿namespace APISolidarityManager.Repositories.FamilyMembers
+﻿using APISolidarityManager.Context;
+using APISolidarityManager.Models;
+using APISolidarityManager.Repositories.Base;
+using APISolidarityManager.Repositories.Items;
+
+namespace APISolidarityManager.Repositories.FamilyMembers
 {
-    public class FamilyMemberRepository : IFamilyMemberRepository
+    public class FamilyMemberRepository : Repository<FamilyMember>, IFamilyMemberRepository
     {
+        public FamilyMemberRepository(AppDbContext context) : base(context)
+        {
+        }
     }
 }

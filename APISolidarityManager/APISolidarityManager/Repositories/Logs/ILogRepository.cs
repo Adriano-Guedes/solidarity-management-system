@@ -1,6 +1,9 @@
-﻿namespace APISolidarityManager.Repositories.Logs
+﻿using APISolidarityManager.Models;
+using APISolidarityManager.Repositories.Base;
+
+namespace APISolidarityManager.Repositories.Logs
 {
-    public interface ILogRepository
+    public interface ILogRepository : IRepository<Log>
     {
     }
 }

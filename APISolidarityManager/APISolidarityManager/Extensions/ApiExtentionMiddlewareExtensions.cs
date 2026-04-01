@@ -1,9 +1,9 @@
 ﻿using APISolidarityManager.Middleware;
 using Microsoft.AspNetCore.Diagnostics;
 
-namespace APISolidarityManager.Extentions
+namespace APISolidarityManager.Extensions
 {
-    public static class ApiExtentionMiddlewareExtensions
+    public static class ApiExtensionMiddlewareExtensions
     {
         public static void ConfigureExceptionHandler(this IApplicationBuilder app)
         {

@@ -1,6 +1,9 @@
-﻿namespace APISolidarityManager.Repositories.Items
+﻿using APISolidarityManager.Models;
+using APISolidarityManager.Repositories.Base;
+
+namespace APISolidarityManager.Repositories.Items
 {
-    public interface IItemRepository
+    public interface IItemRepository : IRepository<Item>
     {
     }
 }
