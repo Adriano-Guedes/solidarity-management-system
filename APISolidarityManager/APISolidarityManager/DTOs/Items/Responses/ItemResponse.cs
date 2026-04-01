@@ -1,6 +1,6 @@
-﻿namespace APISolidarityManager.Models
+﻿namespace APISolidarityManager.DTOs.Items.Responses
 {
-    public class Item
+    public class ItemResponse
     {
         public Guid Id { get; set; }
         public Guid CategoryId { get; set; }
@@ -8,11 +8,8 @@
         public string? Brand { get; set; }
         public string? UnitOfMeasure { get; set; }
         public string? Notes { get; set; }
-        public bool Active { get; set; } = true;
+        public bool Active { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public ItemCategory Category { get; set; } = null!;
-
-        public ICollection<InventoryBatch> InventoryBatches { get; set; } = new List<InventoryBatch>();
     }
 }

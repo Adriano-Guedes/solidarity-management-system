@@ -1,6 +1,6 @@
-﻿namespace APISolidarityManager.Models
+﻿namespace APISolidarityManager.DTOs.Deliveries.Responses
 {
-    public class Delivery
+    public class DeliveryResponse
     {
         public Guid Id { get; set; }
         public Guid FamilyId { get; set; }
@@ -9,9 +9,7 @@
         public string? Notes { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public Family Family { get; set; } = null!;
-        public User CreatedByUser { get; set; } = null!;
 
-        public ICollection<DeliveryInventoryItem> DeliveryInventoryItems { get; set; } = new List<DeliveryInventoryItem>();
+        public ICollection<DeliveryItemResponse> Items { get; set; } = new List<DeliveryItemResponse>();
     }
 }
