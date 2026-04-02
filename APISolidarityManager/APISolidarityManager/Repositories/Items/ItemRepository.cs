@@ -11,5 +11,15 @@ namespace APISolidarityManager.Repositories.Items
         public ItemRepository(AppDbContext context) : base(context)
         {
         }
+
+        public async Task<bool> ExistsByNameAndCategoryAsync(string name, Guid categoryId)
+        {
+            return await _context.Items.AnyAsync(i => i.Name.ToLower() == name.ToLower() && i.CategoryId == categoryId);
+        }
+
+        public async Task<Item?> GetByNameAndCategoryAsync(string name, Guid categoryId)
+        {
+            return await _context.Items.FirstOrDefaultAsync(i => i.Name.ToLower() == name.ToLower() && i.CategoryId == categoryId);
+        }
     }
 }
