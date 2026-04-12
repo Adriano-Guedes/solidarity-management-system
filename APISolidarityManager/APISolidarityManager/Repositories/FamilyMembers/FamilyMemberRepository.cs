@@ -2,6 +2,7 @@
 using APISolidarityManager.Models;
 using APISolidarityManager.Repositories.Base;
 using APISolidarityManager.Repositories.Items;
+using Microsoft.EntityFrameworkCore;
 
 namespace APISolidarityManager.Repositories.FamilyMembers
 {

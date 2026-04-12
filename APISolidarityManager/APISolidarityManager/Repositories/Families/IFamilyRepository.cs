@@ -5,5 +5,7 @@ namespace APISolidarityManager.Repositories.Families
 {
     public interface IFamilyRepository : IRepository<Family>
     {
+        Task<bool> ExistsByResponsibleDocumentAsync(string document);
+        Task<Family?> GetByResponsibleDocumentAsync(string document);
     }
 }
