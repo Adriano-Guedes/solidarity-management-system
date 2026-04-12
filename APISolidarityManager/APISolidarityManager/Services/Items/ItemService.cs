@@ -19,7 +19,11 @@ namespace APISolidarityManager.Services.Items
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public ItemService(IItemRepository itemRepository, IItemCategoryRepository itemCategoryRepository, IUnitOfWork unitOfWork, IMapper mapper)
+        public ItemService(
+            IItemRepository itemRepository, 
+            IItemCategoryRepository itemCategoryRepository, 
+            IUnitOfWork unitOfWork, 
+            IMapper mapper)
         {
             _itemRepository = itemRepository;
             _itemCategoryRepository = itemCategoryRepository;

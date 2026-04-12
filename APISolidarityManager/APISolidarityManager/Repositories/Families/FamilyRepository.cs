@@ -2,6 +2,7 @@
 using APISolidarityManager.Models;
 using APISolidarityManager.Repositories.Base;
 using APISolidarityManager.Repositories.Items;
+using Microsoft.EntityFrameworkCore;
 
 namespace APISolidarityManager.Repositories.Families
 {
@@ -9,6 +10,18 @@ namespace APISolidarityManager.Repositories.Families
     {
         public FamilyRepository(AppDbContext context) : base(context)
         {
+        }
+
+        public async Task<bool> ExistsByResponsibleDocumentAsync(string document)
+        {
+            return await _context.Families
+                .AnyAsync(f => f.ResponsibleDocument == document);
+        }
+
+        public async Task<Family?> GetByResponsibleDocumentAsync(string document)
+        {
+            return await _context.Families
+                .FirstOrDefaultAsync(f => f.ResponsibleDocument == document);
         }
     }
 }
