@@ -39,9 +39,6 @@ namespace APISolidarityManager.Services.FamilyMembers
 
             var familyMembers = await _familyMemberRepository.FindAsync(fm => fm.FamilyId == familyId);
 
-            if (familyMembers == null || !familyMembers.Any())
-                throw new Exception("Nenhum membro da família foi encontrado.");
-
             return _mapper.Map<IEnumerable<FamilyMemberResponse>>(familyMembers);
         }
 

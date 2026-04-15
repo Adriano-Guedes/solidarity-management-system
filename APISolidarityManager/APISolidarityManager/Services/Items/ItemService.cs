@@ -44,6 +44,19 @@ namespace APISolidarityManager.Services.Items
             }
         }
 
+        public async Task<IEnumerable<ItemResponse>> GetAllByCategoryAsync(Guid categoryId)
+        {
+            try
+            {
+                var items = await _itemRepository.FindAsync(p => p.CategoryId == categoryId);
+                return _mapper.Map<IEnumerable<ItemResponse>>(items);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Ocorreu um erro ao buscar os itens.", ex);
+            }
+        }
+
         public async Task<ItemResponse> GetByIdAsync(Guid id)
         {
             var item = await _itemRepository.GetByIdAsync(id);
