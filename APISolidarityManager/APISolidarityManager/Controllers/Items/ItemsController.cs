@@ -28,6 +28,13 @@ namespace APISolidarityManager.Controllers.Items
             return Ok(items);
         }
 
+        [HttpGet("category/{categoryId:guid}")]
+        public async Task<IActionResult> GetAllByCategory(Guid categoryId)
+        {
+            var items = await _itemService.GetAllByCategoryAsync(categoryId);
+            return Ok(items);
+        }
+
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetById(Guid id)
         {
