@@ -38,5 +38,14 @@ namespace APISolidarityManager.Repositories.InventoryBatches
 
             return hasDeliveryMovements;
         }
+
+        public async Task<IEnumerable<InventoryBatch>> GetAvailableOrderedByExpirationAsync(Guid itemId)
+        {
+            return await _context.InventoryBatches
+                .Where(ib => ib.ItemId == itemId && ib.QuantityAvailable > 0)
+                .OrderBy(ib => ib.ExpirationDate ?? DateTime.MaxValue)
+                .ThenBy(ib => ib.CreatedAt)
+                .ToListAsync();
+        }
     }
 }

@@ -8,5 +8,6 @@ namespace APISolidarityManager.Repositories.InventoryBatches
         Task<IEnumerable<InventoryBatch>> GetByItemIdAsync(Guid itemId);
         Task<InventoryBatch?> GetByItemIdAndExpirationDateAsync(Guid itemId, DateTime? expirationDate);
         Task<bool> HasMovementsAsync(Guid inventoryBatchId);
+        Task<IEnumerable<InventoryBatch>> GetAvailableOrderedByExpirationAsync(Guid itemId);
     }
 }

@@ -25,7 +25,13 @@ namespace APISolidarityManager.Mappings
                 .ForMember(dest => dest.Items,
                     opt => opt.MapFrom(src => src.DeliveryInventoryItems));
 
-            CreateMap<DeliveryInventoryItem, DeliveryItemResponse>();
+            CreateMap<DeliveryInventoryItem, DeliveryItemResponse>()
+                .ForMember(dest => dest.InventoryBatchId,
+                    opt => opt.MapFrom(src => src.InventoryBatchId))
+                .ForMember(dest => dest.ItemId,
+                    opt => opt.MapFrom(src => src.InventoryBatch.ItemId))
+                .ForMember(dest => dest.Quantity,
+                    opt => opt.MapFrom(src => src.Quantity));
             #endregion
         }
     }
