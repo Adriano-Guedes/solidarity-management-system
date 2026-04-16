@@ -5,5 +5,7 @@ namespace APISolidarityManager.Repositories.Deliveries
 {
     public interface IDeliveryRepository : IRepository<Delivery>
     {
+        Task<IEnumerable<Delivery>> GetAllWithItemsAsync();
+        Task<Delivery?> GetByIdWithItemsAsync(Guid id);
     }
 }
