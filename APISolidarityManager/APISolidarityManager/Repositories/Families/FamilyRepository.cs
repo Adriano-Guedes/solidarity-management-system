@@ -23,5 +23,12 @@ namespace APISolidarityManager.Repositories.Families
             return await _context.Families
                 .FirstOrDefaultAsync(f => f.ResponsibleDocument == document);
         }
+
+        public async Task<Family?> GetByIdWithMembersAsync(Guid familyId)
+        {
+            return await _context.Families
+                .Include(x => x.FamilyMembers)
+                .FirstOrDefaultAsync(x => x.Id == familyId);
+        }
     }
 }

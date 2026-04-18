@@ -8,6 +8,7 @@ using APISolidarityManager.Repositories.FamilyMembers;
 using APISolidarityManager.Repositories.InventoryBatches;
 using APISolidarityManager.Repositories.ItemCategories;
 using APISolidarityManager.Repositories.Items;
+using APISolidarityManager.Repositories.ItemTemplates;
 using APISolidarityManager.Repositories.Logs;
 using APISolidarityManager.Repositories.UnitOfWork;
 using APISolidarityManager.Repositories.Users;
@@ -28,6 +29,7 @@ namespace APISolidarityManager.Extensions
             services.AddScoped<IFamilyMemberRepository, FamilyMemberRepository>();
             services.AddScoped<IInventoryBatchRepository, InventoryBatchRepository>();
             services.AddScoped<IItemCategoryRepository, ItemCategoryRepository>();
+            services.AddScoped<IItemTemplateRepository, ItemTemplateRepository>();
             services.AddScoped<IItemRepository, ItemRepository>();
             services.AddScoped<ILogRepository, LogRepository>();
             services.AddScoped<IUserRepository, UserRepository>();

@@ -27,5 +27,14 @@ namespace APISolidarityManager.Repositories.Deliveries
                     .ThenInclude(di => di.InventoryBatch)
                 .FirstOrDefaultAsync(d => d.Id == id);
         }
+
+        public async Task<DateTime?> GetLastDeliveryDateByFamilyIdAsync(Guid familyId)
+        {
+            return await _context.Deliveries
+                .Where(x => x.FamilyId == familyId)
+                .OrderByDescending(x => x.DeliveryDate)
+                .Select(x => (DateTime?)x.DeliveryDate)
+                .FirstOrDefaultAsync();
+        }
     }
 }
