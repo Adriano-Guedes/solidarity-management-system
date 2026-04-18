@@ -1,6 +1,7 @@
 ﻿using APISolidarityManager.DTOs.Families.Requests;
 using APISolidarityManager.Filters;
 using APISolidarityManager.Services.Families;
+using APISolidarityManager.Services.Families.FamilyPriority;
 using Microsoft.AspNetCore.Mvc;
 
 namespace APISolidarityManager.Controllers.Families
@@ -11,10 +12,14 @@ namespace APISolidarityManager.Controllers.Families
     public class FamiliesController : ControllerBase
     {
         private readonly IFamilyService _familyService;
+        private readonly IFamilyPriorityService _familyPriorityService;
 
-        public FamiliesController(IFamilyService familyService)
+        public FamiliesController(
+            IFamilyService familyService,
+            IFamilyPriorityService familyPriorityService)
         {
             _familyService = familyService;
+            _familyPriorityService = familyPriorityService;
         }
 
         [HttpGet]
@@ -29,6 +34,13 @@ namespace APISolidarityManager.Controllers.Families
         {
             var family = await _familyService.GetByIdAsync(id);
             return Ok(family);
+        }
+
+        [HttpGet("{id}/priority")]
+        public async Task<IActionResult> GetPriority(Guid id)
+        {
+            var response = await _familyPriorityService.GetFamilyPriorityAsync(id);
+            return Ok(response);
         }
 
         [HttpPost]

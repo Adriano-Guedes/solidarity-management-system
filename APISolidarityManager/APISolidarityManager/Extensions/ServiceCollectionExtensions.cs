@@ -1,8 +1,10 @@
-﻿using APISolidarityManager.Services.Deliveries;
+﻿using APISolidarityManager.Services;
+using APISolidarityManager.Services.Deliveries;
 using APISolidarityManager.Services.DeliveryInventoryItems;
 using APISolidarityManager.Services.DonationInventoryItems;
 using APISolidarityManager.Services.Donations;
 using APISolidarityManager.Services.Families;
+using APISolidarityManager.Services.Families.FamilyPriority;
 using APISolidarityManager.Services.FamilyMembers;
 using APISolidarityManager.Services.InventoryBatches;
 using APISolidarityManager.Services.ItemCategories;
@@ -22,6 +24,7 @@ namespace APISolidarityManager.Extensions
             services.AddScoped<IDonationService, DonationService>();
             services.AddScoped<IFamilyService, FamilyService>();
             services.AddScoped<IFamilyMemberService, FamilyMemberService>();
+            services.AddScoped<IFamilyPriorityService, FamilyPriorityService>();
             services.AddScoped<IInventoryBatchService, InventoryBatchService>();
             services.AddScoped<IItemCategoryService, ItemCategoryService>();
             services.AddScoped<IItemService, ItemService>();
