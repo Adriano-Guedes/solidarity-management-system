@@ -10,5 +10,6 @@
         public DateTime? UpdatedAt { get; set; }
 
         public ICollection<Item> Items { get; set; } = new List<Item>();
+        public ICollection<ItemTemplate> ItemTemplates { get; set; } = new List<ItemTemplate>();
     }
 }

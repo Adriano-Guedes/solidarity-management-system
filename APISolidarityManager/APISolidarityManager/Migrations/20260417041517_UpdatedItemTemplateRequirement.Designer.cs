@@ -4,6 +4,7 @@ using APISolidarityManager.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APISolidarityManager.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260417041517_UpdatedItemTemplateRequirement")]
+    partial class UpdatedItemTemplateRequirement
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -353,10 +356,6 @@ namespace APISolidarityManager.Migrations
                         .HasColumnType("nvarchar(1000)")
                         .HasColumnName("notes");
 
-                    b.Property<decimal>("PackageQuantity")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("package_quantity");
-
                     b.Property<string>("UnitOfMeasure")
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)")
@@ -370,9 +369,8 @@ namespace APISolidarityManager.Migrations
 
                     b.HasIndex("ItemTemplateId");
 
-                    b.HasIndex("CategoryId", "Name", "PackageQuantity", "UnitOfMeasure")
-                        .IsUnique()
-                        .HasFilter("[unit_of_measure] IS NOT NULL");
+                    b.HasIndex("CategoryId", "Name")
+                        .IsUnique();
 
                     b.ToTable("items", (string)null);
                 });
