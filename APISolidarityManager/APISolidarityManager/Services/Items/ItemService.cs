@@ -5,6 +5,7 @@ using APISolidarityManager.DTOs.Items.Responses;
 using APISolidarityManager.Models;
 using APISolidarityManager.Repositories.ItemCategories;
 using APISolidarityManager.Repositories.Items;
+using APISolidarityManager.Repositories.ItemTemplates;
 using APISolidarityManager.Repositories.UnitOfWork;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
@@ -16,17 +17,20 @@ namespace APISolidarityManager.Services.Items
     {
         private readonly IItemRepository _itemRepository;
         private readonly IItemCategoryRepository _itemCategoryRepository;
+        private readonly IItemTemplateRepository _itemTemplateRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
         public ItemService(
             IItemRepository itemRepository, 
-            IItemCategoryRepository itemCategoryRepository, 
+            IItemCategoryRepository itemCategoryRepository,
+            IItemTemplateRepository itemTemplateRepository, 
             IUnitOfWork unitOfWork, 
             IMapper mapper)
         {
             _itemRepository = itemRepository;
             _itemCategoryRepository = itemCategoryRepository;
+            _itemTemplateRepository = itemTemplateRepository;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
@@ -69,15 +73,11 @@ namespace APISolidarityManager.Services.Items
 
         public async Task<ItemResponse> CreateAsync(CreateItemRequest request)
         {
-            var category = await _itemCategoryRepository.GetByIdAsync(request.CategoryId);
-
-            if (category == null)
-                throw new Exception("A categoria informada não foi encontrada.");
+            await ValidateCategoryAndTemplateAsync(request.CategoryId, request.ItemTemplateId);
 
             var normalizedName = request.Name.NormalizeSpaces();
 
-            var itemAlreadyExists = await _itemRepository
-                .ExistsByNameAndCategoryAsync(normalizedName, request.CategoryId);
+            var itemAlreadyExists = await _itemRepository.ExistsByNameAndCategoryAsync(normalizedName, request.CategoryId);
 
             if (itemAlreadyExists)
                 throw new Exception("Já existe um item com esse nome para a categoria informada.");
@@ -106,10 +106,7 @@ namespace APISolidarityManager.Services.Items
             if (item == null)
                 throw new Exception("O item informado não foi encontrado.");
 
-            var category = await _itemCategoryRepository.GetByIdAsync(request.CategoryId);
-
-            if (category == null)
-                throw new Exception("A categoria informada não foi encontrada.");
+            await ValidateCategoryAndTemplateAsync(request.CategoryId, request.ItemTemplateId);
 
             var normalizedName = request.Name.NormalizeSpaces();
 
@@ -146,5 +143,27 @@ namespace APISolidarityManager.Services.Items
 
             await _unitOfWork.SaveChangesAsync();
         }
+
+        #region Métodos Privados
+        private async Task ValidateCategoryAndTemplateAsync(Guid categoryId, Guid itemTemplateId)
+        {
+            var category = await _itemCategoryRepository.GetByIdAsync(categoryId);
+            if (category is null)
+                throw new Exception("Categoria do item não encontrada.");
+
+            if (!category.Active)
+                throw new Exception("A categoria informada está inativa.");
+
+            var itemTemplate = await _itemTemplateRepository.GetByIdAsync(itemTemplateId);
+            if (itemTemplate is null)
+                throw new Exception("Template do item não encontrado.");
+
+            if (!itemTemplate.Active)
+                throw new Exception("O template informado está inativo.");
+
+            if (itemTemplate.CategoryId != categoryId)
+                throw new Exception("O template informado não pertence à categoria selecionada para o item.");
+        }
+        #endregion
     }
 }

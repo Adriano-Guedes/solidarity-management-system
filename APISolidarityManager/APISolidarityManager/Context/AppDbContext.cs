@@ -29,6 +29,7 @@ namespace APISolidarityManager.Context
             ConfigureFamilies(modelBuilder);
             ConfigureFamilyMembers(modelBuilder);
             ConfigureItemCategories(modelBuilder);
+            ConfigureItemTemplates(modelBuilder);
             ConfigureItems(modelBuilder);
             ConfigureInventoryBatches(modelBuilder);
             ConfigureDonations(modelBuilder);
@@ -266,6 +267,10 @@ namespace APISolidarityManager.Context
                     .HasColumnName("category_id")
                     .IsRequired();
 
+                entity.Property(x => x.ItemTemplateId)
+                    .HasColumnName("item_template_id")
+                    .IsRequired();
+
                 entity.Property(x => x.Name)
                     .HasColumnName("name")
                     .HasMaxLength(150)
@@ -274,6 +279,11 @@ namespace APISolidarityManager.Context
                 entity.Property(x => x.Brand)
                     .HasColumnName("brand")
                     .HasMaxLength(100);
+
+                entity.Property(x => x.PackageQuantity)
+                    .HasColumnName("package_quantity")
+                    .HasColumnType("decimal(18,2)")
+                    .IsRequired();
 
                 entity.Property(x => x.UnitOfMeasure)
                     .HasColumnName("unit_of_measure")
@@ -295,12 +305,104 @@ namespace APISolidarityManager.Context
                 entity.Property(x => x.UpdatedAt)
                     .HasColumnName("updated_at");
 
-                entity.HasIndex(x => new { x.CategoryId, x.Name })
+                entity.HasIndex(x => new { x.CategoryId, x.Name, x.PackageQuantity, x.UnitOfMeasure })
                     .IsUnique();
+
+                entity.HasOne(x => x.Category)
+                    .WithMany(x => x.Items)
+                    .HasForeignKey(x => x.CategoryId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(x => x.ItemTemplateId);
+
+                entity.HasOne(x => x.ItemTemplate)
+                    .WithMany(x => x.Items)
+                    .HasForeignKey(x => x.ItemTemplateId)
+                    .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasMany(x => x.InventoryBatches)
                     .WithOne(x => x.Item)
                     .HasForeignKey(x => x.ItemId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+        }
+
+        private static void ConfigureItemTemplates(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ItemTemplate>(entity =>
+            {
+                entity.ToTable("item_templates");
+
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Id)
+                    .HasColumnName("id");
+
+                entity.Property(x => x.CategoryId)
+                    .HasColumnName("category_id")
+                    .IsRequired();
+
+                entity.Property(x => x.Name)
+                    .HasColumnName("name")
+                    .HasMaxLength(150)
+                    .IsRequired();
+
+                entity.Property(x => x.NeedGroup)
+                    .HasColumnName("need_group")
+                    .HasMaxLength(100)
+                    .IsRequired();
+
+                entity.Property(x => x.IsPerishable)
+                    .HasColumnName("is_perishable")
+                    .IsRequired();
+
+                entity.Property(x => x.RequiresRefrigeration)
+                    .HasColumnName("requires_refrigeration")
+                    .IsRequired();
+
+                entity.Property(x => x.SuitableForAutoSuggestion)
+                    .HasColumnName("suitable_for_auto_suggestion")
+                    .IsRequired();
+
+                entity.Property(x => x.RequiresManualAnalysis)
+                    .HasColumnName("requires_manual_analysis")
+                    .IsRequired();
+
+                entity.Property(x => x.DefaultUnitOfMeasure)
+                    .HasColumnName("default_unit_of_measure")
+                    .HasMaxLength(30);
+
+                entity.Property(x => x.ReferenceQuantity)
+                    .HasColumnName("reference_quantity")
+                    .HasColumnType("decimal(18,2)");
+
+                entity.Property(x => x.Notes)
+                    .HasColumnName("notes")
+                    .HasMaxLength(1000);
+
+                entity.Property(x => x.Active)
+                    .HasColumnName("active")
+                    .HasDefaultValue(true)
+                    .IsRequired();
+
+                entity.Property(x => x.CreatedAt)
+                    .HasColumnName("created_at")
+                    .IsRequired();
+
+                entity.Property(x => x.UpdatedAt)
+                    .HasColumnName("updated_at");
+
+                entity.HasIndex(x => new { x.CategoryId, x.Name })
+                    .IsUnique();
+
+                entity.HasOne(x => x.Category)
+                    .WithMany(x => x.ItemTemplates)
+                    .HasForeignKey(x => x.CategoryId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasMany(x => x.Items)
+                    .WithOne(x => x.ItemTemplate)
+                    .HasForeignKey(x => x.ItemTemplateId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
         }
