@@ -1,5 +1,6 @@
 ﻿using APISolidarityManager.DTOs.Families.Requests;
 using APISolidarityManager.Filters;
+using APISolidarityManager.Services.Deliveries.DeliverySuggestions;
 using APISolidarityManager.Services.Families;
 using APISolidarityManager.Services.Families.FamilyPriority;
 using Microsoft.AspNetCore.Mvc;
@@ -13,13 +14,16 @@ namespace APISolidarityManager.Controllers.Families
     {
         private readonly IFamilyService _familyService;
         private readonly IFamilyPriorityService _familyPriorityService;
+        private readonly IDeliverySuggestionService _deliverySuggestionService;
 
         public FamiliesController(
             IFamilyService familyService,
-            IFamilyPriorityService familyPriorityService)
+            IFamilyPriorityService familyPriorityService,
+            IDeliverySuggestionService deliverySuggestionService)
         {
             _familyService = familyService;
             _familyPriorityService = familyPriorityService;
+            _deliverySuggestionService = deliverySuggestionService;
         }
 
         [HttpGet]
@@ -40,6 +44,20 @@ namespace APISolidarityManager.Controllers.Families
         public async Task<IActionResult> GetPriority(Guid id)
         {
             var response = await _familyPriorityService.GetFamilyPriorityAsync(id);
+            return Ok(response);
+        }
+
+        [HttpGet("priority-ranking")]
+        public async Task<IActionResult> GetPriorityRanking()
+        {
+            var response = await _familyPriorityService.GetPriorityRankingAsync();
+            return Ok(response);
+        }
+
+        [HttpGet("{id}/delivery-suggestion")]
+        public async Task<IActionResult> GetDeliverySuggestion(Guid id)
+        {
+            var response = await _deliverySuggestionService.GetDeliverySuggestionAsync(id);
             return Ok(response);
         }
 

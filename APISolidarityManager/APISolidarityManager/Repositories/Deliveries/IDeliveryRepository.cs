@@ -8,5 +8,6 @@ namespace APISolidarityManager.Repositories.Deliveries
         Task<IEnumerable<Delivery>> GetAllWithItemsAsync();
         Task<Delivery?> GetByIdWithItemsAsync(Guid id);
         Task<DateTime?> GetLastDeliveryDateByFamilyIdAsync(Guid familyId);
+        Task<Dictionary<Guid, DateTime?>> GetLastDeliveryDatesByFamilyIdsAsync(IEnumerable<Guid> familyIds);
     }
 }

@@ -5,5 +5,6 @@ namespace APISolidarityManager.Services.Families.FamilyPriority
     public interface IFamilyPriorityService
     {
         Task<FamilyPriorityResponse> GetFamilyPriorityAsync(Guid familyId);
+        Task<IEnumerable<FamilyPriorityListItemResponse>> GetPriorityRankingAsync();
     }
 }

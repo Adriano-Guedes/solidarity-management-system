@@ -9,5 +9,6 @@ namespace APISolidarityManager.Repositories.InventoryBatches
         Task<InventoryBatch?> GetByItemIdAndExpirationDateAsync(Guid itemId, DateTime? expirationDate);
         Task<bool> HasMovementsAsync(Guid inventoryBatchId);
         Task<IEnumerable<InventoryBatch>> GetAvailableOrderedByExpirationAsync(Guid itemId);
+        Task<IEnumerable<InventoryBatch>> GetAvailableBatchesForSuggestionAsync();
     }
 }

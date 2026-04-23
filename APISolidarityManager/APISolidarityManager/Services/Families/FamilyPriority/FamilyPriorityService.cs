@@ -1,4 +1,5 @@
 ﻿using APISolidarityManager.DTOs.Families.Responses;
+using APISolidarityManager.Models;
 using APISolidarityManager.Repositories.Deliveries;
 using APISolidarityManager.Repositories.Families;
 using APISolidarityManager.Services.Families.FamilyPriority;
@@ -28,7 +29,56 @@ namespace APISolidarityManager.Services
             if (!family.Active)
                 throw new Exception("A família informada está inativa.");
 
-            var response = new FamilyPriorityResponse
+            var lastDeliveryDate = await _deliveryRepository.GetLastDeliveryDateByFamilyIdAsync(familyId);
+
+            var result = CalculatePriority(family, lastDeliveryDate);
+
+            return new FamilyPriorityResponse
+            {
+                FamilyId = result.FamilyId,
+                PriorityScore = result.PriorityScore,
+                PriorityLevel = result.PriorityLevel,
+                RequiresManualAnalysis = result.RequiresManualAnalysis,
+                Reasons = result.Reasons
+            };
+        }
+
+        public async Task<IEnumerable<FamilyPriorityListItemResponse>> GetPriorityRankingAsync()
+        {
+            var families = (await _familyRepository.GetAllActiveWithMembersAsync()).ToList();
+
+            var familyIds = families.Select(x => x.Id).ToList();
+            var lastDeliveryDates = await _deliveryRepository.GetLastDeliveryDatesByFamilyIdsAsync(familyIds);
+
+            var ranking = families
+                .Select(family =>
+                {
+                    lastDeliveryDates.TryGetValue(family.Id, out var lastDeliveryDate);
+
+                    var result = CalculatePriority(family, lastDeliveryDate);
+
+                    return new FamilyPriorityListItemResponse
+                    {
+                        FamilyId = result.FamilyId,
+                        ResponsibleName = family.ResponsibleName,
+                        PriorityScore = result.PriorityScore,
+                        PriorityLevel = result.PriorityLevel,
+                        RequiresManualAnalysis = result.RequiresManualAnalysis,
+                        Reasons = result.Reasons,
+                        LastDeliveryDate = lastDeliveryDate
+                    };
+                })
+                .OrderByDescending(x => x.PriorityScore)
+                .ThenBy(x => x.LastDeliveryDate ?? DateTime.MinValue)
+                .ThenBy(x => x.ResponsibleName)
+                .ToList();
+
+            return ranking;
+        }
+
+        private FamilyPriorityCalculationResult CalculatePriority(Family family, DateTime? lastDeliveryDate)
+        {
+            var result = new FamilyPriorityCalculationResult
             {
                 FamilyId = family.Id
             };
@@ -37,53 +87,52 @@ namespace APISolidarityManager.Services
                 .Where(x => x.Active)
                 .ToList();
 
-            response.PriorityScore += activeMembers.Count * 2;
+            result.PriorityScore += activeMembers.Count * 2;
+
             if (activeMembers.Any())
-                response.Reasons.Add($"Composição familiar: {activeMembers.Count} membro(s) ativo(s).");
+                result.Reasons.Add($"Composição familiar: {activeMembers.Count} membro(s) ativo(s).");
 
             foreach (var member in activeMembers)
             {
-                if (!member.BirthDate.HasValue)
-                    continue;
+                if (member.BirthDate.HasValue)
+                {
+                    var age = CalculateAge(member.BirthDate.Value);
 
-                var age = CalculateAge(member.BirthDate.Value);
-
-                if (age < 2)
-                {
-                    response.PriorityScore += 4;
-                    response.RequiresManualAnalysis = true;
-                    response.Reasons.Add($"Membro {member.Name} com menos de 2 anos.");
-                }
-                else if (age >= 2 && age <= 12)
-                {
-                    response.PriorityScore += 2;
-                    response.Reasons.Add($"Membro {member.Name} é criança entre 2 e 12 anos.");
-                }
-                else if (age >= 60)
-                {
-                    response.PriorityScore += 3;
-                    response.Reasons.Add($"Membro {member.Name} é idoso.");
+                    if (age < 2)
+                    {
+                        result.PriorityScore += 4;
+                        result.RequiresManualAnalysis = true;
+                        result.Reasons.Add($"Membro {member.Name} com menos de 2 anos.");
+                    }
+                    else if (age >= 2 && age <= 12)
+                    {
+                        result.PriorityScore += 2;
+                        result.Reasons.Add($"Membro {member.Name} é criança entre 2 e 12 anos.");
+                    }
+                    else if (age >= 60)
+                    {
+                        result.PriorityScore += 3;
+                        result.Reasons.Add($"Membro {member.Name} é idoso.");
+                    }
                 }
 
                 if (member.HasDisability)
                 {
-                    response.PriorityScore += 4;
-                    response.Reasons.Add($"Membro {member.Name} possui deficiência.");
+                    result.PriorityScore += 4;
+                    result.Reasons.Add($"Membro {member.Name} possui deficiência.");
                 }
 
                 if (member.HasChronicDisease)
                 {
-                    response.PriorityScore += 3;
-                    response.Reasons.Add($"Membro {member.Name} possui doença crônica.");
+                    result.PriorityScore += 3;
+                    result.Reasons.Add($"Membro {member.Name} possui doença crônica.");
                 }
             }
 
-            var lastDeliveryDate = await _deliveryRepository.GetLastDeliveryDateByFamilyIdAsync(familyId);
-
             if (!lastDeliveryDate.HasValue)
             {
-                response.PriorityScore += 10;
-                response.Reasons.Add("Família sem histórico de entrega.");
+                result.PriorityScore += 10;
+                result.Reasons.Add("Família sem histórico de entrega.");
             }
             else
             {
@@ -91,24 +140,24 @@ namespace APISolidarityManager.Services
 
                 if (daysWithoutDelivery > 90)
                 {
-                    response.PriorityScore += 8;
-                    response.Reasons.Add($"Família sem receber entrega há {daysWithoutDelivery} dias.");
+                    result.PriorityScore += 8;
+                    result.Reasons.Add($"Família sem receber entrega há {daysWithoutDelivery} dias.");
                 }
                 else if (daysWithoutDelivery > 60)
                 {
-                    response.PriorityScore += 6;
-                    response.Reasons.Add($"Família sem receber entrega há {daysWithoutDelivery} dias.");
+                    result.PriorityScore += 6;
+                    result.Reasons.Add($"Família sem receber entrega há {daysWithoutDelivery} dias.");
                 }
                 else if (daysWithoutDelivery > 30)
                 {
-                    response.PriorityScore += 3;
-                    response.Reasons.Add($"Família sem receber entrega há {daysWithoutDelivery} dias.");
+                    result.PriorityScore += 3;
+                    result.Reasons.Add($"Família sem receber entrega há {daysWithoutDelivery} dias.");
                 }
             }
 
-            response.PriorityLevel = GetPriorityLevel(response.PriorityScore);
+            result.PriorityLevel = GetPriorityLevel(result.PriorityScore);
 
-            return response;
+            return result;
         }
 
         private static int CalculateAge(DateTime birthDate)
@@ -134,6 +183,15 @@ namespace APISolidarityManager.Services
                 return "Média";
 
             return "Baixa";
+        }
+
+        private class FamilyPriorityCalculationResult
+        {
+            public Guid FamilyId { get; set; }
+            public int PriorityScore { get; set; }
+            public string PriorityLevel { get; set; } = null!;
+            public bool RequiresManualAnalysis { get; set; }
+            public List<string> Reasons { get; set; } = new();
         }
     }
 }

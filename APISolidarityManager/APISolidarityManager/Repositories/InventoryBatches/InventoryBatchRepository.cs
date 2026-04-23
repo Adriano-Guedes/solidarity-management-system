@@ -47,5 +47,20 @@ namespace APISolidarityManager.Repositories.InventoryBatches
                 .ThenBy(ib => ib.CreatedAt)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<InventoryBatch>> GetAvailableBatchesForSuggestionAsync()
+        {
+            return await _context.InventoryBatches
+                .Include(x => x.Item)
+                    .ThenInclude(x => x.ItemTemplate)
+                .Include(x => x.Item)
+                    .ThenInclude(x => x.Category)
+                .Where(x =>
+                    x.QuantityAvailable > 0 &&
+                    x.Item.Active &&
+                    x.Item.ItemTemplate.Active &&
+                    x.Item.ItemTemplate.SuitableForAutoSuggestion)
+                .ToListAsync();
+        }
     }
 }
