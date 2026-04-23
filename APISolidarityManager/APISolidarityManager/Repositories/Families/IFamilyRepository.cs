@@ -8,5 +8,6 @@ namespace APISolidarityManager.Repositories.Families
         Task<bool> ExistsByResponsibleDocumentAsync(string document);
         Task<Family?> GetByResponsibleDocumentAsync(string document);
         Task<Family?> GetByIdWithMembersAsync(Guid familyId);
+        Task<IEnumerable<Family>> GetAllActiveWithMembersAsync();
     }
 }

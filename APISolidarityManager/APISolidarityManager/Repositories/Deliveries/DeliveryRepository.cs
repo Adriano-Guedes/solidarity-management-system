@@ -36,5 +36,18 @@ namespace APISolidarityManager.Repositories.Deliveries
                 .Select(x => (DateTime?)x.DeliveryDate)
                 .FirstOrDefaultAsync();
         }
+
+        public async Task<Dictionary<Guid, DateTime?>> GetLastDeliveryDatesByFamilyIdsAsync(IEnumerable<Guid> familyIds)
+        {
+            return await _context.Deliveries
+                .Where(x => familyIds.Contains(x.FamilyId))
+                .GroupBy(x => x.FamilyId)
+                .Select(g => new
+                {
+                    FamilyId = g.Key,
+                    LastDeliveryDate = g.Max(x => x.DeliveryDate)
+                })
+                .ToDictionaryAsync(x => x.FamilyId, x => (DateTime?)x.LastDeliveryDate);
+        }
     }
 }

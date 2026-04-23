@@ -30,5 +30,13 @@ namespace APISolidarityManager.Repositories.Families
                 .Include(x => x.FamilyMembers)
                 .FirstOrDefaultAsync(x => x.Id == familyId);
         }
+
+        public async Task<IEnumerable<Family>> GetAllActiveWithMembersAsync()
+        {
+            return await _context.Families
+                .Include(x => x.FamilyMembers)
+                .Where(x => x.Active)
+                .ToListAsync();
+        }
     }
 }

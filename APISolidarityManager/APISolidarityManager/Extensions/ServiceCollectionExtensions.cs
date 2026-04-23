@@ -1,5 +1,6 @@
 ﻿using APISolidarityManager.Services;
 using APISolidarityManager.Services.Deliveries;
+using APISolidarityManager.Services.Deliveries.DeliverySuggestions;
 using APISolidarityManager.Services.DeliveryInventoryItems;
 using APISolidarityManager.Services.DonationInventoryItems;
 using APISolidarityManager.Services.Donations;
@@ -20,6 +21,7 @@ namespace APISolidarityManager.Extensions
         {
             services.AddScoped<IDeliveryService, DeliveryService>();
             services.AddScoped<IDeliveryInventoryItemService, DeliveryInventoryItemService>();
+            services.AddScoped<IDeliverySuggestionService, DeliverySuggestionService>();
             services.AddScoped<IDonationInventoryItemService, DonationInventoryItemService>();
             services.AddScoped<IDonationService, DonationService>();
             services.AddScoped<IFamilyService, FamilyService>();

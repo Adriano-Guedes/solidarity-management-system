@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <Folder Include="Common\Helpers\" />
-    <Folder Include="Common\Enums\" />
     <Folder Include="Data\" />
     <Folder Include="DTOs\Logs\Requests\" />
     <Folder Include="Notes\" />
