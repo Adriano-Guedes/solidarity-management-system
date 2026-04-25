@@ -13,7 +13,8 @@ builder.Services
     .AddRepositories()
     .AddServices()
     .AddAutoMapperProfiles()
-    .AddApiFilters();
+    .AddApiFilters()
+    .AddCustomCors();
 
 var app = builder.Build();
 
@@ -22,6 +23,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
     app.ConfigureExceptionHandler();
+    app.UseCors("AllowFrontend");
 }
 
 app.UseHttpsRedirection();
