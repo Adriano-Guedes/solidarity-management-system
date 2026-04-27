@@ -5,6 +5,7 @@
         public Guid Id { get; set; }
         public DateTime ReceivedDate { get; set; }
         public Guid CreatedBy { get; set; }
+        public string CreatedByName { get; set; } = string.Empty;
         public string? Notes { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

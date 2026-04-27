@@ -1,7 +1,9 @@
 export interface ItemResponse {
   id: string;
   categoryId: string;
+  categoryName: string;
   itemTemplateId: string;
+  itemTemplateName: string;
   name: string;
   brand?: string;
   packageQuantity: number;

@@ -1,35 +1,35 @@
-import React, { useEffect, useState } from 'react';
-import { getAllFamilies } from '../features/families/familyService';
-import FamilyTable from '../features/families/components/FamilyTable';
-import type { FamilyResponse } from '../types/family';
+import { useEffect, useState } from 'react';
 import Sidebar from '../components/Sidebar';
+import { getAllDeliveries } from '../features/deliveries/deliveryService';
+import type { DeliveryResponse } from '../types/delivery';
 import SearchBar from '../components/SearchBar';
+import DeliveryTable from '../features/deliveries/components/DeliveryTable';
 
-const FamiliesPage: React.FC = () => {
-  const [families, setFamilies] = useState<FamilyResponse[]>([]);
-  const [allFamilies, setAllFamilies] = useState<FamilyResponse[]>([]); // lista completa para filtro
+const DeliveriesPage: React.FC = () => {
+  const [deliveries, setDeliveries] = useState<DeliveryResponse[]>([]);
+  const [allDeliveries, setAllDeliveries] = useState<DeliveryResponse[]>([]); // lista completa para filtro
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [searching, setSearching] = useState(false);
 
   // Busca na API
-  const fetchFamilies = async () => {
+  const fetchDeliveries = async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await getAllFamilies();
-      setFamilies(data);
-      setAllFamilies(data);
+      const data = await getAllDeliveries();
+      setDeliveries(data);
+      setAllDeliveries(data);
     } catch {
-      setError('Failed to fetch families');
+      setError('Failed to fetch deliveries');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchFamilies();
+    fetchDeliveries();
     // eslint-disable-next-line
   }, []);
 
@@ -38,21 +38,21 @@ const FamiliesPage: React.FC = () => {
   function searchHandler() {
     if (!search.trim()) return;
     setSearching(true);
-    const filtered = allFamilies.filter(f =>
-      f.responsibleName.toLowerCase().includes(search.trim().toLowerCase())
+    const filtered = allDeliveries.filter(f =>
+      f.familyResponsableName.toLowerCase().includes(search.trim().toLowerCase())
     );
-    setFamilies(filtered);
+    setDeliveries(filtered);
     setSearching(false);
   }
 
   function clearHandler() {
     setSearch('');
-    setFamilies(allFamilies);
+    setDeliveries(allDeliveries);
   }
 
   function refreshHandler() {
     setSearch('');
-    fetchFamilies();
+    fetchDeliveries();
   }
 
 
@@ -82,23 +82,22 @@ const FamiliesPage: React.FC = () => {
           border: '1px solid #CBD5E1',
           margin: '0 0',
         }}>
-          <h1 style={{ color: '#0B1F3A' }}>Famílias</h1>
+          <h1 style={{ color: '#0B1F3A' }}>Entregas</h1>
           {/* Barra de busca */}
           <SearchBar
-            inputPlaceholder='Buscar por responsável...'
+            inputPlaceholder='Buscar por responsável da família...'
             search={search}
             setSearch={setSearch}
             loading={loading}
             onSearch={searchHandler}
-            onAdd={() => {}}
             onClear={clearHandler}
             onRefresh={refreshHandler}
           />
-          <FamilyTable families={families} />
+          <DeliveryTable deliveries={deliveries} />
         </div>
       </main>
     </div>
   );
 };
 
-export default FamiliesPage;
+export default DeliveriesPage;

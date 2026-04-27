@@ -27,7 +27,9 @@ namespace APISolidarityManager.Mappings
                 .ForMember(dest => dest.UpdatedAt,
                     opt => opt.MapFrom(src => src.UpdatedAt.ToSaoPauloTime()))
                 .ForMember(dest => dest.Items,
-                    opt => opt.MapFrom(src => src.DonationInventoryItems));
+                    opt => opt.MapFrom(src => src.DonationInventoryItems))
+                .ForMember(dest => dest.CreatedByName,
+                    opt => opt.MapFrom(src => src.CreatedByUser.Name));
             #endregion
         }
     }

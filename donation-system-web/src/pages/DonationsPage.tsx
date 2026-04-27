@@ -1,61 +1,57 @@
 import React, { useEffect, useState } from 'react';
-import { getAllFamilies } from '../features/families/familyService';
-import FamilyTable from '../features/families/components/FamilyTable';
-import type { FamilyResponse } from '../types/family';
 import Sidebar from '../components/Sidebar';
 import SearchBar from '../components/SearchBar';
+import DonationTable from '../features/donations/components/DonationTable';
+import { getAllDonations } from '../features/donations/donationService';
+import type { DonationResponse } from '../types/donation';
 
-const FamiliesPage: React.FC = () => {
-  const [families, setFamilies] = useState<FamilyResponse[]>([]);
-  const [allFamilies, setAllFamilies] = useState<FamilyResponse[]>([]); // lista completa para filtro
+const DonationsPage: React.FC = () => {
+  const [donations, setDonations] = useState<DonationResponse[]>([]);
+  const [allDonations, setAllDonations] = useState<DonationResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [searching, setSearching] = useState(false);
 
   // Busca na API
-  const fetchFamilies = async () => {
+  const fetchDonations = async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await getAllFamilies();
-      setFamilies(data);
-      setAllFamilies(data);
+      const data = await getAllDonations();
+      setDonations(data);
+      setAllDonations(data);
     } catch {
-      setError('Failed to fetch families');
+      setError('Failed to fetch donations');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchFamilies();
+    fetchDonations();
     // eslint-disable-next-line
   }, []);
 
-
-  // Funções auxiliares dentro do componente
   function searchHandler() {
     if (!search.trim()) return;
     setSearching(true);
-    const filtered = allFamilies.filter(f =>
-      f.responsibleName.toLowerCase().includes(search.trim().toLowerCase())
+    const filtered = allDonations.filter(donation =>
+      donation.createdBy.toLowerCase().includes(search.trim().toLowerCase())
     );
-    setFamilies(filtered);
+    setDonations(filtered);
     setSearching(false);
   }
 
   function clearHandler() {
     setSearch('');
-    setFamilies(allFamilies);
+    setDonations(allDonations);
   }
 
   function refreshHandler() {
     setSearch('');
-    fetchFamilies();
+    fetchDonations();
   }
-
-
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
@@ -82,8 +78,7 @@ const FamiliesPage: React.FC = () => {
           border: '1px solid #CBD5E1',
           margin: '0 0',
         }}>
-          <h1 style={{ color: '#0B1F3A' }}>Famílias</h1>
-          {/* Barra de busca */}
+          <h1 style={{ color: '#0B1F3A' }}>Doações Recebidas</h1>
           <SearchBar
             inputPlaceholder='Buscar por responsável...'
             search={search}
@@ -94,11 +89,11 @@ const FamiliesPage: React.FC = () => {
             onClear={clearHandler}
             onRefresh={refreshHandler}
           />
-          <FamilyTable families={families} />
+          <DonationTable donations={donations} />
         </div>
       </main>
     </div>
   );
 };
 
-export default FamiliesPage;
+export default DonationsPage;

@@ -1,61 +1,57 @@
-import React, { useEffect, useState } from 'react';
-import { getAllFamilies } from '../features/families/familyService';
-import FamilyTable from '../features/families/components/FamilyTable';
-import type { FamilyResponse } from '../types/family';
+import { useEffect, useState } from 'react';
 import Sidebar from '../components/Sidebar';
+import type { ItemResponse } from '../types/item';
+import { getAllItems } from '../features/items/itemService';
+import ItemTable from '../features/items/components/ItemTable';
 import SearchBar from '../components/SearchBar';
 
-const FamiliesPage: React.FC = () => {
-  const [families, setFamilies] = useState<FamilyResponse[]>([]);
-  const [allFamilies, setAllFamilies] = useState<FamilyResponse[]>([]); // lista completa para filtro
+const ItemsPage: React.FC = () => {
+  const [items, setItems] = useState<ItemResponse[]>([]);
+  const [allItems, setAllItems] = useState<ItemResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [searching, setSearching] = useState(false);
 
   // Busca na API
-  const fetchFamilies = async () => {
+  const fetchItems = async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await getAllFamilies();
-      setFamilies(data);
-      setAllFamilies(data);
+      const data = await getAllItems();
+      setItems(data);
+      setAllItems(data);
     } catch {
-      setError('Failed to fetch families');
+      setError('Failed to fetch items');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchFamilies();
+    fetchItems();
     // eslint-disable-next-line
   }, []);
 
-
-  // Funções auxiliares dentro do componente
   function searchHandler() {
     if (!search.trim()) return;
     setSearching(true);
-    const filtered = allFamilies.filter(f =>
-      f.responsibleName.toLowerCase().includes(search.trim().toLowerCase())
+    const filtered = allItems.filter(item =>
+      item.name.toLowerCase().includes(search.trim().toLowerCase())
     );
-    setFamilies(filtered);
+    setItems(filtered);
     setSearching(false);
   }
 
   function clearHandler() {
     setSearch('');
-    setFamilies(allFamilies);
+    setItems(allItems);
   }
 
   function refreshHandler() {
     setSearch('');
-    fetchFamilies();
+    fetchItems();
   }
-
-
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
@@ -82,10 +78,9 @@ const FamiliesPage: React.FC = () => {
           border: '1px solid #CBD5E1',
           margin: '0 0',
         }}>
-          <h1 style={{ color: '#0B1F3A' }}>Famílias</h1>
-          {/* Barra de busca */}
+          <h1 style={{ color: '#0B1F3A' }}>Items</h1>
           <SearchBar
-            inputPlaceholder='Buscar por responsável...'
+            inputPlaceholder='Buscar por nome do item...'
             search={search}
             setSearch={setSearch}
             loading={loading}
@@ -94,11 +89,11 @@ const FamiliesPage: React.FC = () => {
             onClear={clearHandler}
             onRefresh={refreshHandler}
           />
-          <FamilyTable families={families} />
+          <ItemTable items={items} />
         </div>
       </main>
     </div>
   );
 };
 
-export default FamiliesPage;
+export default ItemsPage;
