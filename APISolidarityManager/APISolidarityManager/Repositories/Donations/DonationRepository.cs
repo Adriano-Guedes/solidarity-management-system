@@ -17,6 +17,7 @@ namespace APISolidarityManager.Repositories.Donations
             return await _context.Donations
                 .Include(d => d.DonationInventoryItems)
                     .ThenInclude(di => di.InventoryBatch)
+                .Include(d => d.CreatedByUser)
                 .ToListAsync();
         }
 

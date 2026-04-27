@@ -17,7 +17,16 @@ namespace APISolidarityManager.Repositories.Base
 
         public virtual async Task<IEnumerable<T>> GetAllAsync()
         {
-            return await _dbSet.AsNoTracking().ToListAsync();
+            IQueryable<T> query = _dbSet.AsNoTracking();
+
+            var navigationProperties = _dbSet.EntityType.GetNavigations();
+
+            foreach (var navigation in navigationProperties)
+            {
+                query = query.Include(navigation.Name);
+            }
+
+            return await query.ToListAsync();
         }
 
         public virtual async Task<T?> GetByIdAsync(Guid id)

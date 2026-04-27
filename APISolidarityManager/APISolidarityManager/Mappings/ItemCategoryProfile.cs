@@ -11,13 +11,13 @@ namespace APISolidarityManager.Mappings
         public ItemCategoryProfile()
         {
             #region REQUEST
-            CreateMap<CreateItemCategoryRequest, ItemCategory>().ReverseMap();
+            CreateMap<CreateItemCategoryRequest, ItemCategory>();
             
-            CreateMap<UpdateItemCategoryRequest, ItemCategory>().ReverseMap();
+            CreateMap<UpdateItemCategoryRequest, ItemCategory>();
             #endregion
 
             #region RESPONSE
-            CreateMap<ItemCategory, ItemCategoryResponse>().ReverseMap()
+            CreateMap<ItemCategory, ItemCategoryResponse>()
                 .ForMember(dest => dest.CreatedAt,
                     opt => opt.MapFrom(src => src.CreatedAt.ToSaoPauloTime()))
                 .ForMember(dest => dest.UpdatedAt,

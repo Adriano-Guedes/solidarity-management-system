@@ -1,12 +1,8 @@
 import './App.css';
-import FamiliesPage from './pages/FamiliesPage';
+import AppRoutes from './routes/AppRoutes';
 
 function App() {
-  return (
-    <div style={{ padding: 24 }}>
-      <FamiliesPage />
-    </div>
-  );
+  return <AppRoutes />;
 }
 
 export default App;

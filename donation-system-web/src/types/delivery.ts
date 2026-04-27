@@ -37,8 +37,10 @@ export interface DeliveryItemResponse {
 export interface DeliveryResponse {
   id: string;
   familyId: string;
+  familyResponsableName: string;
   deliveryDate: string;
   createdBy: string;
+  createdByName: string;
   notes?: string;
   createdAt: string;
   updatedAt?: string;

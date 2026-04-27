@@ -11,13 +11,13 @@ namespace APISolidarityManager.Mappings
         public FamilyProfile()
         {
             #region REQUEST
-            CreateMap<CreateFamilyRequest, Family>().ReverseMap();
+            CreateMap<CreateFamilyRequest, Family>();
             
-            CreateMap<UpdateFamilyRequest, Family>().ReverseMap();
+            CreateMap<UpdateFamilyRequest, Family>();
             #endregion
 
             #region RESPONSE
-            CreateMap<Family, FamilyResponse>().ReverseMap()
+            CreateMap<Family, FamilyResponse>()
                 .ForMember(dest => dest.CreatedAt,
                     opt => opt.MapFrom(src => src.CreatedAt.ToSaoPauloTime()))
                 .ForMember(dest => dest.UpdatedAt,

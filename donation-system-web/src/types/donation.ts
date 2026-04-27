@@ -9,6 +9,7 @@ export interface DonationResponse {
   id: string;
   receivedDate: string;
   createdBy: string;
+  createdByName: string;
   notes?: string;
   createdAt: string;
   updatedAt?: string;

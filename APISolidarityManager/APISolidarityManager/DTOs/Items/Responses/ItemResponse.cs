@@ -4,7 +4,9 @@
     {
         public Guid Id { get; set; }
         public Guid CategoryId { get; set; }
+        public string CategoryName { get; set; } = null!;
         public Guid ItemTemplateId { get; set; }
+        public string ItemTemplateName { get; set; } = null!;
         public string Name { get; set; } = null!;
         public string? Brand { get; set; }
         public decimal PackageQuantity { get; set; }
