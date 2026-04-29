@@ -31,7 +31,17 @@ namespace APISolidarityManager.Repositories.Base
 
         public virtual async Task<T?> GetByIdAsync(Guid id)
         {
-            return await _dbSet.FindAsync(id);
+            var entityType = _context.Model.FindEntityType(typeof(T));
+            var navigationProperties = entityType.GetNavigations().Select(n => n.Name);
+
+            IQueryable<T> query = _dbSet.AsNoTracking();
+
+            foreach (var navigation in navigationProperties)
+            {
+                query = query.Include(navigation);
+            }
+
+            return await query.FirstOrDefaultAsync(e => EF.Property<Guid>(e, "Id") == id);
         }
 
         public virtual async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)

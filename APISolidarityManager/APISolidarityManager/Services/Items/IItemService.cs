@@ -10,6 +10,6 @@ namespace APISolidarityManager.Services.Items
         Task<ItemResponse> GetByIdAsync(Guid id);
         Task<ItemResponse> CreateAsync(CreateItemRequest request);
         Task<ItemResponse> UpdateAsync(Guid id, UpdateItemRequest request);
-        Task DeleteAsync(Guid id);
+        Task<ItemResponse> DeleteAsync(Guid id);
     }
 }

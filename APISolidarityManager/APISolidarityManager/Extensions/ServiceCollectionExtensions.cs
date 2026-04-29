@@ -10,6 +10,7 @@ using APISolidarityManager.Services.FamilyMembers;
 using APISolidarityManager.Services.InventoryBatches;
 using APISolidarityManager.Services.ItemCategories;
 using APISolidarityManager.Services.Items;
+using APISolidarityManager.Services.ItemTemplates;
 using APISolidarityManager.Services.Logs;
 using APISolidarityManager.Services.Users;
 
@@ -29,6 +30,7 @@ namespace APISolidarityManager.Extensions
             services.AddScoped<IFamilyPriorityService, FamilyPriorityService>();
             services.AddScoped<IInventoryBatchService, InventoryBatchService>();
             services.AddScoped<IItemCategoryService, ItemCategoryService>();
+            services.AddScoped<IItemTemplateService, ItemTemplateService>();
             services.AddScoped<IItemService, ItemService>();
             services.AddScoped<ILogService, LogService>();
             services.AddScoped<IUserService, UserService>();

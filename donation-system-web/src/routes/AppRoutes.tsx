@@ -5,6 +5,7 @@ import FamilyMembersPage from '../pages/FamilyMembersPage';
 import DonationsPage from '../pages/DonationsPage';
 import DeliveriesPage from '../pages/DeliveriesPage';
 import ItemsPage from '../pages/ItemsPage';
+import ItemDetailPage from '../pages/ItemDetailPage';
 import InventoryBatchesPage from '../pages/InventoryBatchesPage';
 import ItemCategoriesPage from '../pages/ItemCategoriesPage';
 import UsersPage from '../pages/UsersPage';
@@ -20,6 +21,7 @@ const AppRoutes = () => (
       <Route path="/donations" element={<DonationsPage />} />
       <Route path="/deliveries" element={<DeliveriesPage />} />
       <Route path="/items" element={<ItemsPage />} />
+      <Route path="/items/:id" element={<ItemDetailPage />} />
       <Route path="/inventory-batches" element={<InventoryBatchesPage />} />
       <Route path="/item-categories" element={<ItemCategoriesPage />} />
       <Route path="/users" element={<UsersPage />} />

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solidarity - Sistema de Gestão de Doações</title>
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-light: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styling */
+        #sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            background-color: var(--primary-color);
+            color: white;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            text-align: center;
+        }
+
+        .sidebar-header h3 {
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin: 0;
+            color: var(--accent-color);
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.7);
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 4px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left-color: var(--accent-color);
+        }
+
+        .nav-link i {
+            font-size: 1.2rem;
+        }
+
+        /* Main Content Styling */
+        #main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .top-bar {
+            background: white;
+            padding: 1rem 2rem;
+            margin: -2rem -2rem 2rem -2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .bg-soft-blue { background-color: #e3f2fd; color: #1976d2; }
+        .bg-soft-green { background-color: #e8f5e9; color: #388e3c; }
+        .bg-soft-orange { background-color: #fff3e0; color: #f57c00; }
+        .bg-soft-purple { background-color: #f3e5f5; color: #7b1fa2; }
+
+        .table thead th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            border-top: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            #sidebar {
+                margin-left: calc(-1 * var(--sidebar-width));
+            }
+            #sidebar.active {
+                margin-left: 0;
+            }
+            #main-content {
+                margin-left: 0;
+            }
+            #main-content.active {
+                margin-left: var(--sidebar-width);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside id="sidebar">
+        <div class="sidebar-header">
+            <h3>SOLIDARITY</h3>
+        </div>
+        
+        <nav class="flex-column flex-grow-1">
+            <a href="#" class="nav-link active">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+            <a href="#" class="nav-link">
+                <i class="bi bi-people"></i> Famílias
+            </a>
+            <a href="#" class="nav-link">
+                <i class="bi bi-gift"></i> Doações
+            </a>
+            <a href="#" class="nav-link">
+                <i class="bi bi-truck"></i> Entregas
+            </a>
+            <a href="#" class="nav-link">
+                <i class="bi bi-box-seam"></i> Itens
+            </a>
+            <a href="#" class="nav-link">
+                <i class="bi bi-tags"></i> Categorias
+            </a>
+        </nav>
+
+        <div class="p-4 mt-auto border-top border-secondary">
+            <div class="d-flex align-items-center mb-3">
+                <div class="rounded-circle bg-accent p-2 me-2">
+                    <i class="bi bi-person-circle text-white"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0 text-white">Administrador</h6>
+                    <small class="text-secondary">admin@solidarity.com</small>
+                </div>
+            </div>
+            <button class="btn btn-outline-light btn-sm w-100 mt-2">
+                <i class="bi bi-box-arrow-right me-2"></i> Sair
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <!-- Top Navigation Bar -->
+        <header class="top-bar">
+            <div class="d-flex align-items-center">
+                <button class="btn d-md-none me-3" id="sidebar-toggle">
+                    <i class="bi bi-list"></i>
+                </button>
+                <h4 class="mb-0 fw-bold">Visão Geral</h4>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="input-group d-none d-lg-flex" style="width: 300px;">
+                    <span class="input-group-text bg-light border-0"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control bg-light border-0" placeholder="Buscar no sistema...">
+                </div>
+                <button class="btn btn-light position-relative">
+                    <i class="bi bi-bell"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
+                        3
+                    </span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Stats Grid -->
+        <div class="row g-4 mb-4">
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card p-4">
+                    <div class="stat-icon bg-soft-blue">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <h6 class="text-muted mb-1">Famílias Ativas</h6>
+                    <h3 class="fw-bold mb-0">124</h3>
+                    <div class="text-success mt-2 small">
+                        <i class="bi bi-arrow-up"></i> 12% desde o mês passado
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card p-4">
+                    <div class="stat-icon bg-soft-green">
+                        <i class="bi bi-gift-fill"></i>
+                    </div>
+                    <h6 class="text-muted mb-1">Doações (Mês)</h6>
+                    <h3 class="fw-bold mb-0">R$ 12.450</h3>
+                    <div class="text-success mt-2 small">
+                        <i class="bi bi-arrow-up"></i> 8% em relação à meta
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card p-4">
+                    <div class="stat-icon bg-soft-orange">
+                        <i class="bi bi-truck"></i>
+                    </div>
+                    <h6 class="text-muted mb-1">Entregas Pendentes</h6>
+                    <h3 class="fw-bold mb-0">18</h3>
+                    <div class="text-warning mt-2 small">
+                        <i class="bi bi-clock-history"></i> Próxima rota em 2h
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card p-4">
+                    <div class="stat-icon bg-soft-purple">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+                    <h6 class="text-muted mb-1">Itens em Estoque</h6>
+                    <h3 class="fw-bold mb-0">1.842</h3>
+                    <div class="text-danger mt-2 small">
+                        <i class="bi bi-exclamation-triangle"></i> 5 itens em nível baixo
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity and Actions -->
+        <div class="row g-4">
+            <div class="col-12 col-lg-8">
+                <div class="card h-100">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold">Últimas Doações</h5>
+                        <button class="btn btn-primary btn-sm">Ver todas</button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="ps-4">Doador</th>
+                                        <th>Tipo</th>
+                                        <th>Data</th>
+                                        <th>Status</th>
+                                        <th class="pe-4 text-end">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="fw-bold">João Silva</div>
+                                            <small class="text-muted">joao@email.com</small>
+                                        </td>
+                                        <td>Alimentos</td>
+                                        <td>28 Abr 2026</td>
+                                        <td><span class="badge bg-success-subtle text-success">Concluído</span></td>
+                                        <td class="pe-4 text-end">
+                                            <button class="btn btn-sm btn-light"><i class="bi bi-eye"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="fw-bold">Maria Oliveira</div>
+                                            <small class="text-muted">maria@email.com</small>
+                                        </td>
+                                        <td>Financeiro</td>
+                                        <td>27 Abr 2026</td>
+                                        <td><span class="badge bg-warning-subtle text-warning">Processando</span></td>
+                                        <td class="pe-4 text-end">
+                                            <button class="btn btn-sm btn-light"><i class="bi bi-eye"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="fw-bold">Empresa XYZ</div>
+                                            <small class="text-muted">contato@xyz.com</small>
+                                        </td>
+                                        <td>Misto</td>
+                                        <td>26 Abr 2026</td>
+                                        <td><span class="badge bg-success-subtle text-success">Concluído</span></td>
+                                        <td class="pe-4 text-end">
+                                            <button class="btn btn-sm btn-light"><i class="bi bi-eye"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-12 col-lg-4">
+                <div class="card h-100">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0 fw-bold">Ações Rápidas</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-3">
+                            <button class="btn btn-outline-primary py-3 text-start px-3 d-flex align-items-center">
+                                <i class="bi bi-person-plus fs-4 me-3"></i>
+                                <div>
+                                    <div class="fw-bold">Cadastrar Família</div>
+                                    <small class="text-muted">Adicionar nova família beneficiada</small>
+                                </div>
+                            </button>
+                            <button class="btn btn-outline-success py-3 text-start px-3 d-flex align-items-center">
+                                <i class="bi bi-plus-circle fs-4 me-3"></i>
+                                <div>
+                                    <div class="fw-bold">Nova Doação</div>
+                                    <small class="text-muted">Registrar entrada de donativos</small>
+                                </div>
+                            </button>
+                            <button class="btn btn-outline-info py-3 text-start px-3 d-flex align-items-center">
+                                <i class="bi bi-geo-alt fs-4 me-3"></i>
+                                <div>
+                                    <div class="fw-bold">Planejar Entrega</div>
+                                    <small class="text-muted">Criar rota de distribuição</small>
+                                </div>
+                            </button>
+                        </div>
+
+                        <div class="mt-4 p-3 rounded bg-light border">
+                            <h6 class="fw-bold small text-uppercase text-muted mb-3">Resumo do Estoque</h6>
+                            <div class="mb-2">
+                                <div class="d-flex justify-content-between small mb-1">
+                                    <span>Cestas Básicas</span>
+                                    <span>85%</span>
+                                </div>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 85%"></div>
+                                </div>
+                            </div>
+                            <div class="mb-0">
+                                <div class="d-flex justify-content-between small mb-1">
+                                    <span>Higiene Pessoal</span>
+                                    <span>32%</span>
+                                </div>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 32%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Toggle Sidebar on Mobile
+        document.getElementById('sidebar-toggle')?.addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('main-content').classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

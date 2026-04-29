@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatDateTimeBR } from '../../../utils/dateFormat';
+import { useNavigate } from 'react-router-dom';
 import TableIconButton from '../../../components/TableIconButton';
 import { FaClipboardList } from 'react-icons/fa6';
 import { COLORS } from '../../../constants';
@@ -10,6 +10,7 @@ interface ItemTableProps {
 }
 
 const ItemTable: React.FC<ItemTableProps> = ({ items }) => {
+    const navigate = useNavigate();
     return (
         <table className="table table-hover">
             <thead>
@@ -36,7 +37,7 @@ const ItemTable: React.FC<ItemTableProps> = ({ items }) => {
                             <TableIconButton
                                 icon={<FaClipboardList color={COLORS.white}/>}
                                 title="Ver detalhes"
-                                onClick={() => console.log('Ver detalhes clicked')}
+                                onClick={() => navigate(`/items/${item.id}`)}
                                 bgColor={COLORS.primary}
                             />
                         </td>
