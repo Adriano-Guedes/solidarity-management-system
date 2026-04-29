@@ -26,5 +26,7 @@ namespace APISolidarityManager.DTOs.Items.Requests
 
         [StringLength(1000, ErrorMessage = "As observações devem ter no máximo 1000 caracteres.")]
         public string? Notes { get; set; }
+        [Required]
+        public bool Active { get; set; }
     }
 }

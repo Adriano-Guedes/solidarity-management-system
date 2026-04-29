@@ -1,97 +1,152 @@
-import { NavLink, useNavigate } from 'react-router-dom';
-import { FiHome, FiUsers, FiGift, FiTruck, FiBox, FiLayers, FiTag, FiUser } from 'react-icons/fi';
-import { COLORS } from '../constants';
+import { NavLink } from 'react-router-dom';
+import { 
+  FiGrid, 
+  FiUsers, 
+  FiGift, 
+  FiTruck, 
+  FiBox, 
+  FiTag, 
+  FiHeart,
+  FiBarChart2,
+  FiSettings
+} from 'react-icons/fi';
 
-const menuItems = [
-  { label: 'Dashboard', path: '/dashboard', icon: <FiHome /> },
-  { label: 'Famílias', path: '/families', icon: <FiUsers /> },
-  { label: 'Doações', path: '/donations', icon: <FiGift /> },
-  { label: 'Entregas', path: '/deliveries', icon: <FiTruck /> },
-  { label: 'Itens', path: '/items', icon: <FiBox /> },
-  { label: 'Categorias', path: '/item-categories', icon: <FiTag /> },
-  // { label: 'Users', path: '/users', icon: <FiUser /> },
+interface SidebarProps {
+  collapsed: boolean;
+}
+
+const menuSections = [
+  {
+    label: 'Principal',
+    items: [
+      { label: 'Dashboard', path: '/dashboard', icon: <FiGrid /> },
+    ]
+  },
+  {
+    label: 'Gestão',
+    items: [
+      { label: 'Famílias', path: '/families', icon: <FiUsers /> },
+      { label: 'Doações', path: '/donations', icon: <FiGift /> },
+      { label: 'Entregas', path: '/deliveries', icon: <FiTruck /> },
+    ]
+  },
+  {
+    label: 'Estoque',
+    items: [
+      { label: 'Itens', path: '/items', icon: <FiBox /> },
+      { label: 'Categorias', path: '/item-categories', icon: <FiTag /> },
+    ]
+  },
+  {
+    label: 'Sistema',
+    items: [
+      { label: 'Relatórios', path: '/reports', icon: <FiBarChart2 /> },
+      { label: 'Configurações', path: '/settings', icon: <FiSettings /> },
+    ]
+  }
 ];
 
-const fakeUser = {
-  name: 'Admin',
-  email: 'admin@system.com',
-};
-
-const Sidebar = () => {
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    navigate('/');
-  };
-
+const Sidebar = ({ collapsed }: SidebarProps) => {
   return (
     <aside
+      id="sidebar"
       style={{
-        width: 240,
+        width: collapsed ? 'var(--sidebar-collapsed-width)' : 'var(--sidebar-width)',
         height: '100vh',
-        background: COLORS.primary,
-        color: COLORS.white,
+        background: 'var(--sidebar-bg)',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'space-between',
+        transition: 'width var(--transition)',
         position: 'fixed',
         left: 0,
         top: 0,
-        boxShadow: '2px 0 8px rgba(0,0,0,0.08)',
-        zIndex: 100,
+        zIndex: 1000,
+        overflow: 'hidden',
       }}
     >
-      <nav style={{ padding: '32px 0 0 0' }}>
-        <h2 style={{ textAlign: 'center', color: COLORS.accent, marginBottom: 32, letterSpacing: 1 }}>Solidarity</h2>
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          {menuItems.map((item) => (
-            <li key={item.path}>
+      <a href="/dashboard" style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        padding: '20px 20px 16px',
+        borderBottom: '1px solid rgba(255,255,255,0.08)',
+        minHeight: 'var(--topbar-height)',
+        textDecoration: 'none',
+      }}>
+        <div style={{
+          width: '36px', height: '36px',
+          background: 'var(--primary)',
+          borderRadius: '10px',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexShrink: 0,
+          fontSize: '18px',
+          color: '#fff',
+        }}>
+          <FiHeart />
+        </div>
+        {!collapsed && (
+          <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <span style={{ fontSize: '15px', fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', letterSpacing: '-0.3px' }}>
+              DoacoesGest
+            </span>
+            <span style={{ fontSize: '11px', color: 'var(--sidebar-text)', whiteSpace: 'nowrap' }}>
+              Gestão de Doações
+            </span>
+          </div>
+        )}
+      </a>
+
+      <nav className="sidebar-nav" style={{
+        flex: 1,
+        padding: '12px 8px',
+        overflowY: 'auto',
+        overflowX: 'hidden',
+      }}>
+        {menuSections.map((section, idx) => (
+          <div key={idx}>
+            {!collapsed && (
+              <div style={{
+                fontSize: '10px',
+                fontWeight: 600,
+                color: 'rgba(199, 210, 254, 0.45)',
+                textTransform: 'uppercase',
+                letterSpacing: '1.2px',
+                padding: '12px 12px 6px',
+                whiteSpace: 'nowrap',
+              }}>
+                {section.label}
+              </div>
+            )}
+            {section.items.map((item) => (
               <NavLink
+                key={item.path}
                 to={item.path}
-                style={({ isActive }) => ({
+                className={({ isActive }) => `nav-item-link ${isActive ? 'active' : ''}`}
+                style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 12,
-                  padding: '12px 32px',
-                  color: isActive ? COLORS.accent : COLORS.white,
-                  background: isActive ? COLORS.secondary : 'transparent',
+                  gap: '12px',
+                  padding: collapsed ? '10px' : '10px 12px',
+                  borderRadius: '10px',
                   textDecoration: 'none',
-                  fontWeight: isActive ? 'bold' : 'normal',
-                  borderLeft: isActive ? `4px solid ${COLORS.accent}` : '4px solid transparent',
-                  transition: 'all 0.2s',
-                  fontSize: 16,
-                })}
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  marginBottom: '2px',
+                  justifyContent: collapsed ? 'center' : 'flex-start',
+                  transition: 'all var(--transition)'
+                }}
               >
-                <span style={{ fontSize: 20 }}>{item.icon}</span>
-                {item.label}
+                <span style={{ fontSize: '18px', flexShrink: 0, width: '24px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}>
+                  {item.icon}
+                </span>
+                {!collapsed && (
+                  <span style={{ overflow: 'hidden' }}>{item.label}</span>
+                )}
               </NavLink>
-            </li>
-          ))}
-        </ul>
+            ))}
+          </div>
+        ))}
       </nav>
-      <div style={{ padding: 24, borderTop: `1px solid ${COLORS.border}` }}>
-        <div style={{ marginBottom: 8 }}>
-          <strong>{fakeUser.name}</strong>
-          <div style={{ fontSize: 12, color: COLORS.accent }}>{fakeUser.email}</div>
-        </div>
-        <button
-          onClick={handleLogout}
-          style={{
-            width: '100%',
-            padding: 8,
-            background: COLORS.secondary,
-            color: COLORS.white,
-            border: 'none',
-            borderRadius: 4,
-            cursor: 'pointer',
-            fontWeight: 'bold',
-            marginTop: 8,
-            transition: 'background 0.2s',
-          }}
-        >
-          Logout
-        </button>
-      </div>
     </aside>
   );
 };

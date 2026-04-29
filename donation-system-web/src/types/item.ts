@@ -33,4 +33,5 @@ export interface CreateItemRequest {
   packageQuantity: number;
   unitOfMeasure?: string;
   notes?: string;
+  active: boolean;
 }

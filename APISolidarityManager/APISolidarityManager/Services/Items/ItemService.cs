@@ -40,7 +40,7 @@ namespace APISolidarityManager.Services.Items
             try
             {
                 var items = await _itemRepository.GetAllAsync();
-                return _mapper.Map<IEnumerable<ItemResponse>>(items);
+                return _mapper.Map<IEnumerable<ItemResponse>>(items.OrderBy(i => i.Name));
             }
             catch (Exception ex)
             {
@@ -89,7 +89,7 @@ namespace APISolidarityManager.Services.Items
             item.Brand = request.Brand.NormalizeNullable();
             item.UnitOfMeasure = request.UnitOfMeasure.NormalizeNullable();
             item.Notes = request.Notes.NormalizeNullable();
-            item.Active = true;
+            item.Active = request.Active;
             item.CreatedAt = DateTime.UtcNow;
             item.UpdatedAt = null;
 

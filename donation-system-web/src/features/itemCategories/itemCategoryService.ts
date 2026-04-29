@@ -21,6 +21,7 @@ export async function updateItemCategory(id: string, data: UpdateItemCategoryReq
   return response.data;
 }
 
-export async function deleteItemCategory(id: string): Promise<void> {
-  await api.delete(`/api/ItemCategories/${id}`);
+export async function deleteItemCategory(id: string): Promise<ItemCategoryResponse> {
+  const response = await api.delete<ItemCategoryResponse>(`/api/ItemCategories/${id}`);
+  return response.data;
 }

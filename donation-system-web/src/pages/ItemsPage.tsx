@@ -1,19 +1,26 @@
-import { useEffect, useState } from 'react';
-import Sidebar from '../components/Sidebar';
-import type { ItemResponse } from '../types/item';
-import { getAllItems } from '../features/items/itemService';
+import React, { useEffect, useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
+import type { ItemResponse, CreateItemRequest } from '../types/item';
+import { getAllItems, createItem } from '../features/items/itemService';
 import ItemTable from '../features/items/components/ItemTable';
+import ItemCreateModal from '../features/items/components/ItemCreateModal';
 import SearchBar from '../components/SearchBar';
+
+interface ContextType {
+  setOnAddClick: (fn: (() => void) | null) => void;
+}
 
 const ItemsPage: React.FC = () => {
   const [items, setItems] = useState<ItemResponse[]>([]);
   const [allItems, setAllItems] = useState<ItemResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
-  const [searching, setSearching] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
-  // Busca na API
+  const { setOnAddClick } = useOutletContext<ContextType>();
+
   const fetchItems = async () => {
     setLoading(true);
     setError(null);
@@ -22,7 +29,7 @@ const ItemsPage: React.FC = () => {
       setItems(data);
       setAllItems(data);
     } catch {
-      setError('Failed to fetch items');
+      setError('Erro ao carregar itens');
     } finally {
       setLoading(false);
     }
@@ -30,68 +37,67 @@ const ItemsPage: React.FC = () => {
 
   useEffect(() => {
     fetchItems();
-    // eslint-disable-next-line
   }, []);
 
+  useEffect(() => {
+    // Register the action for the global header button in MainLayout
+    setOnAddClick(() => () => setShowCreateModal(true));
+    
+    // Cleanup on unmount
+    return () => setOnAddClick(null);
+  }, [setOnAddClick]);
+
+  async function handleCreateItem(data: CreateItemRequest) {
+    setSaving(true);
+    try {
+      await createItem(data);
+      await fetchItems();
+      setShowCreateModal(false);
+    } catch (err) {
+      alert('Erro ao cadastrar item');
+      console.error(err);
+    } finally {
+      setSaving(false);
+    }
+  }
+
   function searchHandler() {
-    if (!search.trim()) return;
-    setSearching(true);
     const filtered = allItems.filter(item =>
       item.name.toLowerCase().includes(search.trim().toLowerCase())
     );
     setItems(filtered);
-    setSearching(false);
   }
 
-  function clearHandler() {
-    setSearch('');
-    setItems(allItems);
-  }
-
-  function refreshHandler() {
-    setSearch('');
-    fetchItems();
-  }
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading && items.length === 0) return (
+    <div className="d-flex justify-content-center p-5">
+      <div className="spinner-border text-primary" role="status"></div>
+    </div>
+  );
 
   return (
-    <div style={{ display: 'flex', background: '#F8FAFC', minHeight: '100vh' }}>
-      <Sidebar />
-      <main style={{
-        width: '100%',
-        flex: 1,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'flex-start',
-        minHeight: '100vh',
-        background: '#F8FAFC',
-      }}>
-        <div style={{
-          width: '100%',
-          minHeight: '100vh',
-          background: '#fff',
-          padding: 40,
-          borderRadius: 0,
-          boxShadow: '0 4px 24px rgba(0,0,0,0.04)',
-          border: '1px solid #CBD5E1',
-          margin: '0 0',
-        }}>
-          <h1 style={{ color: '#0B1F3A' }}>Items</h1>
+    <div className="d-flex flex-column">
+      <div className="card h-100">
+        <div className="p-4 pb-0">
           <SearchBar
             inputPlaceholder='Buscar por nome do item...'
             search={search}
             setSearch={setSearch}
             loading={loading}
             onSearch={searchHandler}
-            onAdd={() => {}}
-            onClear={clearHandler}
-            onRefresh={refreshHandler}
+            onClear={() => { setSearch(''); setItems(allItems); }}
+            onRefresh={fetchItems}
           />
-          <ItemTable items={items} />
         </div>
-      </main>
+
+        <ItemTable items={items} onRefresh={fetchItems} />
+      </div>
+
+      <ItemCreateModal
+        show={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSave={handleCreateItem}
+        loading={saving}
+      />
     </div>
   );
 };
