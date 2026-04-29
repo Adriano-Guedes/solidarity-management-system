@@ -1,21 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Form, Row, Col } from 'react-bootstrap';
-import { FiX, FiSave, FiAlertCircle } from 'react-icons/fi';
+import { FiX, FiPlus, FiAlertCircle } from 'react-icons/fi';
 import { getAllItemCategories } from '../../../features/itemCategories/itemCategoryService';
 import { getAllItemTemplates } from '../../../features/itemTemplates/itemTemplateService';
 import type { ItemCategoryResponse } from '../../../types/itemCategory';
 import type { ItemTemplateResponse } from '../../../types/itemTemplate';
+import type { CreateItemRequest } from '../../../types/item';
 
-interface ItemEditModalProps {
+interface ItemCreateModalProps {
   show: boolean;
   onClose: () => void;
-  onSave: (data: any) => void;
+  onSave: (data: CreateItemRequest) => void;
   loading?: boolean;
-  initialData?: any;
 }
 
-const ItemEditModal: React.FC<ItemEditModalProps> = ({ show, onClose, onSave, loading = false, initialData }) => {
-  const [form, setForm] = useState<any>(initialData || {});
+const ItemCreateModal: React.FC<ItemCreateModalProps> = ({ show, onClose, onSave, loading = false }) => {
+  const [form, setForm] = useState<CreateItemRequest>({
+    name: '',
+    brand: '',
+    categoryId: '',
+    itemTemplateId: '',
+    packageQuantity: 0,
+    unitOfMeasure: '',
+    notes: '',
+    active: true
+  });
+
   const [categories, setCategories] = useState<ItemCategoryResponse[]>([]);
   const [templates, setTemplates] = useState<ItemTemplateResponse[]>([]);
 
@@ -23,22 +33,29 @@ const ItemEditModal: React.FC<ItemEditModalProps> = ({ show, onClose, onSave, lo
     if (show) {
       getAllItemCategories().then(setCategories);
       getAllItemTemplates().then(setTemplates);
+      // Reset form when opening
+      setForm({
+        name: '',
+        brand: '',
+        categoryId: '',
+        itemTemplateId: '',
+        packageQuantity: 0,
+        unitOfMeasure: '',
+        notes: '',
+        active: true
+      });
     }
   }, [show]);
-
-  useEffect(() => {
-    if (initialData) {
-      setForm(initialData);
-    }
-  }, [initialData, show]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value, type } = e.target;
-    setForm((prev: any) => ({
+    setForm((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+      [name]: type === 'checkbox' 
+        ? (e.target as HTMLInputElement).checked 
+        : (name === 'packageQuantity' ? Number(value) : value),
     }));
   };
 
@@ -73,8 +90,8 @@ const ItemEditModal: React.FC<ItemEditModalProps> = ({ show, onClose, onSave, lo
       <div style={{ borderRadius: '16px', overflow: 'hidden', background: '#fff' }}>
         <Modal.Header style={{ borderBottom: '1px solid var(--border)', padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff' }}>
           <div>
-            <Modal.Title style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-main)', marginBottom: '2px' }}>Editar Informações do Item</Modal.Title>
-            <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Atualize as propriedades e configurações deste item</div>
+            <Modal.Title style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-main)', marginBottom: '2px' }}>Cadastrar Novo Item</Modal.Title>
+            <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Preencha as informações para adicionar um item ao catálogo</div>
           </div>
           <button className="btn-icon-sm" onClick={onClose} style={{ fontSize: '20px' }}>
             <FiX />
@@ -89,11 +106,12 @@ const ItemEditModal: React.FC<ItemEditModalProps> = ({ show, onClose, onSave, lo
                   <Form.Label style={labelStyle}>Nome do Item</Form.Label>
                   <Form.Control
                     name="name"
-                    value={form.name || ''}
+                    value={form.name}
                     onChange={handleChange}
                     style={inputStyle}
                     placeholder="Ex: Arroz Agulhinha"
                     autoFocus
+                    required
                   />
                 </Form.Group>
               </Col>
@@ -103,7 +121,7 @@ const ItemEditModal: React.FC<ItemEditModalProps> = ({ show, onClose, onSave, lo
                   <Form.Label style={labelStyle}>Marca</Form.Label>
                   <Form.Control
                     name="brand"
-                    value={form.brand || ''}
+                    value={form.brand}
                     onChange={handleChange}
                     style={inputStyle}
                     placeholder="Ex: Tio João"
@@ -116,9 +134,10 @@ const ItemEditModal: React.FC<ItemEditModalProps> = ({ show, onClose, onSave, lo
                   <Form.Label style={labelStyle}>Categoria</Form.Label>
                   <Form.Select
                     name="categoryId"
-                    value={form.categoryId || ''}
+                    value={form.categoryId}
                     onChange={handleChange}
                     style={{ ...inputStyle, appearance: 'auto' }}
+                    required
                   >
                     <option value="">Selecione uma categoria...</option>
                     {categories.map(cat => (
@@ -133,9 +152,10 @@ const ItemEditModal: React.FC<ItemEditModalProps> = ({ show, onClose, onSave, lo
                   <Form.Label style={labelStyle}>Modelo Base (Template)</Form.Label>
                   <Form.Select
                     name="itemTemplateId"
-                    value={form.itemTemplateId || ''}
+                    value={form.itemTemplateId}
                     onChange={handleChange}
                     style={{ ...inputStyle, appearance: 'auto' }}
+                    required
                   >
                     <option value="">Selecione um modelo base...</option>
                     {templates.map(tpl => (
@@ -151,7 +171,7 @@ const ItemEditModal: React.FC<ItemEditModalProps> = ({ show, onClose, onSave, lo
                   <Form.Control
                     name="packageQuantity"
                     type="number"
-                    value={form.packageQuantity || ''}
+                    value={form.packageQuantity}
                     onChange={handleChange}
                     style={inputStyle}
                     placeholder="Ex: 5"
@@ -164,7 +184,7 @@ const ItemEditModal: React.FC<ItemEditModalProps> = ({ show, onClose, onSave, lo
                   <Form.Label style={labelStyle}>Unidade de Medida</Form.Label>
                   <Form.Control
                     name="unitOfMeasure"
-                    value={form.unitOfMeasure || ''}
+                    value={form.unitOfMeasure}
                     onChange={handleChange}
                     style={inputStyle}
                     placeholder="Ex: kg, un, litros"
@@ -178,7 +198,7 @@ const ItemEditModal: React.FC<ItemEditModalProps> = ({ show, onClose, onSave, lo
                   <Form.Control
                     as="textarea"
                     name="notes"
-                    value={form.notes || ''}
+                    value={form.notes}
                     onChange={handleChange}
                     style={{ ...inputStyle, minHeight: '80px', resize: 'vertical' }}
                     placeholder="Informações adicionais sobre o item..."
@@ -210,15 +230,15 @@ const ItemEditModal: React.FC<ItemEditModalProps> = ({ show, onClose, onSave, lo
                       <FiAlertCircle size={20} />
                     </div>
                     <div>
-                      <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--primary)' }}>Status do Item</div>
-                      <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Itens inativos não podem ser usados em novas doações</div>
+                      <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--primary)' }}>Status Inicial</div>
+                      <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Itens novos são criados como ativos por padrão</div>
                     </div>
                   </div>
                   <Form.Check
                     type="switch"
-                    id="active-switch"
+                    id="create-active-switch"
                     name="active"
-                    checked={!!form.active}
+                    checked={form.active}
                     onChange={handleChange}
                     label={form.active ? 'Ativo' : 'Inativo'}
                     style={{ fontWeight: 600, color: form.active ? 'var(--success)' : 'var(--danger)' }}
@@ -249,10 +269,10 @@ const ItemEditModal: React.FC<ItemEditModalProps> = ({ show, onClose, onSave, lo
             {loading ? (
               <>
                 <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Salvando...
+                Cadastrando...
               </>
             ) : (
-              <><FiSave /> Salvar Alterações</>
+              <><FiPlus /> Cadastrar Item</>
             )}
           </button>
         </Modal.Footer>
@@ -261,5 +281,4 @@ const ItemEditModal: React.FC<ItemEditModalProps> = ({ show, onClose, onSave, lo
   );
 };
 
-export default ItemEditModal;
-
+export default ItemCreateModal;

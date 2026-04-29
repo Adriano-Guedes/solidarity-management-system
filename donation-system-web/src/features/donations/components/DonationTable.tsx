@@ -1,9 +1,6 @@
 import React from 'react';
 import type { DonationResponse } from '../../../types/donation';
 import { formatDateTimeBR } from '../../../utils/dateFormat';
-import TableIconButton from '../../../components/TableIconButton';
-import { FaClipboardList } from 'react-icons/fa6';
-import { COLORS } from '../../../constants';
 
 interface DonationTableProps {
     donations: DonationResponse[];
@@ -11,31 +8,36 @@ interface DonationTableProps {
 
 const DonationTable: React.FC<DonationTableProps> = ({ donations }) => {
     return (
-        <table className="table table-hover">
-            <thead>
-                <tr>
-                    <th>Data de Recebimento</th>
-                    <th>Criado Por</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {donations.map(donation => (
-                    <tr key={donation.id}>
-                        <td>{formatDateTimeBR(donation.receivedDate)}</td>
-                        <td>{donation.createdByName}</td>
-                        <td style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <TableIconButton
-                                icon={<FaClipboardList color={COLORS.white}/>}
-                                title="Ver detalhes"
-                                onClick={() => console.log('Ver detalhes clicked')}
-                                bgColor={COLORS.primary}
-                            />
-                        </td>
+        <div className="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data de Recebimento</th>
+                        <th>Criado Por</th>
+                        <th>Ações</th>
                     </tr>
-                ))}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {donations.map(donation => (
+                        <tr key={donation.id}>
+                            <td>
+                                <strong>{formatDateTimeBR(donation.receivedDate)}</strong>
+                            </td>
+                            <td className="td-muted">{donation.createdByName}</td>
+                            <td>
+                                <button
+                                    className="btn-icon-sm"
+                                    title="Ver detalhes"
+                                    onClick={() => console.log('Ver detalhes clicked')}
+                                >
+                                    <i className="bi bi-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
     );
 };
 

@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistema de Doações</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --sidebar-width: 260px;
+      --sidebar-collapsed-width: 72px;
+      --primary: #4f46e5;
+      --primary-light: #eef2ff;
+      --primary-hover: #4338ca;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #3b82f6;
+      --sidebar-bg: #1e1b4b;
+      --sidebar-text: #c7d2fe;
+      --sidebar-active: #4f46e5;
+      --sidebar-hover: rgba(255,255,255,0.07);
+      --body-bg: #f1f5f9;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --topbar-height: 64px;
+      --transition: 0.25s ease;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--body-bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Sidebar ─────────────────────────────────── */
+    #sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      width: var(--sidebar-width);
+      height: 100vh;
+      background: var(--sidebar-bg);
+      display: flex;
+      flex-direction: column;
+      transition: width var(--transition);
+      z-index: 1000;
+      overflow: hidden;
+    }
+
+    #sidebar.collapsed { width: var(--sidebar-collapsed-width); }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      min-height: var(--topbar-height);
+      text-decoration: none;
+    }
+
+    .sidebar-brand .brand-icon {
+      width: 36px; height: 36px;
+      background: var(--primary);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 18px;
+      color: #fff;
+    }
+
+    .sidebar-brand .brand-text {
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-brand .brand-name {
+      font-size: 15px; font-weight: 700;
+      color: #fff; white-space: nowrap;
+      letter-spacing: -0.3px;
+    }
+
+    .sidebar-brand .brand-sub {
+      font-size: 11px; color: var(--sidebar-text);
+      white-space: nowrap;
+    }
+
+    #sidebar.collapsed .brand-text { display: none; }
+
+    /* Nav */
+    .sidebar-nav {
+      flex: 1;
+      padding: 12px 8px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.1) transparent;
+    }
+
+    .nav-section-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: rgba(199, 210, 254, 0.45);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      padding: 12px 12px 6px;
+      white-space: nowrap;
+      transition: opacity var(--transition);
+    }
+
+    #sidebar.collapsed .nav-section-label { opacity: 0; }
+
+    .nav-item-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      color: var(--sidebar-text);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background var(--transition), color var(--transition);
+      cursor: pointer;
+      white-space: nowrap;
+      margin-bottom: 2px;
+      position: relative;
+    }
+
+    .nav-item-link:hover {
+      background: var(--sidebar-hover);
+      color: #fff;
+    }
+
+    .nav-item-link.active {
+      background: var(--sidebar-active);
+      color: #fff;
+    }
+
+    .nav-item-link .nav-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+      width: 24px;
+      text-align: center;
+    }
+
+    .nav-item-link .nav-label { overflow: hidden; }
+
+    .nav-item-link .badge-count {
+      margin-left: auto;
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 20px;
+      flex-shrink: 0;
+    }
+
+    #sidebar.collapsed .nav-label,
+    #sidebar.collapsed .badge-count { display: none; }
+
+    #sidebar.collapsed .nav-item-link {
+      justify-content: center;
+      padding: 10px;
+    }
+
+    /* Tooltip on collapsed */
+    #sidebar.collapsed .nav-item-link::after {
+      content: attr(data-label);
+      position: absolute;
+      left: calc(var(--sidebar-collapsed-width) - 4px);
+      background: #1e293b;
+      color: #fff;
+      font-size: 13px;
+      padding: 5px 12px;
+      border-radius: 6px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateX(8px);
+      transition: opacity 0.15s, transform 0.15s;
+      z-index: 2000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    #sidebar.collapsed .nav-item-link:hover::after {
+      opacity: 1; transform: translateX(12px);
+    }
+
+    /* Sidebar footer */
+    .sidebar-footer {
+      padding: 12px 8px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+
+    .user-card:hover { background: var(--sidebar-hover); }
+
+    .user-avatar {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    .user-info { overflow: hidden; }
+    .user-name { font-size: 13px; font-weight: 600; color: #fff; white-space: nowrap; }
+    .user-role { font-size: 11px; color: var(--sidebar-text); white-space: nowrap; }
+
+    #sidebar.collapsed .user-info { display: none; }
+    #sidebar.collapsed .user-card { justify-content: center; padding: 10px; }
+
+    /* ── Top bar ─────────────────────────────────── */
+    #topbar {
+      position: fixed;
+      top: 0;
+      left: var(--sidebar-width);
+      right: 0;
+      height: var(--topbar-height);
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 16px;
+      z-index: 900;
+      transition: left var(--transition);
+    }
+
+    #topbar.collapsed { left: var(--sidebar-collapsed-width); }
+
+    .btn-toggle {
+      width: 38px; height: 38px;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 20px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background var(--transition), color var(--transition);
+      flex-shrink: 0;
+    }
+
+    .btn-toggle:hover { background: var(--body-bg); color: var(--text-main); }
+
+    .topbar-search {
+      flex: 1;
+      max-width: 380px;
+      position: relative;
+    }
+
+    .topbar-search input {
+      width: 100%;
+      padding: 8px 16px 8px 40px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      background: var(--body-bg);
+      color: var(--text-main);
+      outline: none;
+      transition: border-color var(--transition);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .topbar-search input:focus { border-color: var(--primary); }
+    .topbar-search input::placeholder { color: var(--text-muted); }
+
+    .topbar-search .search-icon {
+      position: absolute;
+      left: 12px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 16px;
+      pointer-events: none;
+    }
+
+    .topbar-spacer { flex: 1; }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      width: 38px; height: 38px;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 19px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    .icon-btn:hover { background: var(--body-bg); color: var(--text-main); }
+
+    .icon-btn .dot {
+      position: absolute;
+      top: 7px; right: 7px;
+      width: 8px; height: 8px;
+      background: var(--danger);
+      border-radius: 50%;
+      border: 2px solid var(--card-bg);
+    }
+
+    .topbar-divider {
+      width: 1px; height: 28px;
+      background: var(--border);
+      margin: 0 4px;
+    }
+
+    .topbar-avatar {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 13px;
+      cursor: pointer;
+    }
+
+    /* ── Main content ─────────────────────────────── */
+    #main {
+      margin-left: var(--sidebar-width);
+      margin-top: var(--topbar-height);
+      padding: 28px 28px;
+      min-height: calc(100vh - var(--topbar-height));
+      transition: margin-left var(--transition);
+    }
+
+    #main.collapsed { margin-left: var(--sidebar-collapsed-width); }
+
+    /* ── Page header ─────────────────────────────── */
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .page-header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .breadcrumb { font-size: 13px; color: var(--text-muted); margin: 0; background: none; padding: 0; }
+    .breadcrumb-item + .breadcrumb-item::before { color: var(--text-muted); }
+    .breadcrumb-item.active { color: var(--text-muted); }
+
+    /* ── Stats cards ─────────────────────────────── */
+    .stat-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 22px 24px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      transition: box-shadow var(--transition), transform var(--transition);
+    }
+
+    .stat-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.07); transform: translateY(-2px); }
+
+    .stat-icon {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .stat-icon.primary   { background: #eef2ff; color: var(--primary); }
+    .stat-icon.success   { background: #d1fae5; color: var(--success); }
+    .stat-icon.warning   { background: #fef3c7; color: var(--warning); }
+    .stat-icon.danger    { background: #fee2e2; color: var(--danger); }
+    .stat-icon.info      { background: #dbeafe; color: var(--info); }
+
+    .stat-body { flex: 1; min-width: 0; }
+
+    .stat-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-trend {
+      font-size: 12px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .stat-trend.up   { color: var(--success); }
+    .stat-trend.down { color: var(--danger); }
+    .stat-trend.neutral { color: var(--text-muted); }
+
+    /* ── Card base ───────────────────────────────── */
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+    }
+
+    .card-header-custom {
+      padding: 20px 24px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 0;
+    }
+
+    .card-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ── Table ───────────────────────────────────── */
+    .table-wrapper { padding: 20px 24px; overflow-x: auto; }
+
+    table { width: 100%; border-collapse: separate; border-spacing: 0; }
+
+    thead th {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 10px 14px;
+      background: var(--body-bg);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    thead th:first-child { border-left: 1px solid var(--border); border-radius: 8px 0 0 8px; }
+    thead th:last-child  { border-right: 1px solid var(--border); border-radius: 0 8px 8px 0; }
+
+    tbody td {
+      font-size: 14px;
+      padding: 14px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+      color: var(--text-main);
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: #f8fafc; }
+
+    .td-muted { color: var(--text-muted); font-size: 13px; }
+
+    /* ── Badges ──────────────────────────────────── */
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge-status::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0.7;
+    }
+
+    .badge-pending   { background: #fef3c7; color: #92400e; }
+    .badge-delivered { background: #d1fae5; color: #065f46; }
+    .badge-partial   { background: #dbeafe; color: #1e40af; }
+    .badge-cancelled { background: #fee2e2; color: #991b1b; }
+
+    /* ── Buttons ─────────────────────────────────── */
+    .btn-primary-custom {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition), box-shadow var(--transition);
+      font-family: 'Inter', sans-serif;
+      text-decoration: none;
+    }
+
+    .btn-primary-custom:hover { background: var(--primary-hover); box-shadow: 0 4px 14px rgba(79,70,229,0.35); color: #fff; }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background var(--transition), color var(--transition);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-ghost:hover { background: var(--body-bg); color: var(--text-main); }
+
+    .btn-icon-sm {
+      width: 30px; height: 30px;
+      border: none;
+      background: transparent;
+      border-radius: 7px;
+      color: var(--text-muted);
+      font-size: 16px;
+      cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    .btn-icon-sm:hover { background: var(--body-bg); color: var(--text-main); }
+    .btn-icon-sm.danger:hover { background: #fee2e2; color: var(--danger); }
+
+    /* ── Quick actions ───────────────────────────── */
+    .quick-actions-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 20px 24px;
+    }
+
+    .quick-action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 18px 12px;
+      background: var(--body-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background var(--transition), border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .quick-action-btn:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(79,70,229,0.12);
+    }
+
+    .quick-action-btn .qa-icon {
+      width: 42px; height: 42px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+
+    .quick-action-btn .qa-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      text-align: center;
+    }
+
+    .quick-action-btn:hover .qa-label { color: var(--primary); }
+
+    /* ── Activity feed ───────────────────────────── */
+    .activity-list { padding: 8px 24px 20px; }
+
+    .activity-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .activity-item:last-child { border-bottom: none; }
+
+    .activity-dot {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .activity-body { flex: 1; }
+    .activity-text { font-size: 13px; color: var(--text-main); line-height: 1.5; }
+    .activity-text strong { font-weight: 600; }
+    .activity-time { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+    /* ── Progress bar ────────────────────────────── */
+    .progress-custom {
+      height: 6px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: var(--primary);
+    }
+
+    /* ── Category pill ───────────────────────────── */
+    .category-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      background: var(--body-bg);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    /* ── Pagination ──────────────────────────────── */
+    .pagination-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .pagination-info { font-size: 13px; color: var(--text-muted); }
+
+    .pagination-btns { display: flex; gap: 4px; }
+
+    .page-btn {
+      width: 32px; height: 32px;
+      border: 1px solid var(--border);
+      background: transparent;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all var(--transition);
+    }
+
+    .page-btn:hover { background: var(--body-bg); color: var(--text-main); }
+    .page-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .page-btn:disabled { opacity: 0.4; cursor: default; }
+
+    /* ── Responsive ──────────────────────────────── */
+    @media (max-width: 991px) {
+      #sidebar { width: var(--sidebar-collapsed-width); }
+      #sidebar .brand-text,
+      #sidebar .nav-label,
+      #sidebar .badge-count,
+      #sidebar .user-info { display: none; }
+      #sidebar .nav-item-link { justify-content: center; padding: 10px; }
+      #sidebar .user-card { justify-content: center; padding: 10px; }
+      #topbar { left: var(--sidebar-collapsed-width); }
+      #main { margin-left: var(--sidebar-collapsed-width); }
+    }
+
+    @media (max-width: 575px) {
+      #main { padding: 18px 14px; }
+      .topbar-search { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════ SIDEBAR ══════════════ -->
+  <aside id="sidebar">
+
+    <a href="#" class="sidebar-brand">
+      <div class="brand-icon"><i class="bi bi-heart-fill"></i></div>
+      <div class="brand-text">
+        <span class="brand-name">DoacoesGest</span>
+        <span class="brand-sub">Gestão de Doações</span>
+      </div>
+    </a>
+
+    <nav class="sidebar-nav">
+
+      <div class="nav-section-label">Principal</div>
+
+      <a href="#" class="nav-item-link active" data-label="Dashboard">
+        <i class="bi bi-grid-1x2-fill nav-icon"></i>
+        <span class="nav-label">Dashboard</span>
+      </a>
+
+      <div class="nav-section-label">Gestão</div>
+
+      <a href="#" class="nav-item-link" data-label="Famílias">
+        <i class="bi bi-people-fill nav-icon"></i>
+        <span class="nav-label">Famílias</span>
+        <span class="badge-count">128</span>
+      </a>
+
+      <a href="#" class="nav-item-link" data-label="Doações">
+        <i class="bi bi-gift-fill nav-icon"></i>
+        <span class="nav-label">Doações</span>
+        <span class="badge-count">34</span>
+      </a>
+
+      <a href="#" class="nav-item-link" data-label="Entregas">
+        <i class="bi bi-truck nav-icon"></i>
+        <span class="nav-label">Entregas</span>
+        <span class="badge-count">12</span>
+      </a>
+
+      <div class="nav-section-label">Estoque</div>
+
+      <a href="#" class="nav-item-link" data-label="Itens">
+        <i class="bi bi-box-seam-fill nav-icon"></i>
+        <span class="nav-label">Itens</span>
+      </a>
+
+      <a href="#" class="nav-item-link" data-label="Categorias">
+        <i class="bi bi-tag-fill nav-icon"></i>
+        <span class="nav-label">Categorias</span>
+      </a>
+
+      <div class="nav-section-label">Sistema</div>
+
+      <a href="#" class="nav-item-link" data-label="Relatórios">
+        <i class="bi bi-bar-chart-fill nav-icon"></i>
+        <span class="nav-label">Relatórios</span>
+      </a>
+
+      <a href="#" class="nav-item-link" data-label="Configurações">
+        <i class="bi bi-gear-fill nav-icon"></i>
+        <span class="nav-label">Configurações</span>
+      </a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="user-avatar">AG</div>
+        <div class="user-info">
+          <div class="user-name">Alan Guedes</div>
+          <div class="user-role">Administrador</div>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ══════════════ TOPBAR ══════════════ -->
+  <header id="topbar">
+
+    <button class="btn-toggle" id="sidebarToggle" title="Recolher menu">
+      <i class="bi bi-list"></i>
+    </button>
+
+    <div class="topbar-search">
+      <i class="bi bi-search search-icon"></i>
+      <input type="text" placeholder="Buscar famílias, doações, itens…" />
+    </div>
+
+    <div class="topbar-spacer"></div>
+
+    <div class="topbar-actions">
+
+      <button class="icon-btn" title="Notificações">
+        <i class="bi bi-bell"></i>
+        <span class="dot"></span>
+      </button>
+
+      <button class="icon-btn" title="Mensagens">
+        <i class="bi bi-chat-dots"></i>
+      </button>
+
+      <div class="topbar-divider"></div>
+
+      <div class="topbar-avatar" title="Perfil">AG</div>
+
+    </div>
+  </header>
+
+  <!-- ══════════════ MAIN ══════════════ -->
+  <main id="main">
+
+    <!-- Page header -->
+    <div class="page-header">
+      <div>
+        <h1>Dashboard</h1>
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item active">Visão geral do sistema</li>
+          </ol>
+        </nav>
+      </div>
+      <button class="btn-primary-custom">
+        <i class="bi bi-plus-lg"></i> Nova Doação
+      </button>
+    </div>
+
+    <!-- ── Stats row ── -->
+    <div class="row g-3 mb-4">
+
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+          <div class="stat-icon primary"><i class="bi bi-gift-fill"></i></div>
+          <div class="stat-body">
+            <div class="stat-label">Total Doações</div>
+            <div class="stat-value">1.284</div>
+            <div class="stat-trend up"><i class="bi bi-arrow-up-short"></i> 12% este mês</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+          <div class="stat-icon success"><i class="bi bi-people-fill"></i></div>
+          <div class="stat-body">
+            <div class="stat-label">Famílias Atendidas</div>
+            <div class="stat-value">328</div>
+            <div class="stat-trend up"><i class="bi bi-arrow-up-short"></i> 8% este mês</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+          <div class="stat-icon warning"><i class="bi bi-truck"></i></div>
+          <div class="stat-body">
+            <div class="stat-label">Entregas Pendentes</div>
+            <div class="stat-value">47</div>
+            <div class="stat-trend neutral"><i class="bi bi-dash"></i> Estável</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+          <div class="stat-icon info"><i class="bi bi-box-seam-fill"></i></div>
+          <div class="stat-body">
+            <div class="stat-label">Itens em Estoque</div>
+            <div class="stat-value">892</div>
+            <div class="stat-trend down"><i class="bi bi-arrow-down-short"></i> 5% esta semana</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Middle row ── -->
+    <div class="row g-3 mb-4">
+
+      <!-- Recent deliveries table -->
+      <div class="col-12 col-xl-8">
+        <div class="card">
+          <div class="card-header-custom">
+            <div>
+              <div class="card-title">Entregas Recentes</div>
+              <div class="card-subtitle">Últimas movimentações registradas</div>
+            </div>
+            <div class="d-flex gap-2">
+              <button class="btn-ghost"><i class="bi bi-funnel"></i> Filtrar</button>
+              <button class="btn-ghost"><i class="bi bi-download"></i> Exportar</button>
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Família</th>
+                  <th>Itens</th>
+                  <th>Categoria</th>
+                  <th>Data</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <strong>Silva &amp; Santos</strong>
+                    <div class="td-muted">4 membros</div>
+                  </td>
+                  <td>Cesta básica × 2</td>
+                  <td><span class="category-pill"><i class="bi bi-tag-fill" style="color:#f59e0b"></i> Alimentos</span></td>
+                  <td class="td-muted">29 abr 2026</td>
+                  <td><span class="badge-status badge-delivered">Entregue</span></td>
+                  <td>
+                    <button class="btn-icon-sm"><i class="bi bi-eye"></i></button>
+                    <button class="btn-icon-sm danger"><i class="bi bi-trash3"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Família Oliveira</strong>
+                    <div class="td-muted">7 membros</div>
+                  </td>
+                  <td>Roupas, Brinquedos</td>
+                  <td><span class="category-pill"><i class="bi bi-tag-fill" style="color:#3b82f6"></i> Vestuário</span></td>
+                  <td class="td-muted">28 abr 2026</td>
+                  <td><span class="badge-status badge-pending">Pendente</span></td>
+                  <td>
+                    <button class="btn-icon-sm"><i class="bi bi-eye"></i></button>
+                    <button class="btn-icon-sm danger"><i class="bi bi-trash3"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Família Costa</strong>
+                    <div class="td-muted">2 membros</div>
+                  </td>
+                  <td>Medicamentos</td>
+                  <td><span class="category-pill"><i class="bi bi-tag-fill" style="color:#10b981"></i> Saúde</span></td>
+                  <td class="td-muted">27 abr 2026</td>
+                  <td><span class="badge-status badge-partial">Parcial</span></td>
+                  <td>
+                    <button class="btn-icon-sm"><i class="bi bi-eye"></i></button>
+                    <button class="btn-icon-sm danger"><i class="bi bi-trash3"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Família Ferreira</strong>
+                    <div class="td-muted">5 membros</div>
+                  </td>
+                  <td>Cesta básica × 1</td>
+                  <td><span class="category-pill"><i class="bi bi-tag-fill" style="color:#f59e0b"></i> Alimentos</span></td>
+                  <td class="td-muted">26 abr 2026</td>
+                  <td><span class="badge-status badge-cancelled">Cancelado</span></td>
+                  <td>
+                    <button class="btn-icon-sm"><i class="bi bi-eye"></i></button>
+                    <button class="btn-icon-sm danger"><i class="bi bi-trash3"></i></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Família Souza</strong>
+                    <div class="td-muted">3 membros</div>
+                  </td>
+                  <td>Móveis, Utensílios</td>
+                  <td><span class="category-pill"><i class="bi bi-tag-fill" style="color:#8b5cf6"></i> Outros</span></td>
+                  <td class="td-muted">25 abr 2026</td>
+                  <td><span class="badge-status badge-delivered">Entregue</span></td>
+                  <td>
+                    <button class="btn-icon-sm"><i class="bi bi-eye"></i></button>
+                    <button class="btn-icon-sm danger"><i class="bi bi-trash3"></i></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pagination-wrapper">
+            <span class="pagination-info">Mostrando 5 de 47 entregas</span>
+            <div class="pagination-btns">
+              <button class="page-btn" disabled><i class="bi bi-chevron-left"></i></button>
+              <button class="page-btn active">1</button>
+              <button class="page-btn">2</button>
+              <button class="page-btn">3</button>
+              <button class="page-btn">…</button>
+              <button class="page-btn">10</button>
+              <button class="page-btn"><i class="bi bi-chevron-right"></i></button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Right column -->
+      <div class="col-12 col-xl-4 d-flex flex-column gap-3">
+
+        <!-- Quick actions -->
+        <div class="card">
+          <div class="card-header-custom">
+            <div>
+              <div class="card-title">Ações Rápidas</div>
+            </div>
+          </div>
+          <div class="quick-actions-grid">
+            <a href="#" class="quick-action-btn">
+              <div class="qa-icon" style="background:#eef2ff;color:#4f46e5"><i class="bi bi-person-plus-fill"></i></div>
+              <span class="qa-label">Nova Família</span>
+            </a>
+            <a href="#" class="quick-action-btn">
+              <div class="qa-icon" style="background:#d1fae5;color:#10b981"><i class="bi bi-gift-fill"></i></div>
+              <span class="qa-label">Registrar Doação</span>
+            </a>
+            <a href="#" class="quick-action-btn">
+              <div class="qa-icon" style="background:#fef3c7;color:#f59e0b"><i class="bi bi-truck"></i></div>
+              <span class="qa-label">Agendar Entrega</span>
+            </a>
+            <a href="#" class="quick-action-btn">
+              <div class="qa-icon" style="background:#dbeafe;color:#3b82f6"><i class="bi bi-box-seam-fill"></i></div>
+              <span class="qa-label">Adicionar Item</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Category stock -->
+        <div class="card">
+          <div class="card-header-custom">
+            <div>
+              <div class="card-title">Estoque por Categoria</div>
+              <div class="card-subtitle">Atualizado agora</div>
+            </div>
+          </div>
+          <div style="padding: 16px 24px 20px; display:flex; flex-direction:column; gap:14px;">
+
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:500;color:var(--text-main)">
+                <span><i class="bi bi-tag-fill" style="color:#f59e0b;margin-right:6px"></i>Alimentos</span>
+                <span style="color:var(--text-muted)">312 itens</span>
+              </div>
+              <div class="progress-custom"><div class="progress-fill" style="width:78%;background:#f59e0b"></div></div>
+            </div>
+
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:500;color:var(--text-main)">
+                <span><i class="bi bi-tag-fill" style="color:#3b82f6;margin-right:6px"></i>Vestuário</span>
+                <span style="color:var(--text-muted)">187 itens</span>
+              </div>
+              <div class="progress-custom"><div class="progress-fill" style="width:47%;background:#3b82f6"></div></div>
+            </div>
+
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:500;color:var(--text-main)">
+                <span><i class="bi bi-tag-fill" style="color:#10b981;margin-right:6px"></i>Saúde</span>
+                <span style="color:var(--text-muted)">94 itens</span>
+              </div>
+              <div class="progress-custom"><div class="progress-fill" style="width:24%;background:#10b981"></div></div>
+            </div>
+
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:500;color:var(--text-main)">
+                <span><i class="bi bi-tag-fill" style="color:#8b5cf6;margin-right:6px"></i>Outros</span>
+                <span style="color:var(--text-muted)">299 itens</span>
+              </div>
+              <div class="progress-custom"><div class="progress-fill" style="width:75%;background:#8b5cf6"></div></div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Bottom row ── -->
+    <div class="row g-3">
+
+      <!-- Activity feed -->
+      <div class="col-12 col-md-6 col-xl-4">
+        <div class="card h-100">
+          <div class="card-header-custom">
+            <div>
+              <div class="card-title">Atividade Recente</div>
+              <div class="card-subtitle">Últimas ações no sistema</div>
+            </div>
+          </div>
+          <div class="activity-list">
+
+            <div class="activity-item">
+              <div class="activity-dot" style="background:#eef2ff;color:#4f46e5"><i class="bi bi-person-plus-fill"></i></div>
+              <div class="activity-body">
+                <div class="activity-text"><strong>Família Rodrigues</strong> cadastrada no sistema</div>
+                <div class="activity-time">Há 15 minutos</div>
+              </div>
+            </div>
+
+            <div class="activity-item">
+              <div class="activity-dot" style="background:#d1fae5;color:#10b981"><i class="bi bi-gift-fill"></i></div>
+              <div class="activity-body">
+                <div class="activity-text">Doação de <strong>50 itens</strong> registrada por João</div>
+                <div class="activity-time">Há 1 hora</div>
+              </div>
+            </div>
+
+            <div class="activity-item">
+              <div class="activity-dot" style="background:#fef3c7;color:#f59e0b"><i class="bi bi-truck"></i></div>
+              <div class="activity-body">
+                <div class="activity-text">Entrega para <strong>Família Costa</strong> confirmada</div>
+                <div class="activity-time">Há 3 horas</div>
+              </div>
+            </div>
+
+            <div class="activity-item">
+              <div class="activity-dot" style="background:#fee2e2;color:#ef4444"><i class="bi bi-exclamation-triangle-fill"></i></div>
+              <div class="activity-body">
+                <div class="activity-text">Estoque de <strong>Medicamentos</strong> abaixo do mínimo</div>
+                <div class="activity-time">Há 5 horas</div>
+              </div>
+            </div>
+
+            <div class="activity-item">
+              <div class="activity-dot" style="background:#dbeafe;color:#3b82f6"><i class="bi bi-box-seam-fill"></i></div>
+              <div class="activity-body">
+                <div class="activity-text"><strong>30 cestas básicas</strong> adicionadas ao estoque</div>
+                <div class="activity-time">Ontem, 16h42</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Top families -->
+      <div class="col-12 col-md-6 col-xl-4">
+        <div class="card h-100">
+          <div class="card-header-custom">
+            <div>
+              <div class="card-title">Famílias Prioritárias</div>
+              <div class="card-subtitle">Maior necessidade registrada</div>
+            </div>
+          </div>
+          <div style="padding:16px 24px 20px;display:flex;flex-direction:column;gap:12px;">
+
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--body-bg);border-radius:10px;">
+              <div style="width:38px;height:38px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;">SI</div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:14px;font-weight:600;">Família Silva</div>
+                <div style="font-size:12px;color:var(--text-muted);">6 membros · Última: há 30 dias</div>
+              </div>
+              <span class="badge-status badge-pending">Urgente</span>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--body-bg);border-radius:10px;">
+              <div style="width:38px;height:38px;border-radius:50%;background:#10b981;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;">OL</div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:14px;font-weight:600;">Família Oliveira</div>
+                <div style="font-size:12px;color:var(--text-muted);">7 membros · Última: há 12 dias</div>
+              </div>
+              <span class="badge-status badge-partial">Parcial</span>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--body-bg);border-radius:10px;">
+              <div style="width:38px;height:38px;border-radius:50%;background:#f59e0b;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;">PE</div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:14px;font-weight:600;">Família Pereira</div>
+                <div style="font-size:12px;color:var(--text-muted);">3 membros · Última: há 45 dias</div>
+              </div>
+              <span class="badge-status badge-pending">Urgente</span>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--body-bg);border-radius:10px;">
+              <div style="width:38px;height:38px;border-radius:50%;background:#8b5cf6;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;">ME</div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:14px;font-weight:600;">Família Melo</div>
+                <div style="font-size:12px;color:var(--text-muted);">5 membros · Última: há 8 dias</div>
+              </div>
+              <span class="badge-status badge-delivered">OK</span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary KPIs -->
+      <div class="col-12 col-xl-4">
+        <div class="card h-100">
+          <div class="card-header-custom">
+            <div>
+              <div class="card-title">Resumo do Mês</div>
+              <div class="card-subtitle">Abril 2026</div>
+            </div>
+          </div>
+          <div style="padding:16px 24px 20px;display:flex;flex-direction:column;gap:16px;">
+
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid var(--border);">
+              <div>
+                <div style="font-size:12px;color:var(--text-muted);font-weight:500;text-transform:uppercase;letter-spacing:.5px;">Doações recebidas</div>
+                <div style="font-size:22px;font-weight:700;margin-top:2px;">214</div>
+              </div>
+              <div style="width:46px;height:46px;border-radius:12px;background:#eef2ff;color:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:20px;"><i class="bi bi-gift-fill"></i></div>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid var(--border);">
+              <div>
+                <div style="font-size:12px;color:var(--text-muted);font-weight:500;text-transform:uppercase;letter-spacing:.5px;">Entregas realizadas</div>
+                <div style="font-size:22px;font-weight:700;margin-top:2px;">189</div>
+              </div>
+              <div style="width:46px;height:46px;border-radius:12px;background:#d1fae5;color:#10b981;display:flex;align-items:center;justify-content:center;font-size:20px;"><i class="bi bi-truck"></i></div>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid var(--border);">
+              <div>
+                <div style="font-size:12px;color:var(--text-muted);font-weight:500;text-transform:uppercase;letter-spacing:.5px;">Novas famílias</div>
+                <div style="font-size:22px;font-weight:700;margin-top:2px;">23</div>
+              </div>
+              <div style="width:46px;height:46px;border-radius:12px;background:#fef3c7;color:#f59e0b;display:flex;align-items:center;justify-content:center;font-size:20px;"><i class="bi bi-people-fill"></i></div>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div>
+                <div style="font-size:12px;color:var(--text-muted);font-weight:500;text-transform:uppercase;letter-spacing:.5px;">Taxa de atendimento</div>
+                <div style="font-size:22px;font-weight:700;margin-top:2px;">88,3%</div>
+              </div>
+              <div style="width:46px;height:46px;border-radius:12px;background:#dbeafe;color:#3b82f6;display:flex;align-items:center;justify-content:center;font-size:20px;"><i class="bi bi-graph-up-arrow"></i></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <!-- /bottom row -->
+
+  </main>
+  <!-- /main -->
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    const sidebar   = document.getElementById('sidebar');
+    const topbar    = document.getElementById('topbar');
+    const main      = document.getElementById('main');
+    const toggle    = document.getElementById('sidebarToggle');
+
+    toggle.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      topbar.classList.toggle('collapsed');
+      main.classList.toggle('collapsed');
+    });
+
+    // Nav active state
+    document.querySelectorAll('.nav-item-link').forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        document.querySelectorAll('.nav-item-link').forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+      });
+    });
+  </script>
+
+</body>
+</html>

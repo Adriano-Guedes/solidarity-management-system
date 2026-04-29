@@ -26,6 +26,7 @@ export async function updateItem(id: string, data: UpdateItemRequest): Promise<I
   return response.data;
 }
 
-export async function deleteItem(id: string): Promise<void> {
-  await api.delete(`/api/Items/${id}`);
+export async function deleteItem(id: string): Promise<ItemResponse> {
+  const response = await api.delete<ItemResponse>(`/api/Items/${id}`);
+  return response.data;
 }

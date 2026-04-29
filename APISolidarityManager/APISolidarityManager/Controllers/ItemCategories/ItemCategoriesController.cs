@@ -52,8 +52,8 @@ namespace APISolidarityManager.Controllers.ItemCategories
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            await _itemCategoryService.DeleteAsync(id);
-            return NoContent();
+            var updatedCategory = await _itemCategoryService.DeleteAsync(id);
+            return Ok(updatedCategory);
         }
     }
 }

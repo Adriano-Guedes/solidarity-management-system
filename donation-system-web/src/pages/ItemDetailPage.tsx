@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import RefreshBar from '../components/RefreshBar';
 import { useNavigate, useParams } from 'react-router-dom';
 import { deleteItem, getItemById, updateItem } from '../features/items/itemService';
-import { getInventoryBatchesByItem } from '../features/inventoryBatches/inventoryBatchService';
+import { getInventoryBatchesByItem, updateInventoryBatch } from '../features/inventoryBatches/inventoryBatchService';
 import type { ItemResponse } from '../types/item';
-import type { InventoryBatchResponse } from '../types/inventoryBatch';
-import InventoryBatchTable from '../features/inventoryBatches/components/InventoryBatchTable.tsx';
-import Sidebar from '../components/Sidebar';
-import { COLORS } from '../constants';
-import RoundedButton from '../components/RoundedButton.tsx';
-import LoadingModal from '../components/LoadingModal.tsx';
+import type { InventoryBatchResponse, UpdateInventoryBatchRequest } from '../types/inventoryBatch';
+import InventoryBatchTable from '../features/inventoryBatches/components/InventoryBatchTable';
 import ItemEditModal from '../features/items/components/ItemEditModal';
+import InventoryBatchEditModal from '../features/inventoryBatches/components/InventoryBatchEditModal';
+import { FiEdit3, FiArrowLeft, FiBox, FiTag, FiLayers, FiActivity, FiSlash, FiCheckCircle } from 'react-icons/fi';
 
 const ItemDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -20,20 +17,13 @@ const ItemDetailPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
     const [showEditModal, setShowEditModal] = useState(false);
+    const [showBatchEditModal, setShowBatchEditModal] = useState(false);
+    const [selectedBatch, setSelectedBatch] = useState<InventoryBatchResponse | null>(null);
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
-        async function fetchData() {
-            await getItemAndBatchesData();
-        }
-        fetchData();
+        getItemAndBatchesData();
     }, [id]);
-
-    const handleRefresh = async () => {
-        if (id) {
-            await getItemAndBatchesData();
-        }
-    };
 
     async function getItemAndBatchesData() {
         setLoading(true);
@@ -60,108 +50,164 @@ const ItemDetailPage: React.FC = () => {
         }
     }
 
-    async function handleDelete(id: string) {
+    async function handleSaveBatchEdit(data: UpdateInventoryBatchRequest) {
+        if (!selectedBatch) return;
         setSaving(true);
         try {
-            await deleteItem(id!);
-            await handleRefresh();
-            setShowEditModal(false);
+            await updateInventoryBatch(selectedBatch.id, data);
+            await getItemAndBatchesData();
+            setShowBatchEditModal(false);
         } finally {
             setSaving(false);
         }
     }
 
+    const handleEditBatch = (batch: InventoryBatchResponse) => {
+        setSelectedBatch(batch);
+        setShowBatchEditModal(true);
+    };
+
+    const handleToggleStatus = async () => {
+        if (!item) return;
+        const action = item.active ? 'inativar' : 'ativar';
+        if (window.confirm(`Deseja realmente ${action} o item "${item.name}"?`)) {
+            setSaving(true);
+            try {
+                await deleteItem(item.id);
+                await getItemAndBatchesData();
+            } finally {
+                setSaving(false);
+            }
+        }
+    };
+
     function countTotalAvailableQuantity() {
         return batches.reduce((total, batch) => total + batch.quantityAvailable, 0);
     }
 
-    if (loading) return <LoadingModal show={loading} />;
+    if (loading) return (
+        <div className="d-flex justify-content-center p-5">
+            <div className="spinner-border text-primary" role="status"></div>
+        </div>
+    );
+
     if (error || !item) {
         navigate('/items');
         return null;
     }
 
     return (
-        <div style={{ display: 'flex', background: COLORS.background, minHeight: '100vh' }}>
-            <Sidebar />
-            <main style={{ width: '100%', flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'flex-start', minHeight: '100vh', background: COLORS.background }}>
-                <div style={{ width: '100%', padding: 40 }}>
-                    {/* Card com dados do item */}
-                    <div
-                        style={{
-                            background: COLORS.white,
-                            borderRadius: 18,
-                            boxShadow: '0 4px 24px rgba(0,0,0,0.10)',
-                            padding: 32,
-                            maxWidth: 800,
-                            marginBottom: 32,
-                            marginLeft: 'auto',
-                            marginRight: 'auto',
-                            position: 'relative',
-                        }}
+        <div className="d-flex flex-column gap-4">
+            {/* Header da Página de Detalhes */}
+            <div className="page-header mb-0" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                    <h1 style={{ fontSize: '22px', fontWeight: 700, margin: 0 }}>{item.name}</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol className="breadcrumb" style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0 }}>
+                            <li className="breadcrumb-item">Controle de Itens</li>
+                            <li className="breadcrumb-item active">{item.brand}</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div className="d-flex gap-2">
+                    <button className="btn-ghost" onClick={() => navigate('/items')} disabled={saving}>
+                        <FiArrowLeft /> Voltar
+                    </button>
+                    <button className="btn-primary-custom" onClick={() => setShowEditModal(true)} disabled={saving}>
+                        <FiEdit3 /> Editar
+                    </button>
+                    <button 
+                        className="btn-primary-custom"
+                        style={{ background: item.active ? 'var(--danger)' : 'var(--success)', border: 'none' }}
+                        onClick={handleToggleStatus}
+                        disabled={saving}
                     >
-                        {/* Topo: nome e marca */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
-                            <div>
-                                <div style={{ fontSize: 26, fontWeight: 700, color: COLORS.primary, lineHeight: 1 }}>{item.name}</div>
-                                <div style={{ fontSize: 16, color: COLORS.secondary, fontWeight: 500, marginTop: 2 }}>{item.brand}</div>
-                            </div>
-                            {/* Botões de ação */}
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginLeft: 'auto' }}>
-                                <RoundedButton color={COLORS.white} background={COLORS.primary} onClick={() => setShowEditModal(true)}>Editar</RoundedButton>
-                                <RoundedButton color={item.active ? COLORS.white : COLORS.white} background={item.active ? COLORS.danger : COLORS.success} onClick={() => handleDelete(item.id)}>{item.active ? 'Inativar' : 'Ativar'}</RoundedButton>
-                            </div>
-                        </div>
-                        {/* Descrição centralizada */}
-                        <div style={{ textAlign: 'center', color: COLORS.textSecondary || '#64748B', margin: '18px 0 28px 0', fontSize: 16, minHeight: 24 }}>
-                            {item.notes}
-                        </div>
-                        {/* Cards menores de info */}
-                        <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginBottom: 0 }}>
-                            <div style={{ background: COLORS.background, borderRadius: 12, padding: '16px 24px', minWidth: 120, textAlign: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
-                                <div style={{ fontSize: 13, color: COLORS.textSecondary || '#64748B', fontWeight: 500, marginBottom: 2 }}>Quantidade Total</div>
-                                <div style={{ fontSize: 20, color: COLORS.primary, fontWeight: 700 }}>{countTotalAvailableQuantity()}</div>
-                            </div>
-                            <div style={{ background: COLORS.background, borderRadius: 12, padding: '16px 24px', minWidth: 120, textAlign: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
-                                <div style={{ fontSize: 13, color: COLORS.textSecondary || '#64748B', fontWeight: 500, marginBottom: 2 }}>Medida</div>
-                                <div style={{ fontSize: 20, color: COLORS.primary, fontWeight: 700 }}>{item.packageQuantity} {item.unitOfMeasure}</div>
-                            </div>
-                            <div style={{ background: COLORS.background, borderRadius: 12, padding: '16px 24px', minWidth: 120, textAlign: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
-                                <div style={{ fontSize: 13, color: COLORS.textSecondary || '#64748B', fontWeight: 500, marginBottom: 2 }}>Categoria</div>
-                                <div style={{ fontSize: 20, color: COLORS.primary, fontWeight: 700 }}>{item.categoryName}</div>
-                            </div>
-                            <div style={{ background: COLORS.background, borderRadius: 12, padding: '16px 24px', minWidth: 120, textAlign: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
-                                <div style={{ fontSize: 13, color: COLORS.textSecondary || '#64748B', fontWeight: 500, marginBottom: 2 }}>Modelo Base</div>
-                                <div style={{ fontSize: 20, color: COLORS.primary, fontWeight: 700 }}>{item.itemTemplateName}</div>
-                            </div>
-                            <div style={{ background: COLORS.background, borderRadius: 12, padding: '16px 24px', minWidth: 120, textAlign: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
-                                <div style={{ fontSize: 13, color: COLORS.textSecondary || '#64748B', fontWeight: 500, marginBottom: 2 }}>Status</div>
-                                <div style={{ fontSize: 20, color: COLORS.primary, fontWeight: 700 }}>{item.active ? 'Ativo' : 'Inativo'}</div>
-                            </div>
+                        {item.active ? <><FiSlash /> Inativar</> : <><FiCheckCircle /> Ativar</>}
+                    </button>
+                </div>
+            </div>
+
+            {/* Informações Principais */}
+            <div className="row g-3">
+                <div className="col-12 col-md-6 col-xl-3">
+                    <div className="stat-card">
+                        <div className="stat-icon info"><FiLayers /></div>
+                        <div className="stat-body">
+                            <div className="stat-label">Quantidade Total</div>
+                            <div className="stat-value">{countTotalAvailableQuantity()}</div>
+                            <div className="stat-trend neutral">Unidades disponíveis</div>
                         </div>
                     </div>
-                    {/* Abas Bootstrap */}
-                    {/* <Tab.Container defaultActiveKey="batches">
-                        <Nav variant="tabs" className="mb-3">
-                            <Nav.Item>
-                                <Nav.Link eventKey="batches">Lotes</Nav.Link>
-                            </Nav.Item>
-                        </Nav>
-                        <Tab.Content>
-                            <Tab.Pane eventKey="batches">
-                            </Tab.Pane>
-                        </Tab.Content>
-                    </Tab.Container> */}
-                    <RefreshBar onRefresh={handleRefresh} loading={loading} onBack={() => navigate('/items')} />
-                    <InventoryBatchTable batches={batches} />
                 </div>
-            </main>
+                <div className="col-12 col-md-6 col-xl-3">
+                    <div className="stat-card">
+                        <div className="stat-icon warning"><FiBox /></div>
+                        <div className="stat-body">
+                            <div className="stat-label">Medida</div>
+                            <div className="stat-value">{item.packageQuantity} {item.unitOfMeasure}</div>
+                            <div className="stat-trend neutral">Por pacote</div>
+                        </div>
+                    </div>
+                </div>
+                <div className="col-12 col-md-6 col-xl-3">
+                    <div className="stat-card">
+                        <div className="stat-icon primary"><FiTag /></div>
+                        <div className="stat-body">
+                            <div className="stat-label">Categoria</div>
+                            <div className="stat-value" style={{ fontSize: '18px' }}>{item.categoryName}</div>
+                            <div className="stat-trend neutral">{item.itemTemplateName}</div>
+                        </div>
+                    </div>
+                </div>
+                <div className="col-12 col-md-6 col-xl-3">
+                    <div className="stat-card">
+                        <div className={`stat-icon ${item.active ? 'success' : 'danger'}`}>
+                            <FiActivity />
+                        </div>
+                        <div className="stat-body">
+                            <div className="stat-label">Status Atual</div>
+                            <div className={`stat-value ${item.active ? 'text-success' : 'text-danger'}`} style={{ fontSize: '20px' }}>
+                                {item.active ? 'Ativo' : 'Inativo'}
+                            </div>
+                            <div className="stat-trend neutral">Situação no sistema</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Descrição e Notas */}
+            {item.notes && (
+                <div className="card border-0 shadow-sm p-4">
+                    <div className="card-title mb-3">Observações do Item</div>
+                    <p className="text-muted mb-0" style={{ fontSize: '14px', lineHeight: '1.6' }}>{item.notes}</p>
+                </div>
+            )}
+
+            {/* Tabela de Lotes */}
+            <div className="card h-100">
+                <div className="card-header-custom border-0 pb-3">
+                    <div>
+                        <div className="card-title">Lotes em Estoque</div>
+                        <div className="card-subtitle">Detalhamento por data de validade e entrada</div>
+                    </div>
+                </div>
+                <InventoryBatchTable batches={batches} onEdit={handleEditBatch} />
+            </div>
+
             <ItemEditModal
                 show={showEditModal}
                 onClose={() => setShowEditModal(false)}
                 onSave={handleSaveEdit}
                 loading={saving}
                 initialData={item}
+            />
+
+            <InventoryBatchEditModal
+                show={showBatchEditModal}
+                onClose={() => setShowBatchEditModal(false)}
+                onSave={handleSaveBatchEdit}
+                loading={saving}
+                batch={selectedBatch}
             />
         </div>
     );

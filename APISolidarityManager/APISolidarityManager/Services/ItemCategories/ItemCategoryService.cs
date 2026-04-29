@@ -93,19 +93,20 @@ namespace APISolidarityManager.Services.ItemCategories
             return _mapper.Map<ItemCategoryResponse>(updatedCategory);
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task<ItemCategoryResponse> DeleteAsync(Guid id)
         {
             var category = await _itemCategoryRepository.GetByIdAsync(id);
 
             if (category == null)
                 throw new Exception("A categoria de item informada não foi encontrada.");
 
-            var removed = await _itemCategoryRepository.RemoveAsync(id);
+            category.Active = !category.Active;
+            category.UpdatedAt = DateTime.UtcNow;
 
-            if (!removed)
-                throw new Exception("Não foi possível remover a categoria de item.");
+            var updatedItem = await _itemCategoryRepository.UpdateAsync(category);
 
             await _unitOfWork.SaveChangesAsync();
+            return _mapper.Map<ItemCategoryResponse>(updatedItem);
         }
     }
 }
