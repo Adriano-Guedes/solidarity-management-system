@@ -129,19 +129,20 @@ namespace APISolidarityManager.Services.Items
             return _mapper.Map<ItemResponse>(updatedItem);
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task<ItemResponse> DeleteAsync(Guid id)
         {
             var item = await _itemRepository.GetByIdAsync(id);
 
             if (item == null)
                 throw new Exception("O item informado não foi encontrado.");
 
-            var removed = await _itemRepository.RemoveAsync(id);
+            item.Active = !item.Active;
+            item.UpdatedAt = DateTime.UtcNow;
 
-            if (!removed)
-                throw new Exception("Não foi possível remover o item.");
+            var updatedItem = await _itemRepository.UpdateAsync(item);
 
             await _unitOfWork.SaveChangesAsync();
+            return _mapper.Map<ItemResponse>(updatedItem);
         }
 
         #region Métodos Privados

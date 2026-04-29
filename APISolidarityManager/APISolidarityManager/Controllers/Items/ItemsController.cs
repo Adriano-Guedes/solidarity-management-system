@@ -60,8 +60,8 @@ namespace APISolidarityManager.Controllers.Items
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            await _itemService.DeleteAsync(id);
-            return NoContent();
+            var updatedItem = await _itemService.DeleteAsync(id);
+            return Ok(updatedItem);
         }
     }
 }

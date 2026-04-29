@@ -8,7 +8,6 @@ const menuItems = [
   { label: 'Doações', path: '/donations', icon: <FiGift /> },
   { label: 'Entregas', path: '/deliveries', icon: <FiTruck /> },
   { label: 'Itens', path: '/items', icon: <FiBox /> },
-  { label: 'Lotes de Inventário', path: '/inventory-batches', icon: <FiLayers /> },
   { label: 'Categorias', path: '/item-categories', icon: <FiTag /> },
   // { label: 'Users', path: '/users', icon: <FiUser /> },
 ];
