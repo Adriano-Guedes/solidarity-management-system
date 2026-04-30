@@ -5,6 +5,7 @@ import { getAllItems, createItem } from '../features/items/itemService';
 import ItemTable from '../features/items/components/ItemTable';
 import ItemCreateModal from '../features/items/components/ItemCreateModal';
 import SearchBar from '../components/SearchBar';
+import { notificationService } from '../utils/toastUtils';
 
 interface ContextType {
   setOnAddClick: (fn: (() => void) | null) => void;
@@ -15,7 +16,6 @@ const ItemsPage: React.FC = () => {
   const [allItems, setAllItems] = useState<ItemResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
 
@@ -23,13 +23,12 @@ const ItemsPage: React.FC = () => {
 
   const fetchItems = async () => {
     setLoading(true);
-    setError(null);
     try {
       const data = await getAllItems();
       setItems(data);
       setAllItems(data);
-    } catch {
-      setError('Erro ao carregar itens');
+    } catch (err) {
+      notificationService.error(err);
     } finally {
       setLoading(false);
     }
@@ -51,11 +50,11 @@ const ItemsPage: React.FC = () => {
     setSaving(true);
     try {
       await createItem(data);
+      notificationService.success('Item cadastrado com sucesso!');
       await fetchItems();
       setShowCreateModal(false);
     } catch (err) {
-      alert('Erro ao cadastrar item');
-      console.error(err);
+      notificationService.error(err);
     } finally {
       setSaving(false);
     }

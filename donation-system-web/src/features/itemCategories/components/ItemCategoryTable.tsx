@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import type { ItemCategoryResponse } from '../../../types/itemCategory';
 import { deleteItemCategory } from '../itemCategoryService';
 import { FiEye, FiSlash, FiCheckCircle } from 'react-icons/fi';
+import { notificationService } from '../../../utils/toastUtils';
 
 interface ItemCategoryTableProps {
     itemCategories: ItemCategoryResponse[];
@@ -18,9 +19,9 @@ const ItemCategoryTable: React.FC<ItemCategoryTableProps> = ({ itemCategories, o
             try {
                 await deleteItemCategory(id);
                 onRefresh();
+                notificationService.success(`Status da categoria "${name}" alterado com sucesso!`);
             } catch (error) {
-                alert(`Erro ao ${action} categoria`);
-                console.error(error);
+                notificationService.error(error);
             }
         }
     };

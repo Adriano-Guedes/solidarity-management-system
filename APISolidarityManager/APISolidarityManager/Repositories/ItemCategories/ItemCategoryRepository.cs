@@ -18,7 +18,9 @@ namespace APISolidarityManager.Repositories.ItemCategories
         }
         public async Task<ItemCategory?> GetByNameAsync(string name)
         {
-            return await _context.ItemCategories.FirstOrDefaultAsync(i => i.Name.ToLower() == name.ToLower());
+            return await _context.ItemCategories
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i => i.Name.ToLower() == name.ToLower());
         }
     }
 }

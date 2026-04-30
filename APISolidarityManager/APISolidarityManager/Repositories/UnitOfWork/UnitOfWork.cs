@@ -35,6 +35,7 @@ namespace APISolidarityManager.Repositories.UnitOfWork
             {
                 await _context.SaveChangesAsync(cancellationToken);
                 await _transaction.CommitAsync(cancellationToken);
+                _context.ChangeTracker.Clear();
             }
             catch
             {
@@ -55,6 +56,7 @@ namespace APISolidarityManager.Repositories.UnitOfWork
             try
             {
                 await _transaction.RollbackAsync(cancellationToken);
+                _context.ChangeTracker.Clear();
             }
             finally
             {

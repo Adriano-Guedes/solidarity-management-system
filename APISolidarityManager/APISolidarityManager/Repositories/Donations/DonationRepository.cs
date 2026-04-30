@@ -15,6 +15,7 @@ namespace APISolidarityManager.Repositories.Donations
         public async Task<IEnumerable<Donation>> GetAllWithItemsAsync()
         {
             return await _context.Donations
+                .AsNoTracking()
                 .Include(d => d.DonationInventoryItems)
                     .ThenInclude(di => di.InventoryBatch)
                 .Include(d => d.CreatedByUser)
@@ -24,8 +25,10 @@ namespace APISolidarityManager.Repositories.Donations
         public async Task<Donation?> GetByIdWithItemsAsync(Guid id)
         {
             return await _context.Donations
+                .AsNoTracking()
                 .Include(d => d.DonationInventoryItems)
                     .ThenInclude(di => di.InventoryBatch)
+                .Include(d => d.CreatedByUser)
                 .FirstOrDefaultAsync(d => d.Id == id);
         }
     }

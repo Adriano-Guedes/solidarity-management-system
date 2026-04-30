@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import type { ItemResponse } from '../../../types/item';
 import { deleteItem } from '../itemService';
 import { FiEye, FiSlash, FiCheckCircle } from 'react-icons/fi';
+import { notificationService } from '../../../utils/toastUtils';
 
 interface ItemTableProps {
     items: ItemResponse[];
@@ -18,9 +19,9 @@ const ItemTable: React.FC<ItemTableProps> = ({ items, onRefresh }) => {
             try {
                 await deleteItem(id);
                 onRefresh();
+                notificationService.success(`Status do item "${name}" alterado com sucesso!`);
             } catch (error) {
-                alert(`Erro ao ${action} item`);
-                console.error(error);
+                notificationService.error(error);
             }
         }
     };
