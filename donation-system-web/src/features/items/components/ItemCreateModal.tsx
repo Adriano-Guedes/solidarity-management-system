@@ -26,14 +26,54 @@ const ItemCreateModal: React.FC<ItemCreateModalProps> = ({ show, onClose, onSave
     active: true
   });
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [categories, setCategories] = useState<ItemCategoryResponse[]>([]);
   const [templates, setTemplates] = useState<ItemTemplateResponse[]>([]);
+
+  const filteredTemplates = templates.filter(t => t.categoryId === form.categoryId);
+
+  const validate = (formData: CreateItemRequest) => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'O nome do item é obrigatório.';
+    } else if (formData.name.length < 2 || formData.name.length > 150) {
+      newErrors.name = 'O nome deve ter entre 2 e 150 caracteres.';
+    }
+
+    if (formData.brand && formData.brand.length > 100) {
+      newErrors.brand = 'A marca deve ter no máximo 100 caracteres.';
+    }
+
+    if (!formData.categoryId) {
+      newErrors.categoryId = 'A categoria do item é obrigatória.';
+    }
+
+    if (!formData.itemTemplateId) {
+      newErrors.itemTemplateId = 'O modelo base do item é obrigatório.';
+    }
+
+    if (formData.packageQuantity <= 0) {
+      newErrors.packageQuantity = 'A quantidade deve ser maior que zero.';
+    }
+
+    if (formData.unitOfMeasure && formData.unitOfMeasure.length > 30) {
+      newErrors.unitOfMeasure = 'A unidade de medida deve ter no máximo 30 caracteres.';
+    }
+
+    if (formData.notes && formData.notes.length > 1000) {
+      newErrors.notes = 'As observações devem ter no máximo 1000 caracteres.';
+    }
+
+    return newErrors;
+  };
 
   useEffect(() => {
     if (show) {
       getAllItemCategories().then(setCategories);
       getAllItemTemplates().then(setTemplates);
-      // Reset form when opening
+      // Reset form and validation state when opening
       setForm({
         name: '',
         brand: '',
@@ -44,20 +84,48 @@ const ItemCreateModal: React.FC<ItemCreateModalProps> = ({ show, onClose, onSave
         notes: '',
         active: true
       });
+      setErrors({});
+      setTouched({});
     }
   }, [show]);
+
+  useEffect(() => {
+    setErrors(validate(form));
+  }, [form]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value, type } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' 
+    
+    setForm((prev) => {
+      const updatedValue = type === 'checkbox' 
         ? (e.target as HTMLInputElement).checked 
-        : (name === 'packageQuantity' ? Number(value) : value),
-    }));
+        : (name === 'packageQuantity' ? Number(value) : value);
+      
+      const nextForm = { ...prev, [name]: updatedValue };
+
+      if (name === 'categoryId') {
+        const templateExistsInNewCategory = templates.some(
+          t => t.id === prev.itemTemplateId && t.categoryId === value
+        );
+        if (!templateExistsInNewCategory) {
+          nextForm.itemTemplateId = '';
+        }
+      }
+
+      return nextForm;
+    });
   };
+
+  const handleBlur = (
+    e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    const { name } = e.target;
+    setTouched(prev => ({ ...prev, [name]: true }));
+  };
+
+  const isFormValid = Object.keys(errors).length === 0;
 
   const inputStyle: React.CSSProperties = {
     borderRadius: '10px',
@@ -103,16 +171,23 @@ const ItemCreateModal: React.FC<ItemCreateModalProps> = ({ show, onClose, onSave
             <Row className="g-3">
               <Col md={12}>
                 <Form.Group>
-                  <Form.Label style={labelStyle}>Nome do Item</Form.Label>
+                  <Form.Label style={labelStyle}>
+                    Nome do Item <span style={{ color: 'var(--danger)' }}>*</span>
+                  </Form.Label>
                   <Form.Control
                     name="name"
                     value={form.name}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    isInvalid={touched.name && !!errors.name}
                     style={inputStyle}
                     placeholder="Ex: Arroz Agulhinha"
                     autoFocus
                     required
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.name}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Col>
 
@@ -123,19 +198,28 @@ const ItemCreateModal: React.FC<ItemCreateModalProps> = ({ show, onClose, onSave
                     name="brand"
                     value={form.brand}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    isInvalid={touched.brand && !!errors.brand}
                     style={inputStyle}
                     placeholder="Ex: Tio João"
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.brand}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Col>
 
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label style={labelStyle}>Categoria</Form.Label>
+                  <Form.Label style={labelStyle}>
+                    Categoria <span style={{ color: 'var(--danger)' }}>*</span>
+                  </Form.Label>
                   <Form.Select
                     name="categoryId"
                     value={form.categoryId}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    isInvalid={touched.categoryId && !!errors.categoryId}
                     style={{ ...inputStyle, appearance: 'auto' }}
                     required
                   >
@@ -144,38 +228,59 @@ const ItemCreateModal: React.FC<ItemCreateModalProps> = ({ show, onClose, onSave
                       <option key={cat.id} value={cat.id}>{cat.name}</option>
                     ))}
                   </Form.Select>
+                  <Form.Control.Feedback type="invalid">
+                    {errors.categoryId}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Col>
 
               <Col md={12}>
                 <Form.Group>
-                  <Form.Label style={labelStyle}>Modelo Base (Template)</Form.Label>
+                  <Form.Label style={labelStyle}>
+                    Modelo Base (Template) <span style={{ color: 'var(--danger)' }}>*</span>
+                  </Form.Label>
                   <Form.Select
                     name="itemTemplateId"
                     value={form.itemTemplateId}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    isInvalid={touched.itemTemplateId && !!errors.itemTemplateId}
                     style={{ ...inputStyle, appearance: 'auto' }}
                     required
+                    disabled={!form.categoryId}
                   >
-                    <option value="">Selecione um modelo base...</option>
-                    {templates.map(tpl => (
+                    <option value="">
+                      {!form.categoryId ? 'Selecione primeiro uma categoria...' : 'Selecione um modelo base...'}
+                    </option>
+                    {filteredTemplates.map(tpl => (
                       <option key={tpl.id} value={tpl.id}>{tpl.name} ({tpl.categoryName})</option>
                     ))}
                   </Form.Select>
+                  <Form.Control.Feedback type="invalid">
+                    {errors.itemTemplateId}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Col>
 
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label style={labelStyle}>Quantidade por Pacote</Form.Label>
+                  <Form.Label style={labelStyle}>
+                    Quantidade por Pacote <span style={{ color: 'var(--danger)' }}>*</span>
+                  </Form.Label>
                   <Form.Control
                     name="packageQuantity"
                     type="number"
+                    step="0.01"
                     value={form.packageQuantity}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    isInvalid={touched.packageQuantity && !!errors.packageQuantity}
                     style={inputStyle}
                     placeholder="Ex: 5"
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.packageQuantity}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Col>
 
@@ -186,9 +291,14 @@ const ItemCreateModal: React.FC<ItemCreateModalProps> = ({ show, onClose, onSave
                     name="unitOfMeasure"
                     value={form.unitOfMeasure}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    isInvalid={touched.unitOfMeasure && !!errors.unitOfMeasure}
                     style={inputStyle}
                     placeholder="Ex: kg, un, litros"
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.unitOfMeasure}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Col>
 
@@ -200,9 +310,14 @@ const ItemCreateModal: React.FC<ItemCreateModalProps> = ({ show, onClose, onSave
                     name="notes"
                     value={form.notes}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    isInvalid={touched.notes && !!errors.notes}
                     style={{ ...inputStyle, minHeight: '80px', resize: 'vertical' }}
                     placeholder="Informações adicionais sobre o item..."
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.notes}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Col>
 
@@ -263,8 +378,15 @@ const ItemCreateModal: React.FC<ItemCreateModalProps> = ({ show, onClose, onSave
             type="button"
             className="btn-primary-custom" 
             onClick={() => onSave(form)} 
-            disabled={loading}
-            style={{ padding: '10px 24px', minWidth: '160px', justifyContent: 'center', borderRadius: '10px' }}
+            disabled={loading || !isFormValid}
+            style={{ 
+              padding: '10px 24px', 
+              minWidth: '160px', 
+              justifyContent: 'center', 
+              borderRadius: '10px',
+              opacity: (loading || !isFormValid) ? 0.6 : 1,
+              cursor: (loading || !isFormValid) ? 'not-allowed' : 'pointer'
+            }}
           >
             {loading ? (
               <>

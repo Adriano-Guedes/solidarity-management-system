@@ -3,14 +3,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { deleteItemCategory, getItemCategoryById, updateItemCategory } from '../features/itemCategories/itemCategoryService';
 import type { ItemCategoryResponse, UpdateItemCategoryRequest } from '../types/itemCategory';
 import ItemCategoryEditModal from '../features/itemCategories/components/ItemCategoryEditModal';
-import { FiEdit3, FiArrowLeft, FiTag, FiInfo, FiActivity, FiSlash, FiCheckCircle, FiCalendar } from 'react-icons/fi';
+import { FiEdit3, FiArrowLeft, FiTag, FiInfo, FiActivity, FiSlash, FiCheckCircle, FiCalendar, FiRefreshCw } from 'react-icons/fi';
 import { formatDateBR } from '../utils/dateFormat';
+import { notificationService } from '../utils/toastUtils';
 
 const ItemCategoryDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [category, setCategory] = useState<ItemCategoryResponse | null>(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<boolean>(false);
     const navigate = useNavigate();
     const [showEditModal, setShowEditModal] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -21,11 +22,13 @@ const ItemCategoryDetailPage: React.FC = () => {
 
     async function getCategoryData() {
         setLoading(true);
+        setError(false);
         try {
             const data = await getItemCategoryById(id!);
             setCategory(data);
-        } catch {
-            setError('Erro ao buscar dados da categoria');
+        } catch (err) {
+            setError(true);
+            notificationService.error(err);
         } finally {
             setLoading(false);
         }
@@ -35,11 +38,11 @@ const ItemCategoryDetailPage: React.FC = () => {
         setSaving(true);
         try {
             await updateItemCategory(id!, data);
+            notificationService.success('Categoria atualizada com sucesso!');
             setCategory({ ...category!, ...data });
             setShowEditModal(false);
         } catch (err) {
-            alert('Erro ao salvar alterações');
-            console.error(err);
+            notificationService.error(err);
         } finally {
             setSaving(false);
         }
@@ -48,18 +51,23 @@ const ItemCategoryDetailPage: React.FC = () => {
     const handleToggleStatus = async () => {
         if (!category) return;
         const action = category.active ? 'inativar' : 'ativar';
+        const actionText = category.active ? 'inativada' : 'ativada';
+
         if (window.confirm(`Deseja realmente ${action} a categoria "${category.name}"?`)) {
             setSaving(true);
             try {
                 await deleteItemCategory(category.id);
+                notificationService.success(`Categoria ${actionText} com sucesso!`);
                 await getCategoryData();
+            } catch (err) {
+                notificationService.error(err);
             } finally {
                 setSaving(false);
             }
         }
     };
 
-    if (loading) return (
+    if (loading && !category) return (
         <div className="d-flex justify-content-center p-5">
             <div className="spinner-border text-primary" role="status"></div>
         </div>
@@ -87,6 +95,9 @@ const ItemCategoryDetailPage: React.FC = () => {
                 <div className="d-flex gap-2">
                     <button className="btn-ghost" onClick={() => navigate('/item-categories')} disabled={saving}>
                         <FiArrowLeft /> Voltar
+                    </button>
+                    <button className="btn-ghost" onClick={getCategoryData} disabled={loading || saving} title="Atualizar dados">
+                        <FiRefreshCw className={loading ? 'spinner-border-sm' : ''} />
                     </button>
                     <button className="btn-primary-custom" onClick={() => setShowEditModal(true)} disabled={saving}>
                         <FiEdit3 /> Editar

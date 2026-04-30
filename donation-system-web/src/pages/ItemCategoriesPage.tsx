@@ -5,6 +5,7 @@ import { getAllItemCategories, createItemCategory } from '../features/itemCatego
 import SearchBar from '../components/SearchBar';
 import ItemCategoryTable from '../features/itemCategories/components/ItemCategoryTable';
 import ItemCategoryCreateModal from '../features/itemCategories/components/ItemCategoryCreateModal';
+import { notificationService } from '../utils/toastUtils';
 
 interface ContextType {
   setOnAddClick: (fn: (() => void) | null) => void;
@@ -15,7 +16,6 @@ const ItemCategoriesPage = () => {
   const [allItems, setAllItems] = useState<ItemCategoryResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
 
@@ -23,13 +23,12 @@ const ItemCategoriesPage = () => {
 
   const fetchItems = async () => {
     setLoading(true);
-    setError(null);
     try {
       const data = await getAllItemCategories();
       setItems(data);
       setAllItems(data);
-    } catch {
-      setError('Erro ao carregar categorias');
+    } catch (err) {
+      notificationService.error(err);
     } finally {
       setLoading(false);
     }
@@ -51,11 +50,11 @@ const ItemCategoriesPage = () => {
     setSaving(true);
     try {
       await createItemCategory(data);
+      notificationService.success('Categoria cadastrada com sucesso!');
       await fetchItems();
       setShowCreateModal(false);
     } catch (err) {
-      alert('Erro ao cadastrar categoria');
-      console.error(err);
+      notificationService.error(err);
     } finally {
       setSaving(false);
     }

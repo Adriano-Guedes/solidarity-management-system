@@ -48,12 +48,25 @@ namespace APISolidarityManager.Services.Items
             }
         }
 
+        public async Task<IEnumerable<ItemResponse>> GetAllActiveAsync()
+        {
+            try
+            {
+                var items = await _itemRepository.FindAsync(p => p.Active == true);
+                return _mapper.Map<IEnumerable<ItemResponse>>(items.OrderBy(i => i.Name));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Ocorreu um erro ao buscar os itens.", ex);
+            }
+        }
+
         public async Task<IEnumerable<ItemResponse>> GetAllByCategoryAsync(Guid categoryId)
         {
             try
             {
                 var items = await _itemRepository.FindAsync(p => p.CategoryId == categoryId);
-                return _mapper.Map<IEnumerable<ItemResponse>>(items);
+                return _mapper.Map<IEnumerable<ItemResponse>>(items.OrderBy(i => i.Name));
             }
             catch (Exception ex)
             {

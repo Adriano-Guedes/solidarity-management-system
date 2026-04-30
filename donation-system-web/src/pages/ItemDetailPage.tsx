@@ -7,14 +7,15 @@ import type { InventoryBatchResponse, UpdateInventoryBatchRequest } from '../typ
 import InventoryBatchTable from '../features/inventoryBatches/components/InventoryBatchTable';
 import ItemEditModal from '../features/items/components/ItemEditModal';
 import InventoryBatchEditModal from '../features/inventoryBatches/components/InventoryBatchEditModal';
-import { FiEdit3, FiArrowLeft, FiBox, FiTag, FiLayers, FiActivity, FiSlash, FiCheckCircle } from 'react-icons/fi';
+import { FiEdit3, FiArrowLeft, FiBox, FiTag, FiLayers, FiActivity, FiSlash, FiCheckCircle, FiRefreshCw } from 'react-icons/fi';
+import { notificationService } from '../utils/toastUtils';
 
 const ItemDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [item, setItem] = useState<ItemResponse | null>(null);
     const [batches, setBatches] = useState<InventoryBatchResponse[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<boolean>(false);
     const navigate = useNavigate();
     const [showEditModal, setShowEditModal] = useState(false);
     const [showBatchEditModal, setShowBatchEditModal] = useState(false);
@@ -27,13 +28,15 @@ const ItemDetailPage: React.FC = () => {
 
     async function getItemAndBatchesData() {
         setLoading(true);
+        setError(false);
         try {
             const itemData = await getItemById(id!);
             setItem(itemData);
             const batchData = await getInventoryBatchesByItem(id!);
             setBatches(batchData);
-        } catch {
-            setError('Erro ao buscar dados do item ou lotes');
+        } catch (err) {
+            setError(true);
+            notificationService.error(err);
         } finally {
             setLoading(false);
         }
@@ -43,8 +46,11 @@ const ItemDetailPage: React.FC = () => {
         setSaving(true);
         try {
             await updateItem(id!, data);
+            notificationService.success('Item atualizado com sucesso!');
             setItem({ ...item!, ...data });
             setShowEditModal(false);
+        } catch (err) {
+            notificationService.error(err);
         } finally {
             setSaving(false);
         }
@@ -55,8 +61,11 @@ const ItemDetailPage: React.FC = () => {
         setSaving(true);
         try {
             await updateInventoryBatch(selectedBatch.id, data);
+            notificationService.success('Lote atualizado com sucesso!');
             await getItemAndBatchesData();
             setShowBatchEditModal(false);
+        } catch (err) {
+            notificationService.error(err);
         } finally {
             setSaving(false);
         }
@@ -70,11 +79,16 @@ const ItemDetailPage: React.FC = () => {
     const handleToggleStatus = async () => {
         if (!item) return;
         const action = item.active ? 'inativar' : 'ativar';
+        const actionText = item.active ? 'inativado' : 'ativado';
+        
         if (window.confirm(`Deseja realmente ${action} o item "${item.name}"?`)) {
             setSaving(true);
             try {
                 await deleteItem(item.id);
+                notificationService.success(`Item ${actionText} com sucesso!`);
                 await getItemAndBatchesData();
+            } catch (err) {
+                notificationService.error(err);
             } finally {
                 setSaving(false);
             }
@@ -85,7 +99,7 @@ const ItemDetailPage: React.FC = () => {
         return batches.reduce((total, batch) => total + batch.quantityAvailable, 0);
     }
 
-    if (loading) return (
+    if (loading && !item) return (
         <div className="d-flex justify-content-center p-5">
             <div className="spinner-border text-primary" role="status"></div>
         </div>
@@ -112,6 +126,9 @@ const ItemDetailPage: React.FC = () => {
                 <div className="d-flex gap-2">
                     <button className="btn-ghost" onClick={() => navigate('/items')} disabled={saving}>
                         <FiArrowLeft /> Voltar
+                    </button>
+                    <button className="btn-ghost" onClick={getItemAndBatchesData} disabled={loading || saving} title="Atualizar dados">
+                        <FiRefreshCw className={loading ? 'spinner-border-sm' : ''} />
                     </button>
                     <button className="btn-primary-custom" onClick={() => setShowEditModal(true)} disabled={saving}>
                         <FiEdit3 /> Editar

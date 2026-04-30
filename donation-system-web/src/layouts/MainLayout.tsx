@@ -34,7 +34,11 @@ const MainLayout = () => {
 
   const toggleSidebar = () => setCollapsed(!collapsed);
 
-  const isDetailPage = location.pathname.includes('/items/') || location.pathname.includes('/item-categories/') || location.pathname.includes('/members');
+  const isDetailPage = 
+    location.pathname.includes('/items/') || 
+    location.pathname.includes('/item-categories/') || 
+    location.pathname.includes('/donations/') || 
+    location.pathname.includes('/members');
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--body-bg)' }}>

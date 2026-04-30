@@ -15,6 +15,7 @@ namespace APISolidarityManager.Repositories.InventoryBatches
         public async Task<IEnumerable<InventoryBatch>> GetByItemIdAsync(Guid itemId)
         {
             return await _context.InventoryBatches
+                .AsNoTracking()
                 .Where(ib => ib.ItemId == itemId)
                 .ToListAsync();
         }
@@ -42,6 +43,7 @@ namespace APISolidarityManager.Repositories.InventoryBatches
         public async Task<IEnumerable<InventoryBatch>> GetAvailableOrderedByExpirationAsync(Guid itemId)
         {
             return await _context.InventoryBatches
+                .AsNoTracking()
                 .Where(ib => ib.ItemId == itemId && ib.QuantityAvailable > 0)
                 .OrderBy(ib => ib.ExpirationDate ?? DateTime.MaxValue)
                 .ThenBy(ib => ib.CreatedAt)
@@ -51,6 +53,7 @@ namespace APISolidarityManager.Repositories.InventoryBatches
         public async Task<IEnumerable<InventoryBatch>> GetAvailableBatchesForSuggestionAsync()
         {
             return await _context.InventoryBatches
+                .AsNoTracking()
                 .Include(x => x.Item)
                     .ThenInclude(x => x.ItemTemplate)
                 .Include(x => x.Item)

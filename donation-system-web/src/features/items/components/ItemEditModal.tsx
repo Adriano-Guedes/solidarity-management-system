@@ -5,42 +5,132 @@ import { getAllItemCategories } from '../../../features/itemCategories/itemCateg
 import { getAllItemTemplates } from '../../../features/itemTemplates/itemTemplateService';
 import type { ItemCategoryResponse } from '../../../types/itemCategory';
 import type { ItemTemplateResponse } from '../../../types/itemTemplate';
+import type { UpdateItemRequest } from '../../../types/item';
 
 interface ItemEditModalProps {
   show: boolean;
   onClose: () => void;
-  onSave: (data: any) => void;
+  onSave: (data: UpdateItemRequest) => void;
   loading?: boolean;
-  initialData?: any;
+  initialData?: UpdateItemRequest;
 }
 
 const ItemEditModal: React.FC<ItemEditModalProps> = ({ show, onClose, onSave, loading = false, initialData }) => {
-  const [form, setForm] = useState<any>(initialData || {});
+  const [form, setForm] = useState<UpdateItemRequest>({
+    name: '',
+    brand: '',
+    categoryId: '',
+    itemTemplateId: '',
+    packageQuantity: 0,
+    unitOfMeasure: '',
+    notes: '',
+    active: true
+  });
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [categories, setCategories] = useState<ItemCategoryResponse[]>([]);
   const [templates, setTemplates] = useState<ItemTemplateResponse[]>([]);
+
+  const filteredTemplates = templates.filter(t => t.categoryId === form.categoryId);
+
+  const validate = (formData: UpdateItemRequest) => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.name?.trim()) {
+      newErrors.name = 'O nome do item é obrigatório.';
+    } else if (formData.name.length < 2 || formData.name.length > 150) {
+      newErrors.name = 'O nome deve ter entre 2 e 150 caracteres.';
+    }
+
+    if (formData.brand && formData.brand.length > 100) {
+      newErrors.brand = 'A marca deve ter no máximo 100 caracteres.';
+    }
+
+    if (!formData.categoryId) {
+      newErrors.categoryId = 'A categoria do item é obrigatória.';
+    }
+
+    if (!formData.itemTemplateId) {
+      newErrors.itemTemplateId = 'O modelo base do item é obrigatório.';
+    }
+
+    if (formData.packageQuantity <= 0) {
+      newErrors.packageQuantity = 'A quantidade deve ser maior que zero.';
+    }
+
+    if (formData.unitOfMeasure && formData.unitOfMeasure.length > 30) {
+      newErrors.unitOfMeasure = 'A unidade de medida deve ter no máximo 30 caracteres.';
+    }
+
+    if (formData.notes && formData.notes.length > 1000) {
+      newErrors.notes = 'As observações devem ter no máximo 1000 caracteres.';
+    }
+
+    return newErrors;
+  };
 
   useEffect(() => {
     if (show) {
       getAllItemCategories().then(setCategories);
       getAllItemTemplates().then(setTemplates);
+      setErrors({});
+      setTouched({});
     }
   }, [show]);
 
   useEffect(() => {
-    if (initialData) {
-      setForm(initialData);
+    if (initialData && show) {
+      setForm({
+        name: initialData.name || '',
+        brand: initialData.brand || '',
+        categoryId: initialData.categoryId || '',
+        itemTemplateId: initialData.itemTemplateId || '',
+        packageQuantity: initialData.packageQuantity || 0,
+        unitOfMeasure: initialData.unitOfMeasure || '',
+        notes: initialData.notes || '',
+        active: initialData.active ?? true
+      });
     }
   }, [initialData, show]);
+
+  useEffect(() => {
+    setErrors(validate(form));
+  }, [form]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value, type } = e.target;
-    setForm((prev: any) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
-    }));
+    
+    setForm((prev) => {
+      const updatedValue = type === 'checkbox' 
+        ? (e.target as HTMLInputElement).checked 
+        : (name === 'packageQuantity' ? Number(value) : value);
+      
+      const nextForm = { ...prev, [name]: updatedValue };
+
+      if (name === 'categoryId') {
+        const templateExistsInNewCategory = templates.some(
+          t => t.id === prev.itemTemplateId && t.categoryId === value
+        );
+        if (!templateExistsInNewCategory) {
+          nextForm.itemTemplateId = '';
+        }
+      }
+
+      return nextForm;
+    });
   };
+
+  const handleBlur = (
+    e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    const { name } = e.target;
+    setTouched(prev => ({ ...prev, [name]: true }));
+  };
+
+  const isFormValid = Object.keys(errors).length === 0;
 
   const inputStyle: React.CSSProperties = {
     borderRadius: '10px',
@@ -86,15 +176,23 @@ const ItemEditModal: React.FC<ItemEditModalProps> = ({ show, onClose, onSave, lo
             <Row className="g-3">
               <Col md={12}>
                 <Form.Group>
-                  <Form.Label style={labelStyle}>Nome do Item</Form.Label>
+                  <Form.Label style={labelStyle}>
+                    Nome do Item <span style={{ color: 'var(--danger)' }}>*</span>
+                  </Form.Label>
                   <Form.Control
                     name="name"
-                    value={form.name || ''}
+                    value={form.name}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    isInvalid={touched.name && !!errors.name}
                     style={inputStyle}
                     placeholder="Ex: Arroz Agulhinha"
                     autoFocus
+                    required
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.name}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Col>
 
@@ -103,59 +201,91 @@ const ItemEditModal: React.FC<ItemEditModalProps> = ({ show, onClose, onSave, lo
                   <Form.Label style={labelStyle}>Marca</Form.Label>
                   <Form.Control
                     name="brand"
-                    value={form.brand || ''}
+                    value={form.brand}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    isInvalid={touched.brand && !!errors.brand}
                     style={inputStyle}
                     placeholder="Ex: Tio João"
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.brand}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Col>
 
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label style={labelStyle}>Categoria</Form.Label>
+                  <Form.Label style={labelStyle}>
+                    Categoria <span style={{ color: 'var(--danger)' }}>*</span>
+                  </Form.Label>
                   <Form.Select
                     name="categoryId"
-                    value={form.categoryId || ''}
+                    value={form.categoryId}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    isInvalid={touched.categoryId && !!errors.categoryId}
                     style={{ ...inputStyle, appearance: 'auto' }}
+                    required
                   >
                     <option value="">Selecione uma categoria...</option>
                     {categories.map(cat => (
                       <option key={cat.id} value={cat.id}>{cat.name}</option>
                     ))}
                   </Form.Select>
+                  <Form.Control.Feedback type="invalid">
+                    {errors.categoryId}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Col>
 
               <Col md={12}>
                 <Form.Group>
-                  <Form.Label style={labelStyle}>Modelo Base (Template)</Form.Label>
+                  <Form.Label style={labelStyle}>
+                    Modelo Base (Template) <span style={{ color: 'var(--danger)' }}>*</span>
+                  </Form.Label>
                   <Form.Select
                     name="itemTemplateId"
-                    value={form.itemTemplateId || ''}
+                    value={form.itemTemplateId}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    isInvalid={touched.itemTemplateId && !!errors.itemTemplateId}
                     style={{ ...inputStyle, appearance: 'auto' }}
+                    required
+                    disabled={!form.categoryId}
                   >
-                    <option value="">Selecione um modelo base...</option>
-                    {templates.map(tpl => (
+                    <option value="">
+                      {!form.categoryId ? 'Selecione primeiro uma categoria...' : 'Selecione um modelo base...'}
+                    </option>
+                    {filteredTemplates.map(tpl => (
                       <option key={tpl.id} value={tpl.id}>{tpl.name} ({tpl.categoryName})</option>
                     ))}
                   </Form.Select>
+                  <Form.Control.Feedback type="invalid">
+                    {errors.itemTemplateId}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Col>
 
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label style={labelStyle}>Quantidade por Pacote</Form.Label>
+                  <Form.Label style={labelStyle}>
+                    Quantidade por Pacote <span style={{ color: 'var(--danger)' }}>*</span>
+                  </Form.Label>
                   <Form.Control
                     name="packageQuantity"
                     type="number"
-                    value={form.packageQuantity || ''}
+                    step="0.01"
+                    value={form.packageQuantity}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    isInvalid={touched.packageQuantity && !!errors.packageQuantity}
                     style={inputStyle}
                     placeholder="Ex: 5"
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.packageQuantity}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Col>
 
@@ -164,11 +294,16 @@ const ItemEditModal: React.FC<ItemEditModalProps> = ({ show, onClose, onSave, lo
                   <Form.Label style={labelStyle}>Unidade de Medida</Form.Label>
                   <Form.Control
                     name="unitOfMeasure"
-                    value={form.unitOfMeasure || ''}
+                    value={form.unitOfMeasure}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    isInvalid={touched.unitOfMeasure && !!errors.unitOfMeasure}
                     style={inputStyle}
                     placeholder="Ex: kg, un, litros"
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.unitOfMeasure}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Col>
 
@@ -178,11 +313,16 @@ const ItemEditModal: React.FC<ItemEditModalProps> = ({ show, onClose, onSave, lo
                   <Form.Control
                     as="textarea"
                     name="notes"
-                    value={form.notes || ''}
+                    value={form.notes}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    isInvalid={touched.notes && !!errors.notes}
                     style={{ ...inputStyle, minHeight: '80px', resize: 'vertical' }}
                     placeholder="Informações adicionais sobre o item..."
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.notes}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Col>
 
@@ -218,7 +358,7 @@ const ItemEditModal: React.FC<ItemEditModalProps> = ({ show, onClose, onSave, lo
                     type="switch"
                     id="active-switch"
                     name="active"
-                    checked={!!form.active}
+                    checked={form.active}
                     onChange={handleChange}
                     label={form.active ? 'Ativo' : 'Inativo'}
                     style={{ fontWeight: 600, color: form.active ? 'var(--success)' : 'var(--danger)' }}
@@ -243,8 +383,15 @@ const ItemEditModal: React.FC<ItemEditModalProps> = ({ show, onClose, onSave, lo
             type="button"
             className="btn-primary-custom" 
             onClick={() => onSave(form)} 
-            disabled={loading}
-            style={{ padding: '10px 24px', minWidth: '160px', justifyContent: 'center', borderRadius: '10px' }}
+            disabled={loading || !isFormValid}
+            style={{ 
+              padding: '10px 24px', 
+              minWidth: '160px', 
+              justifyContent: 'center', 
+              borderRadius: '10px',
+              opacity: (loading || !isFormValid) ? 0.6 : 1,
+              cursor: (loading || !isFormValid) ? 'not-allowed' : 'pointer'
+            }}
           >
             {loading ? (
               <>

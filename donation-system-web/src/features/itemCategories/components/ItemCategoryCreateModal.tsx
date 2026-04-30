@@ -16,14 +16,39 @@ const ItemCategoryCreateModal: React.FC<ItemCategoryCreateModalProps> = ({ show,
     description: '',
   });
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  const validate = (formData: CreateItemCategoryRequest) => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'O nome da categoria é obrigatório.';
+    } else if (formData.name.length < 2 || formData.name.length > 100) {
+      newErrors.name = 'O nome da categoria deve ter entre 2 e 100 caracteres.';
+    }
+
+    if (formData.description && formData.description.length > 500) {
+      newErrors.description = 'A descrição deve ter no máximo 500 caracteres.';
+    }
+
+    return newErrors;
+  };
+
   useEffect(() => {
     if (show) {
       setForm({
         name: '',
         description: '',
       });
+      setErrors({});
+      setTouched({});
     }
   }, [show]);
+
+  useEffect(() => {
+    setErrors(validate(form));
+  }, [form]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -34,6 +59,15 @@ const ItemCategoryCreateModal: React.FC<ItemCategoryCreateModalProps> = ({ show,
       [name]: value,
     }));
   };
+
+  const handleBlur = (
+    e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name } = e.target;
+    setTouched(prev => ({ ...prev, [name]: true }));
+  };
+
+  const isFormValid = Object.keys(errors).length === 0;
 
   const inputStyle: React.CSSProperties = {
     borderRadius: '10px',
@@ -79,16 +113,23 @@ const ItemCategoryCreateModal: React.FC<ItemCategoryCreateModalProps> = ({ show,
             <Row className="g-3">
               <Col md={12}>
                 <Form.Group>
-                  <Form.Label style={labelStyle}>Nome da Categoria</Form.Label>
+                  <Form.Label style={labelStyle}>
+                    Nome da Categoria <span style={{ color: 'var(--danger)' }}>*</span>
+                  </Form.Label>
                   <Form.Control
                     name="name"
                     value={form.name}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    isInvalid={touched.name && !!errors.name}
                     style={inputStyle}
                     placeholder="Ex: Alimentos, Vestuário, Higiene"
                     autoFocus
                     required
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.name}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Col>
 
@@ -100,9 +141,14 @@ const ItemCategoryCreateModal: React.FC<ItemCategoryCreateModalProps> = ({ show,
                     name="description"
                     value={form.description}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    isInvalid={touched.description && !!errors.description}
                     style={{ ...inputStyle, minHeight: '100px', resize: 'vertical' }}
                     placeholder="Breve descrição sobre o que esta categoria abrange..."
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.description}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Col>
 
@@ -153,8 +199,15 @@ const ItemCategoryCreateModal: React.FC<ItemCategoryCreateModalProps> = ({ show,
             type="button"
             className="btn-primary-custom" 
             onClick={() => onSave(form)} 
-            disabled={loading}
-            style={{ padding: '10px 24px', minWidth: '180px', justifyContent: 'center', borderRadius: '10px' }}
+            disabled={loading || !isFormValid}
+            style={{ 
+              padding: '10px 24px', 
+              minWidth: '180px', 
+              justifyContent: 'center', 
+              borderRadius: '10px',
+              opacity: (loading || !isFormValid) ? 0.6 : 1,
+              cursor: (loading || !isFormValid) ? 'not-allowed' : 'pointer'
+            }}
           >
             {loading ? (
               <>

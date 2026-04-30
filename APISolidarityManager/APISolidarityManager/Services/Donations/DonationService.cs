@@ -43,7 +43,7 @@ namespace APISolidarityManager.Services.Donations
         public async Task<IEnumerable<DonationResponse>> GetAllAsync()
         {
             var donations = await _donationRepository.GetAllWithItemsAsync();
-            return _mapper.Map<IEnumerable<DonationResponse>>(donations);
+            return _mapper.Map<IEnumerable<DonationResponse>>(donations.OrderByDescending(d => d.ReceivedDate));
         }
 
         public async Task<DonationResponse> GetByIdAsync(Guid id)

@@ -6,6 +6,11 @@ export async function getAllItems(): Promise<ItemResponse[]> {
   return response.data;
 }
 
+export async function getAllActiveItems(): Promise<ItemResponse[]> {
+  const response = await api.get<ItemResponse[]>('/api/Items/active');
+  return response.data;
+}
+
 export async function getItemsByCategory(categoryId: string): Promise<ItemResponse[]> {
   const response = await api.get<ItemResponse[]>(`/api/Items/category/${categoryId}`);
   return response.data;
