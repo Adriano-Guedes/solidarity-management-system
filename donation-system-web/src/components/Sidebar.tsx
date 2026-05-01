@@ -40,7 +40,6 @@ const menuSections = [
   {
     label: 'Sistema',
     items: [
-      { label: 'Relatórios', path: '/reports', icon: <FiBarChart2 /> },
       { label: 'Configurações', path: '/settings', icon: <FiSettings /> },
     ]
   }

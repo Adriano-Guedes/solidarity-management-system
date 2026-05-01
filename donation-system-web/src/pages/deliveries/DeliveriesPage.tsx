@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { getAllDeliveries } from '../features/deliveries/deliveryService';
-import type { DeliveryResponse } from '../types/delivery';
-import SearchBar from '../components/SearchBar';
-import DeliveryTable from '../features/deliveries/components/DeliveryTable';
-import { FiFilter, FiDownload } from 'react-icons/fi';
+import { getAllDeliveries } from '../../features/deliveries/deliveryService';
+import type { DeliveryResponse } from '../../types/delivery';
+import SearchBar from '../../components/SearchBar';
+import DeliveryTable from '../../features/deliveries/components/DeliveryTable';
 
 const DeliveriesPage: React.FC = () => {
   const [deliveries, setDeliveries] = useState<DeliveryResponse[]>([]);

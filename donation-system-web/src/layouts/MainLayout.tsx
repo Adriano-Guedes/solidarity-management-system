@@ -38,6 +38,7 @@ const MainLayout = () => {
     location.pathname.includes('/items/') || 
     location.pathname.includes('/item-categories/') || 
     location.pathname.includes('/donations/') || 
+    location.pathname.includes('/families/') || 
     location.pathname.includes('/members');
 
   return (

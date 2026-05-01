@@ -43,6 +43,11 @@ export async function updateFamily(id: string, data: UpdateFamilyRequest): Promi
   return response.data;
 }
 
+export async function updateFamilyStatus(id: string): Promise<FamilyResponse> {
+  const response = await api.put<FamilyResponse>(`/api/Families/${id}/status`);
+  return response.data;
+}
+
 export async function deleteFamily(id: string): Promise<void> {
   await api.delete(`/api/Families/${id}`);
 }

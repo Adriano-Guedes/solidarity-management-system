@@ -14,26 +14,26 @@ namespace APISolidarityManager.Repositories.Families
 
         public async Task<bool> ExistsByResponsibleDocumentAsync(string document)
         {
-            return await _context.Families
+            return await _context.Families.AsNoTracking()
                 .AnyAsync(f => f.ResponsibleDocument == document);
         }
 
         public async Task<Family?> GetByResponsibleDocumentAsync(string document)
         {
-            return await _context.Families
+            return await _context.Families.AsNoTracking()
                 .FirstOrDefaultAsync(f => f.ResponsibleDocument == document);
         }
 
         public async Task<Family?> GetByIdWithMembersAsync(Guid familyId)
         {
-            return await _context.Families
+            return await _context.Families.AsNoTracking()
                 .Include(x => x.FamilyMembers)
                 .FirstOrDefaultAsync(x => x.Id == familyId);
         }
 
         public async Task<IEnumerable<Family>> GetAllActiveWithMembersAsync()
         {
-            return await _context.Families
+            return await _context.Families.AsNoTracking()
                 .Include(x => x.FamilyMembers)
                 .Where(x => x.Active)
                 .ToListAsync();

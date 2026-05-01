@@ -39,7 +39,7 @@ namespace APISolidarityManager.Services.FamilyMembers
 
             var familyMembers = await _familyMemberRepository.FindAsync(fm => fm.FamilyId == familyId);
 
-            return _mapper.Map<IEnumerable<FamilyMemberResponse>>(familyMembers);
+            return _mapper.Map<IEnumerable<FamilyMemberResponse>>(familyMembers.OrderBy(fm => fm.Name));
         }
 
         public async Task<FamilyMemberResponse> GetByIdAsync(Guid familyId, Guid memberId)
@@ -123,6 +123,22 @@ namespace APISolidarityManager.Services.FamilyMembers
             familyMember.DocumentNumber = request.DocumentNumber.NormalizeNullable();
             familyMember.Gender = request.Gender.NormalizeNullable();
             familyMember.Relationship = request.Relationship.NormalizeNullable();
+            familyMember.UpdatedAt = DateTime.UtcNow;
+
+            var updatedFamilyMember = await _familyMemberRepository.UpdateAsync(familyMember);
+            await _unitOfWork.SaveChangesAsync();
+
+            return _mapper.Map<FamilyMemberResponse>(updatedFamilyMember);
+        }
+
+        public async Task<FamilyMemberResponse> UpdateStatusAsync(Guid familyId, Guid memberId)
+        {
+            var familyMember = await _familyMemberRepository.GetByIdAsync(memberId);
+
+            if (familyMember == null || familyMember.FamilyId != familyId)
+                throw new Exception("Membro da família não encontrado.");
+
+            familyMember.Active = !familyMember.Active;
             familyMember.UpdatedAt = DateTime.UtcNow;
 
             var updatedFamilyMember = await _familyMemberRepository.UpdateAsync(familyMember);

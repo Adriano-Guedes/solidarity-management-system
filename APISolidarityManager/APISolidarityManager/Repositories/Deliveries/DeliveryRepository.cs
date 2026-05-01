@@ -20,6 +20,16 @@ namespace APISolidarityManager.Repositories.Deliveries
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Delivery>> GetAllByFamilyIdAsync(Guid familyId)
+        {
+            return await _context.Deliveries
+                .Where(d => d.FamilyId == familyId)
+                .Include(d => d.DeliveryInventoryItems)
+                    .ThenInclude(di => di.InventoryBatch)
+                .Include(d => d.CreatedByUser)
+                .ToListAsync();
+        }
+
         public async Task<Delivery?> GetByIdWithItemsAsync(Guid id)
         {
             return await _context.Deliveries

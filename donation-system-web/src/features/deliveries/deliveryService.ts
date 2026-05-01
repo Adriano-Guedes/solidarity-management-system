@@ -6,6 +6,11 @@ export async function getAllDeliveries(): Promise<DeliveryResponse[]> {
   return response.data;
 }
 
+export async function getAllDeliveriesByFamilyId(familyId: string): Promise<DeliveryResponse[]> {
+  const response = await api.get<DeliveryResponse[]>(`/api/Deliveries/family/${familyId}`);
+  return response.data;
+}
+
 export async function getDeliveryById(id: string): Promise<DeliveryResponse> {
   const response = await api.get<DeliveryResponse>(`/api/Deliveries/${id}`);
   return response.data;

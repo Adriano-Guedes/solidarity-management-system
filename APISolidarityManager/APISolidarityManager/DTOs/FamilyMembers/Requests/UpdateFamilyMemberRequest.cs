@@ -14,6 +14,7 @@ namespace APISolidarityManager.DTOs.FamilyMembers.Requests
         [StringLength(20, ErrorMessage = "O documento deve ter no máximo 20 caracteres.")]
         public string? DocumentNumber { get; set; }
 
+        [Required(ErrorMessage = "A data de nascimento é obrigatória.")]
         [DataType(DataType.Date, ErrorMessage = "A data de nascimento deve ser uma data válida.")]
         public DateTime? BirthDate { get; set; }
 

@@ -49,6 +49,13 @@ namespace APISolidarityManager.Controllers.FamilyMembers
             return Ok(updatedFamilyMember);
         }
 
+        [HttpPut("{memberId:guid}/status")]
+        public async Task<IActionResult> UpdateStatus(Guid familyId, Guid memberId)
+        {
+            var updatedFamilyMember = await _familyMemberService.UpdateStatusAsync(familyId, memberId);
+            return Ok(updatedFamilyMember);
+        }
+
         [HttpDelete("{memberId:guid}")]
         public async Task<IActionResult> Delete(Guid familyId, Guid memberId)
         {

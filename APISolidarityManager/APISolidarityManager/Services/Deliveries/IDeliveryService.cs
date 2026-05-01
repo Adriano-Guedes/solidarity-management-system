@@ -6,6 +6,7 @@ namespace APISolidarityManager.Services.Deliveries
     public interface IDeliveryService
     {
         Task<IEnumerable<DeliveryResponse>> GetAllAsync();
+        Task<IEnumerable<DeliveryResponse>> GetAllByFamilyIdAsync(Guid familyId);
         Task<DeliveryResponse> GetByIdAsync(Guid id);
         Task<DeliveryResponse> CreateAsync(CreateDeliveryRequest request, Guid createdBy);
     }

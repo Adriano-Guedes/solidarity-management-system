@@ -9,6 +9,7 @@ namespace APISolidarityManager.Services.FamilyMembers
         Task<FamilyMemberResponse> GetByIdAsync(Guid familyId, Guid memberId);
         Task<FamilyMemberResponse> CreateAsync(Guid familyId, CreateFamilyMemberRequest request);
         Task<FamilyMemberResponse> UpdateAsync(Guid familyId, Guid memberId, UpdateFamilyMemberRequest request);
+        Task<FamilyMemberResponse> UpdateStatusAsync(Guid familyId, Guid memberId);
         Task DeleteAsync(Guid familyId, Guid memberId);
     }
 }

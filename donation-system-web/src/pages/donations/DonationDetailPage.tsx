@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getDonationById } from '../features/donations/donationService';
-import { getAllItems } from '../features/items/itemService';
-import type { DonationResponse } from '../types/donation';
-import type { ItemResponse } from '../types/item';
-import { FiArrowLeft, FiCalendar, FiUser, FiPackage, FiInfo, FiTag, FiRefreshCw } from 'react-icons/fi';
-import { formatDateBR } from '../utils/dateFormat';
-import { notificationService } from '../utils/toastUtils';
+import { getDonationById } from '../../features/donations/donationService';
+import { getAllItems } from '../../features/items/itemService';
+import type { DonationResponse } from '../../types/donation';
+import type { ItemResponse } from '../../types/item';
+import { FiArrowLeft, FiCalendar, FiUser, FiPackage, FiInfo, FiRefreshCw } from 'react-icons/fi';
+import { formatDateBR } from '../../utils/dateFormat';
+import { notificationService } from '../../utils/toastUtils';
 
 const DonationDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();

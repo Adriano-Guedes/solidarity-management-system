@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import SearchBar from '../components/SearchBar';
-import DonationTable from '../features/donations/components/DonationTable';
-import DonationCreateModal from '../features/donations/components/DonationCreateModal';
-import { getAllDonations, createDonation } from '../features/donations/donationService';
-import type { DonationResponse, CreateDonationRequest } from '../types/donation';
-import { notificationService } from '../utils/toastUtils';
+import { getAllFamilies, createFamily } from '../../features/families/familyService';
+import FamilyTable from '../../features/families/components/FamilyTable';
+import FamilyCreateModal from '../../features/families/components/FamilyCreateModal';
+import type { FamilyResponse, CreateFamilyRequest } from '../../types/family';
+import SearchBar from '../../components/SearchBar';
+import { notificationService } from '../../utils/toastUtils';
 
 interface ContextType {
   setOnAddClick: (fn: (() => void) | null) => void;
 }
 
-const DonationsPage: React.FC = () => {
-  const [donations, setDonations] = useState<DonationResponse[]>([]);
-  const [allDonations, setAllDonations] = useState<DonationResponse[]>([]);
+const FamiliesPage: React.FC = () => {
+  const [families, setFamilies] = useState<FamilyResponse[]>([]);
+  const [allFamilies, setAllFamilies] = useState<FamilyResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState('');
@@ -21,12 +21,12 @@ const DonationsPage: React.FC = () => {
 
   const { setOnAddClick } = useOutletContext<ContextType>();
 
-  const fetchDonations = async () => {
+  const fetchFamilies = async () => {
     setLoading(true);
     try {
-      const data = await getAllDonations();
-      setDonations(data);
-      setAllDonations(data);
+      const data = await getAllFamilies();
+      setFamilies(data);
+      setAllFamilies(data);
     } catch (err) {
       notificationService.error(err);
     } finally {
@@ -35,7 +35,7 @@ const DonationsPage: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchDonations();
+    fetchFamilies();
   }, []);
 
   useEffect(() => {
@@ -43,28 +43,28 @@ const DonationsPage: React.FC = () => {
     return () => setOnAddClick(null);
   }, [setOnAddClick]);
 
-  async function handleCreateDonation(data: CreateDonationRequest) {
+  const handleCreateFamily = async (data: CreateFamilyRequest) => {
     setSaving(true);
     try {
-      await createDonation(data);
-      notificationService.success('Doação registrada com sucesso!');
-      await fetchDonations();
+      await createFamily(data);
+      notificationService.success('Família cadastrada com sucesso!');
+      await fetchFamilies();
       setShowCreateModal(false);
     } catch (err) {
       notificationService.error(err);
     } finally {
       setSaving(false);
     }
-  }
+  };
 
-  function searchHandler() {
-    const filtered = allDonations.filter(donation =>
-      donation.createdByName.toLowerCase().includes(search.trim().toLowerCase())
+  const searchHandler = () => {
+    const filtered = allFamilies.filter(f =>
+      f.responsibleName.toLowerCase().includes(search.trim().toLowerCase())
     );
-    setDonations(filtered);
-  }
+    setFamilies(filtered);
+  };
 
-  if (loading && donations.length === 0) return (
+  if (loading && families.length === 0) return (
     <div className="d-flex justify-content-center p-5">
       <div className="spinner-border text-primary" role="status"></div>
     </div>
@@ -80,22 +80,22 @@ const DonationsPage: React.FC = () => {
             setSearch={setSearch}
             loading={loading}
             onSearch={searchHandler}
-            onClear={() => { setSearch(''); setDonations(allDonations); }}
-            onRefresh={fetchDonations}
+            onClear={() => { setSearch(''); setFamilies(allFamilies); }}
+            onRefresh={fetchFamilies}
           />
         </div>
-        
-        <DonationTable donations={donations} />
+
+        <FamilyTable families={families} onRefresh={fetchFamilies} />
       </div>
 
-      <DonationCreateModal
+      <FamilyCreateModal
         show={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        onSave={handleCreateDonation}
+        onSave={handleCreateFamily}
         loading={saving}
       />
     </div>
   );
 };
 
-export default DonationsPage;
+export default FamiliesPage;
