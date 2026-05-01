@@ -7,7 +7,7 @@ interface TopBarProps {
 }
 
 const fakeUser = {
-  name: 'Alan Guedes',
+  name: 'Adriano Guedes',
   role: 'Administrador',
   initials: 'AG'
 };
@@ -48,7 +48,7 @@ const TopBar = ({ collapsed, onToggle }: TopBarProps) => {
           color: 'var(--text-muted)',
           fontSize: '20px',
           cursor: 'pointer',
-          display: 'flex', alignItems: 'center', justify: 'center',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
           transition: 'background var(--transition), color var(--transition)',
           flexShrink: 0,
         }}

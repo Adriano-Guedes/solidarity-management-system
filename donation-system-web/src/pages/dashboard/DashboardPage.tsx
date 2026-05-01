@@ -1,17 +1,4 @@
-import { 
-  FiGift, 
-  FiUsers, 
-  FiTruck, 
-  FiBox, 
-  FiTrendingUp, 
-  FiTrendingDown,
-  FiPlus,
-  FiUserPlus,
-  FiMap,
-  FiArrowRight,
-  FiTag,
-  FiAlertCircle
-} from 'react-icons/fi';
+import { FiGift, FiUsers, FiTruck, FiBox, FiTrendingUp, FiTrendingDown, FiUserPlus, FiArrowRight, FiTag, FiAlertCircle } from 'react-icons/fi';
 
 const DashboardPage = () => {
   return (
@@ -94,7 +81,7 @@ const DashboardPage = () => {
                 </tbody>
               </table>
             </div>
-            
+
             <div style={{ padding: '14px 24px', borderTop: '1px solid var(--border)', textAlign: 'center' }}>
               <button className="btn btn-link text-decoration-none p-0 fw-600" style={{ color: 'var(--primary)', fontSize: '13px' }}>
                 Ver todas as movimentações <FiArrowRight />

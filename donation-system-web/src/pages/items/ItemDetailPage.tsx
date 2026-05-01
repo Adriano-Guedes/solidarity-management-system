@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { deleteItem, getItemById, updateItem } from '../features/items/itemService';
-import { getInventoryBatchesByItem, updateInventoryBatch } from '../features/inventoryBatches/inventoryBatchService';
-import type { ItemResponse } from '../types/item';
-import type { InventoryBatchResponse, UpdateInventoryBatchRequest } from '../types/inventoryBatch';
-import InventoryBatchTable from '../features/inventoryBatches/components/InventoryBatchTable';
-import ItemEditModal from '../features/items/components/ItemEditModal';
-import InventoryBatchEditModal from '../features/inventoryBatches/components/InventoryBatchEditModal';
+import { deleteItem, getItemById, updateItem } from '../../features/items/itemService';
+import { getInventoryBatchesByItem, updateInventoryBatch } from '../../features/inventoryBatches/inventoryBatchService';
+import type { ItemResponse } from '../../types/item';
+import type { InventoryBatchResponse, UpdateInventoryBatchRequest } from '../../types/inventoryBatch';
+import InventoryBatchTable from '../../features/inventoryBatches/components/InventoryBatchTable';
+import ItemEditModal from '../../features/items/components/ItemEditModal';
+import InventoryBatchEditModal from '../../features/inventoryBatches/components/InventoryBatchEditModal';
 import { FiEdit3, FiArrowLeft, FiBox, FiTag, FiLayers, FiActivity, FiSlash, FiCheckCircle, FiRefreshCw } from 'react-icons/fi';
-import { notificationService } from '../utils/toastUtils';
+import { notificationService } from '../../utils/toastUtils';
 
 const ItemDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();

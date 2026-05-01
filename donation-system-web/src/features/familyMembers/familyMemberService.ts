@@ -21,6 +21,11 @@ export async function updateFamilyMember(familyId: string, memberId: string, dat
   return response.data;
 }
 
+export async function updateFamilyMemberStatus(familyId: string, memberId: string): Promise<FamilyMemberResponse> {
+  const response = await api.put<FamilyMemberResponse>(`/api/families/${familyId}/members/${memberId}/status`);
+  return response.data;
+}
+
 export async function deleteFamilyMember(familyId: string, memberId: string): Promise<void> {
   await api.delete(`/api/families/${familyId}/members/${memberId}`);
 }

@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import type { ItemResponse, CreateItemRequest } from '../types/item';
-import { getAllItems, createItem } from '../features/items/itemService';
-import ItemTable from '../features/items/components/ItemTable';
-import ItemCreateModal from '../features/items/components/ItemCreateModal';
-import SearchBar from '../components/SearchBar';
-import { notificationService } from '../utils/toastUtils';
+import type { ItemCategoryResponse, CreateItemCategoryRequest } from '../../types/itemCategory';
+import { getAllItemCategories, createItemCategory } from '../../features/itemCategories/itemCategoryService';
+import SearchBar from '../../components/SearchBar';
+import ItemCategoryTable from '../../features/itemCategories/components/ItemCategoryTable';
+import ItemCategoryCreateModal from '../../features/itemCategories/components/ItemCategoryCreateModal';
+import { notificationService } from '../../utils/toastUtils';
 
 interface ContextType {
   setOnAddClick: (fn: (() => void) | null) => void;
 }
 
-const ItemsPage: React.FC = () => {
-  const [items, setItems] = useState<ItemResponse[]>([]);
-  const [allItems, setAllItems] = useState<ItemResponse[]>([]);
+const ItemCategoriesPage = () => {
+  const [items, setItems] = useState<ItemCategoryResponse[]>([]);
+  const [allItems, setAllItems] = useState<ItemCategoryResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState('');
@@ -24,7 +24,7 @@ const ItemsPage: React.FC = () => {
   const fetchItems = async () => {
     setLoading(true);
     try {
-      const data = await getAllItems();
+      const data = await getAllItemCategories();
       setItems(data);
       setAllItems(data);
     } catch (err) {
@@ -39,18 +39,16 @@ const ItemsPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Register the action for the global header button in MainLayout
     setOnAddClick(() => () => setShowCreateModal(true));
     
-    // Cleanup on unmount
     return () => setOnAddClick(null);
   }, [setOnAddClick]);
 
-  async function handleCreateItem(data: CreateItemRequest) {
+  async function handleCreateCategory(data: CreateItemCategoryRequest) {
     setSaving(true);
     try {
-      await createItem(data);
-      notificationService.success('Item cadastrado com sucesso!');
+      await createItemCategory(data);
+      notificationService.success('Categoria cadastrada com sucesso!');
       await fetchItems();
       setShowCreateModal(false);
     } catch (err) {
@@ -78,7 +76,7 @@ const ItemsPage: React.FC = () => {
       <div className="card h-100">
         <div className="p-4 pb-0">
           <SearchBar
-            inputPlaceholder='Buscar por nome do item...'
+            inputPlaceholder='Buscar por nome da categoria...'
             search={search}
             setSearch={setSearch}
             loading={loading}
@@ -88,17 +86,17 @@ const ItemsPage: React.FC = () => {
           />
         </div>
 
-        <ItemTable items={items} onRefresh={fetchItems} />
+        <ItemCategoryTable itemCategories={items} onRefresh={fetchItems} />
       </div>
 
-      <ItemCreateModal
+      <ItemCategoryCreateModal
         show={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        onSave={handleCreateItem}
+        onSave={handleCreateCategory}
         loading={saving}
       />
     </div>
   );
 };
 
-export default ItemsPage;
+export default ItemCategoriesPage;

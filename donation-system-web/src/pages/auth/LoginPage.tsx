@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import type { UserResponse } from '../types/user';
+import type { UserResponse } from '../../types/user';
 import { FiHeart } from 'react-icons/fi';
 
 const FAKE_ADMIN: UserResponse = {

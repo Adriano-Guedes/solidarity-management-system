@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import type { ItemCategoryResponse, CreateItemCategoryRequest } from '../types/itemCategory';
-import { getAllItemCategories, createItemCategory } from '../features/itemCategories/itemCategoryService';
-import SearchBar from '../components/SearchBar';
-import ItemCategoryTable from '../features/itemCategories/components/ItemCategoryTable';
-import ItemCategoryCreateModal from '../features/itemCategories/components/ItemCategoryCreateModal';
-import { notificationService } from '../utils/toastUtils';
+import type { ItemResponse, CreateItemRequest } from '../../types/item';
+import { getAllItems, createItem } from '../../features/items/itemService';
+import ItemTable from '../../features/items/components/ItemTable';
+import ItemCreateModal from '../../features/items/components/ItemCreateModal';
+import SearchBar from '../../components/SearchBar';
+import { notificationService } from '../../utils/toastUtils';
 
 interface ContextType {
   setOnAddClick: (fn: (() => void) | null) => void;
 }
 
-const ItemCategoriesPage = () => {
-  const [items, setItems] = useState<ItemCategoryResponse[]>([]);
-  const [allItems, setAllItems] = useState<ItemCategoryResponse[]>([]);
+const ItemsPage: React.FC = () => {
+  const [items, setItems] = useState<ItemResponse[]>([]);
+  const [allItems, setAllItems] = useState<ItemResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState('');
@@ -24,7 +24,7 @@ const ItemCategoriesPage = () => {
   const fetchItems = async () => {
     setLoading(true);
     try {
-      const data = await getAllItemCategories();
+      const data = await getAllItems();
       setItems(data);
       setAllItems(data);
     } catch (err) {
@@ -46,11 +46,11 @@ const ItemCategoriesPage = () => {
     return () => setOnAddClick(null);
   }, [setOnAddClick]);
 
-  async function handleCreateCategory(data: CreateItemCategoryRequest) {
+  async function handleCreateItem(data: CreateItemRequest) {
     setSaving(true);
     try {
-      await createItemCategory(data);
-      notificationService.success('Categoria cadastrada com sucesso!');
+      await createItem(data);
+      notificationService.success('Item cadastrado com sucesso!');
       await fetchItems();
       setShowCreateModal(false);
     } catch (err) {
@@ -78,7 +78,7 @@ const ItemCategoriesPage = () => {
       <div className="card h-100">
         <div className="p-4 pb-0">
           <SearchBar
-            inputPlaceholder='Buscar por nome da categoria...'
+            inputPlaceholder='Buscar por nome do item...'
             search={search}
             setSearch={setSearch}
             loading={loading}
@@ -88,17 +88,17 @@ const ItemCategoriesPage = () => {
           />
         </div>
 
-        <ItemCategoryTable itemCategories={items} onRefresh={fetchItems} />
+        <ItemTable items={items} onRefresh={fetchItems} />
       </div>
 
-      <ItemCategoryCreateModal
+      <ItemCreateModal
         show={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        onSave={handleCreateCategory}
+        onSave={handleCreateItem}
         loading={saving}
       />
     </div>
   );
 };
 
-export default ItemCategoriesPage;
+export default ItemsPage;

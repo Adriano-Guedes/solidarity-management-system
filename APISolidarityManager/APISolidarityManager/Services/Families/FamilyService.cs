@@ -1,6 +1,7 @@
 ﻿using APISolidarityManager.Common.Extensions;
 using APISolidarityManager.DTOs.Families.Requests;
 using APISolidarityManager.DTOs.Families.Responses;
+using APISolidarityManager.DTOs.Items.Responses;
 using APISolidarityManager.Models;
 using APISolidarityManager.Repositories.Families;
 using APISolidarityManager.Repositories.Items;
@@ -28,7 +29,7 @@ namespace APISolidarityManager.Services.Families
         public async Task<IEnumerable<FamilyResponse>> GetAllAsync()
         {
             var families = await _familyRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<FamilyResponse>>(families);
+            return _mapper.Map<IEnumerable<FamilyResponse>>(families.OrderBy(f => f.ResponsibleName));
         }
 
         public async Task<FamilyResponse> GetByIdAsync(Guid id)
@@ -110,6 +111,22 @@ namespace APISolidarityManager.Services.Families
             var updatedFamily = await _familyRepository.UpdateAsync(family);
             await _unitOfWork.SaveChangesAsync();
 
+            return _mapper.Map<FamilyResponse>(updatedFamily);
+        }
+
+        public async Task<FamilyResponse> UpdateStatusAsync(Guid id)
+        {
+            var family = await _familyRepository.GetByIdAsync(id);
+
+            if (family == null)
+                throw new Exception("A família informada não foi encontrada.");
+
+            family.Active = !family.Active;
+            family.UpdatedAt = DateTime.UtcNow;
+
+            var updatedFamily = await _familyRepository.UpdateAsync(family);
+
+            await _unitOfWork.SaveChangesAsync();
             return _mapper.Map<FamilyResponse>(updatedFamily);
         }
 

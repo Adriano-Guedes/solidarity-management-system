@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { deleteItemCategory, getItemCategoryById, updateItemCategory } from '../features/itemCategories/itemCategoryService';
-import type { ItemCategoryResponse, UpdateItemCategoryRequest } from '../types/itemCategory';
-import ItemCategoryEditModal from '../features/itemCategories/components/ItemCategoryEditModal';
+import { deleteItemCategory, getItemCategoryById, updateItemCategory } from '../../features/itemCategories/itemCategoryService';
+import type { ItemCategoryResponse, UpdateItemCategoryRequest } from '../../types/itemCategory';
+import ItemCategoryEditModal from '../../features/itemCategories/components/ItemCategoryEditModal';
 import { FiEdit3, FiArrowLeft, FiTag, FiInfo, FiActivity, FiSlash, FiCheckCircle, FiCalendar, FiRefreshCw } from 'react-icons/fi';
-import { formatDateBR } from '../utils/dateFormat';
-import { notificationService } from '../utils/toastUtils';
+import { formatDateBR } from '../../utils/dateFormat';
+import { notificationService } from '../../utils/toastUtils';
 
 const ItemCategoryDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();

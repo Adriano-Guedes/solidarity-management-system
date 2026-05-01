@@ -24,6 +24,13 @@ namespace APISolidarityManager.Controllers.Deliveries
             return Ok(deliveries);
         }
 
+        [HttpGet("family/{familyId:guid}")]
+        public async Task<IActionResult> GetAllByFamilyId(Guid familyId)
+        {
+            var deliveries = await _deliveryService.GetAllByFamilyIdAsync(familyId);
+            return Ok(deliveries);
+        }
+
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetById(Guid id)
         {
