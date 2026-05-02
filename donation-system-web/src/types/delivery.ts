@@ -31,13 +31,16 @@ export interface DeliverySuggestionResponse {
 export interface DeliveryItemResponse {
   inventoryBatchId: string;
   itemId: string;
+  itemName: string;
+  itemCategoryId: string;
+  itemCategoryName: string;
   quantity: number;
 }
 
 export interface DeliveryResponse {
   id: string;
   familyId: string;
-  familyResponsableName: string;
+  familyResponsibleName: string;
   deliveryDate: string;
   createdBy: string;
   createdByName: string;

@@ -24,7 +24,7 @@ namespace APISolidarityManager.Mappings
                     opt => opt.MapFrom(src => src.UpdatedAt.ToSaoPauloTime()))
                 .ForMember(dest => dest.Items,
                     opt => opt.MapFrom(src => src.DeliveryInventoryItems))
-                .ForMember(dest => dest.FamilyResponsableName,
+                .ForMember(dest => dest.FamilyResponsibleName,
                     opt => opt.MapFrom(src => src.Family.ResponsibleName))
                 .ForMember(dest => dest.CreatedByName,
                     opt => opt.MapFrom(src => src.CreatedByUser.Name));
@@ -34,6 +34,12 @@ namespace APISolidarityManager.Mappings
                     opt => opt.MapFrom(src => src.InventoryBatchId))
                 .ForMember(dest => dest.ItemId,
                     opt => opt.MapFrom(src => src.InventoryBatch.ItemId))
+                .ForMember(dest => dest.ItemName,
+                    opt => opt.MapFrom(src => src.InventoryBatch.Item.Name))
+                .ForMember(dest => dest.ItemCategoryId,
+                    opt => opt.MapFrom(src => src.InventoryBatch.Item.CategoryId))
+                .ForMember(dest => dest.ItemCategoryName,
+                    opt => opt.MapFrom(src => src.InventoryBatch.Item.Category.Name))
                 .ForMember(dest => dest.Quantity,
                     opt => opt.MapFrom(src => src.Quantity));
             #endregion

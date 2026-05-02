@@ -1,13 +1,13 @@
 import api from '../../services/api';
-import type { ItemResponse, CreateItemRequest, UpdateItemRequest } from '../../types/item';
+import type { ItemResponse, CreateItemRequest, UpdateItemRequest, ActiveItemResponse } from '../../types/item';
 
 export async function getAllItems(): Promise<ItemResponse[]> {
   const response = await api.get<ItemResponse[]>('/api/Items');
   return response.data;
 }
 
-export async function getAllActiveItems(): Promise<ItemResponse[]> {
-  const response = await api.get<ItemResponse[]>('/api/Items/active');
+export async function getAllActiveItems(): Promise<ActiveItemResponse[]> {
+  const response = await api.get<ActiveItemResponse[]>('/api/Items/active');
   return response.data;
 }
 
