@@ -176,7 +176,7 @@ const DeliveryCreatePage: React.FC = () => {
         return suggestion.needGroupsSummary.map(summary => {
             const metInCart = cart
                 .filter(c => c.item.needGroup === summary.needGroup)
-                .reduce((acc, curr) => acc + (curr.quantity * (curr.item.referenceQuantity || 0)), 0);
+                .reduce((acc, curr) => acc + (curr.quantity * (curr.item.templateWeight || 0)), 0);
 
             const requiredQty = summary.requiredQuantity || 0;
             const percentage = requiredQty > 0 
@@ -503,7 +503,16 @@ const DeliveryCreatePage: React.FC = () => {
                                                         {remaining}
                                                     </span>
                                                 </td>
-                                                <td><span className="category-pill" style={{ fontSize: '10px', padding: '2px 8px' }}>{item.needGroup}</span></td>
+                                                <td>
+                                                    <div className="d-flex flex-column gap-1">
+                                                        <span className="category-pill" style={{ fontSize: '10px', padding: '2px 8px', width: 'fit-content' }}>
+                                                            {item.needGroup}
+                                                        </span>
+                                                        <span className="text-muted" style={{ fontSize: '10px', fontWeight: 500 }}>
+                                                            {item.templateWeight} / un
+                                                        </span>
+                                                    </div>
+                                                </td>
                                                 <td className="text-end">
                                                     <button 
                                                         className="btn-icon-sm" 
@@ -589,7 +598,7 @@ const DeliveryCreatePage: React.FC = () => {
                                                     </button>
                                                 </div>
                                                 <div className="text-muted" style={{ fontSize: '11px' }}>
-                                                    Sub: {(c.quantity * (c.item.referenceQuantity || 0)).toFixed(1)}
+                                                    Sub: {(c.quantity * (c.item.templateWeight || 0)).toFixed(1)}
                                                 </div>
                                             </div>
                                         </div>

@@ -7,7 +7,7 @@ import type { InventoryBatchResponse, UpdateInventoryBatchRequest } from '../../
 import InventoryBatchTable from '../../features/inventoryBatches/components/InventoryBatchTable';
 import ItemEditModal from '../../features/items/components/ItemEditModal';
 import InventoryBatchEditModal from '../../features/inventoryBatches/components/InventoryBatchEditModal';
-import { FiEdit3, FiArrowLeft, FiBox, FiTag, FiLayers, FiActivity, FiSlash, FiCheckCircle, FiRefreshCw } from 'react-icons/fi';
+import { FiEdit3, FiArrowLeft, FiBox, FiTag, FiLayers, FiActivity, FiSlash, FiCheckCircle, FiRefreshCw, FiGrid } from 'react-icons/fi';
 import { notificationService } from '../../utils/toastUtils';
 
 const ItemDetailPage: React.FC = () => {
@@ -160,9 +160,11 @@ const ItemDetailPage: React.FC = () => {
                     <div className="stat-card">
                         <div className="stat-icon warning"><FiBox /></div>
                         <div className="stat-body">
-                            <div className="stat-label">Medida</div>
-                            <div className="stat-value">{item.packageQuantity} {item.unitOfMeasure}</div>
-                            <div className="stat-trend neutral">Por pacote</div>
+                            <div className="stat-label">Medidas e Peso</div>
+                            <div className="stat-value" style={{ fontSize: '18px' }}>
+                                {item.packageQuantity} {item.unitOfMeasure}
+                            </div>
+                            <div className="stat-trend neutral">Ref: {item.templateWeight}</div>
                         </div>
                     </div>
                 </div>

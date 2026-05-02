@@ -47,7 +47,7 @@ namespace APISolidarityManager.Services.Deliveries
         public async Task<IEnumerable<DeliveryResponse>> GetAllAsync()
         {
             var deliveries = await _deliveryRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<DeliveryResponse>>(deliveries.OrderByDescending(d => d.DeliveryDate));
+            return _mapper.Map<IEnumerable<DeliveryResponse>>(deliveries.OrderByDescending(d => d.CreatedAt));
         }
 
         public async Task<IEnumerable<DeliveryResponse>> GetAllByFamilyIdAsync(Guid familyId)

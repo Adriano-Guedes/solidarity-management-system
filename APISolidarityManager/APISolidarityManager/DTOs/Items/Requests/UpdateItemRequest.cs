@@ -20,6 +20,10 @@ namespace APISolidarityManager.DTOs.Items.Requests
         [Range(0.01, double.MaxValue, ErrorMessage = "A quantidade deve ser maior que zero.")]
         public decimal PackageQuantity { get; set; }
 
+        [Required(ErrorMessage = "O peso em relação ao template é obrigatório.")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "O peso deve ser maior que zero.")]
+        public decimal TemplateWeight { get; set; }
+
         [StringLength(30, ErrorMessage = "A unidade de medida deve ter no máximo 30 caracteres.")]
         public string? UnitOfMeasure { get; set; }
 

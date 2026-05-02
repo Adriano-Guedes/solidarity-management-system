@@ -62,7 +62,9 @@ const ItemsPage: React.FC = () => {
 
   function searchHandler() {
     const filtered = allItems.filter(item =>
-      item.name.toLowerCase().includes(search.trim().toLowerCase())
+      item.name.toLowerCase().includes(search.trim().toLowerCase()) 
+      || item.categoryName.toLowerCase().includes(search.trim().toLowerCase())
+      || item.itemTemplateName.toLowerCase().includes(search.trim().toLowerCase())
     );
     setItems(filtered);
   }
@@ -78,7 +80,7 @@ const ItemsPage: React.FC = () => {
       <div className="card h-100">
         <div className="p-4 pb-0">
           <SearchBar
-            inputPlaceholder='Buscar por nome do item...'
+            inputPlaceholder='Buscar por nome do item, categoria ou modelo...'
             search={search}
             setSearch={setSearch}
             loading={loading}

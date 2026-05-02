@@ -10,6 +10,7 @@
         public string Name { get; set; } = null!;
         public string? Brand { get; set; }
         public decimal PackageQuantity { get; set; }
+        public decimal TemplateWeight { get; set; }
         public string? UnitOfMeasure { get; set; }
         public string? Notes { get; set; }
         public bool Active { get; set; }

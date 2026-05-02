@@ -6,6 +6,7 @@ namespace APISolidarityManager.DTOs.Items.Responses
         public string Name { get; set; } = string.Empty;
         public string? Brand { get; set; }
         public decimal PackageQuantity { get; set; }
+        public decimal TemplateWeight { get; set; }
         public string? UnitOfMeasure { get; set; }
         public Guid CategoryId { get; set; }
         public string CategoryName { get; set; } = string.Empty;
