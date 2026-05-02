@@ -4,7 +4,7 @@
     {
         public Guid Id { get; set; }
         public Guid FamilyId { get; set; }
-        public string FamilyResponsableName { get; set; } = string.Empty;
+        public string FamilyResponsibleName { get; set; } = string.Empty;
         public DateTime DeliveryDate { get; set; }
         public Guid CreatedBy { get; set; }
         public string CreatedByName { get; set; } = string.Empty;

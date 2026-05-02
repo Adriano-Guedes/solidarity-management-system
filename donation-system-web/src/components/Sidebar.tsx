@@ -7,7 +7,6 @@ import {
   FiBox, 
   FiTag, 
   FiHeart,
-  FiBarChart2,
   FiSettings
 } from 'react-icons/fi';
 

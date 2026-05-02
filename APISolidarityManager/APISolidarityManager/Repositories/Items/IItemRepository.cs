@@ -7,5 +7,6 @@ namespace APISolidarityManager.Repositories.Items
     {
         Task<Item?> GetByNameAndCategoryAsync(string name, Guid categoryId);
         Task<bool> ExistsByNameAndCategoryAsync(string name, Guid categoryId);
+        Task<IEnumerable<Item>> GetAllActiveWithTotalQuantityAsync();
     }
 }

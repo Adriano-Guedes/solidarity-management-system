@@ -5,6 +5,8 @@ import FamilyDetailPage from '../pages/families/FamilyDetailPage';
 import DonationsPage from '../pages/donations/DonationsPage';
 import DonationDetailPage from '../pages/donations/DonationDetailPage';
 import DeliveriesPage from '../pages/deliveries/DeliveriesPage';
+import DeliveryDetailPage from '../pages/deliveries/DeliveryDetailPage';
+import DeliveryCreatePage from '../pages/deliveries/DeliveryCreatePage';
 import ItemsPage from '../pages/items/ItemsPage';
 import ItemDetailPage from '../pages/items/ItemDetailPage';
 import ItemCategoriesPage from '../pages/itemCategories/ItemCategoriesPage';
@@ -25,6 +27,8 @@ const AppRoutes = () => (
         <Route path="/donations" element={<DonationsPage />} />
         <Route path="/donations/:id" element={<DonationDetailPage />} />
         <Route path="/deliveries" element={<DeliveriesPage />} />
+        <Route path="/deliveries/create" element={<DeliveryCreatePage />} />
+        <Route path="/deliveries/:id" element={<DeliveryDetailPage />} />
         <Route path="/items" element={<ItemsPage />} />
         <Route path="/items/:id" element={<ItemDetailPage />} />
         <Route path="/item-categories" element={<ItemCategoriesPage />} />

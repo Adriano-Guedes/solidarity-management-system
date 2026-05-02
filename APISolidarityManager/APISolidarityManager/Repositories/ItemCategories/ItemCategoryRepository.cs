@@ -14,7 +14,9 @@ namespace APISolidarityManager.Repositories.ItemCategories
 
         public async Task<bool> ExistsByNameAsync(string name)
         {
-            return await _context.ItemCategories.AnyAsync(i => i.Name.ToLower() == name.ToLower());
+            return await _context.ItemCategories
+                .AsNoTracking()
+                .AnyAsync(i => i.Name.ToLower() == name.ToLower());
         }
         public async Task<ItemCategory?> GetByNameAsync(string name)
         {

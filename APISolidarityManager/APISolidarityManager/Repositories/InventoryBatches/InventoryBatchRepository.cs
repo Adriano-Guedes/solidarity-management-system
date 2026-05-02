@@ -23,18 +23,21 @@ namespace APISolidarityManager.Repositories.InventoryBatches
         public async Task<InventoryBatch?> GetByItemIdAndExpirationDateAsync(Guid itemId, DateTime? expirationDate)
         {
             return await _context.InventoryBatches
+                .AsNoTracking()
                 .FirstOrDefaultAsync(ib => ib.ItemId == itemId && ib.ExpirationDate == expirationDate);
         }
 
         public async Task<bool> HasMovementsAsync(Guid inventoryBatchId)
         {
             var hasDonationMovements = await _context.DonationInventoryItems
+                .AsNoTracking()
                 .AnyAsync(dii => dii.InventoryBatchId == inventoryBatchId);
 
             if (hasDonationMovements)
                 return true;
 
             var hasDeliveryMovements = await _context.DeliveryInventoryItems
+                .AsNoTracking()
                 .AnyAsync(dii => dii.InventoryBatchId == inventoryBatchId);
 
             return hasDeliveryMovements;

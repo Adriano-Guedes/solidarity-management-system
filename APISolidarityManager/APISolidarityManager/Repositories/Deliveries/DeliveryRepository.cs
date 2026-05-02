@@ -15,32 +15,47 @@ namespace APISolidarityManager.Repositories.Deliveries
         public async Task<IEnumerable<Delivery>> GetAllWithItemsAsync()
         {
             return await _context.Deliveries
+                .AsNoTracking()
+                .Include(d => d.Family)
+                .Include(d => d.CreatedByUser)
                 .Include(d => d.DeliveryInventoryItems)
                     .ThenInclude(di => di.InventoryBatch)
+                        .ThenInclude(ib => ib.Item)
+                            .ThenInclude(i => i.Category)
                 .ToListAsync();
         }
 
         public async Task<IEnumerable<Delivery>> GetAllByFamilyIdAsync(Guid familyId)
         {
             return await _context.Deliveries
+                .AsNoTracking()
                 .Where(d => d.FamilyId == familyId)
+                .Include(d => d.Family)
+                .Include(d => d.CreatedByUser)
                 .Include(d => d.DeliveryInventoryItems)
                     .ThenInclude(di => di.InventoryBatch)
-                .Include(d => d.CreatedByUser)
+                        .ThenInclude(ib => ib.Item)
+                            .ThenInclude(i => i.Category)
                 .ToListAsync();
         }
 
         public async Task<Delivery?> GetByIdWithItemsAsync(Guid id)
         {
             return await _context.Deliveries
+                .AsNoTracking()
+                .Include(d => d.Family)
+                .Include(d => d.CreatedByUser)
                 .Include(d => d.DeliveryInventoryItems)
                     .ThenInclude(di => di.InventoryBatch)
+                        .ThenInclude(ib => ib.Item)
+                            .ThenInclude(i => i.Category)
                 .FirstOrDefaultAsync(d => d.Id == id);
         }
 
         public async Task<DateTime?> GetLastDeliveryDateByFamilyIdAsync(Guid familyId)
         {
             return await _context.Deliveries
+                .AsNoTracking()
                 .Where(x => x.FamilyId == familyId)
                 .OrderByDescending(x => x.DeliveryDate)
                 .Select(x => (DateTime?)x.DeliveryDate)
@@ -50,6 +65,7 @@ namespace APISolidarityManager.Repositories.Deliveries
         public async Task<Dictionary<Guid, DateTime?>> GetLastDeliveryDatesByFamilyIdsAsync(IEnumerable<Guid> familyIds)
         {
             return await _context.Deliveries
+                .AsNoTracking()
                 .Where(x => familyIds.Contains(x.FamilyId))
                 .GroupBy(x => x.FamilyId)
                 .Select(g => new

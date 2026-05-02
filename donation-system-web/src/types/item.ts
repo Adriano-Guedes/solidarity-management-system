@@ -14,6 +14,21 @@ export interface ItemResponse {
   updatedAt?: string;
 }
 
+export interface ActiveItemResponse {
+  id: string;
+  name: string;
+  brand?: string;
+  packageQuantity: number;
+  unitOfMeasure?: string;
+  categoryId: string;
+  categoryName: string;
+  itemTemplateId: string;
+  itemTemplateName: string;
+  needGroup: string;
+  referenceQuantity: number;
+  totalQuantity: number;
+}
+
 export interface UpdateItemRequest {
   categoryId: string;
   itemTemplateId: string;

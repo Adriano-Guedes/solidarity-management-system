@@ -1,9 +1,8 @@
 import React from 'react';
 import type { DonationResponse } from '../../../types/donation';
-import { formatDateBR } from '../../../utils/dateFormat';
+import { formatDateBR, formatDateTimeBR } from '../../../utils/dateFormat';
 import { useNavigate } from 'react-router-dom';
 import { FiEye } from 'react-icons/fi';
-import TableIconButton from '../../../components/TableIconButton';
 
 interface DonationTableProps {
     donations: DonationResponse[];
@@ -37,7 +36,7 @@ const DonationTable: React.FC<DonationTableProps> = ({ donations }) => {
                                     <div className="d-flex flex-column">
                                         <strong>{formatDateBR(donation.receivedDate)}</strong>
                                         <span className="td-muted" style={{ fontSize: '11px' }}>
-                                            Registrado em: {formatDateBR(donation.createdAt)}
+                                            Registrado em: {formatDateTimeBR(donation.createdAt)}
                                         </span>
                                     </div>
                                 </td>

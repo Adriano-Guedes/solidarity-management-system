@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getFamilyById, deleteFamily, updateFamily, updateFamilyStatus } from '../../features/families/familyService';
-import { getFamilyMembers, updateFamilyMember, deleteFamilyMember, createFamilyMember, updateFamilyMemberStatus } from '../../features/familyMembers/familyMemberService';
-import { getAllDeliveries, getAllDeliveriesByFamilyId } from '../../features/deliveries/deliveryService';
+import { getFamilyById, updateFamily, updateFamilyStatus } from '../../features/families/familyService';
+import { getFamilyMembers, updateFamilyMember, createFamilyMember, updateFamilyMemberStatus } from '../../features/familyMembers/familyMemberService';
+import { getAllDeliveriesByFamilyId } from '../../features/deliveries/deliveryService';
 import type { FamilyResponse, UpdateFamilyRequest } from '../../types/family';
 import type { FamilyMemberResponse, UpdateFamilyMemberRequest, CreateFamilyMemberRequest } from '../../types/familyMember';
 import type { DeliveryResponse } from '../../types/delivery';
