@@ -285,6 +285,11 @@ namespace APISolidarityManager.Context
                     .HasColumnType("decimal(18,2)")
                     .IsRequired();
 
+                entity.Property(x => x.TemplateWeight)
+                    .HasColumnName("template_weight")
+                    .HasColumnType("decimal(18,2)")
+                    .IsRequired();
+
                 entity.Property(x => x.UnitOfMeasure)
                     .HasColumnName("unit_of_measure")
                     .HasMaxLength(30);

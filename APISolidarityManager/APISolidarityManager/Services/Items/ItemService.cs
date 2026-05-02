@@ -90,10 +90,10 @@ namespace APISolidarityManager.Services.Items
 
             var normalizedName = request.Name.NormalizeSpaces();
 
-            var itemAlreadyExists = await _itemRepository.ExistsByNameAndCategoryAsync(normalizedName, request.CategoryId);
+            var itemAlreadyExists = await _itemRepository.ExistsByNameCategoryAndQuantityAsync(normalizedName, request.CategoryId, request.PackageQuantity);
 
             if (itemAlreadyExists)
-                throw new Exception("Já existe um item com esse nome para a categoria informada.");
+                throw new Exception("Já existe um item com esse nome e quantidade para a categoria informada.");
 
             var item = _mapper.Map<Item>(request);
 
@@ -123,10 +123,10 @@ namespace APISolidarityManager.Services.Items
 
             var normalizedName = request.Name.NormalizeSpaces();
 
-            var existingItem = await _itemRepository.GetByNameAndCategoryAsync(normalizedName, request.CategoryId);
+            var existingItem = await _itemRepository.GetByNameCategoryAndQuantityAsync(normalizedName, request.CategoryId, request.PackageQuantity);
 
             if (existingItem != null && existingItem.Id != id)
-                throw new Exception("Já existe um item com esse nome para a categoria informada.");
+                throw new Exception("Já existe um item com esse nome e quantidade para a categoria informada.");
 
             _mapper.Map(request, item);
 

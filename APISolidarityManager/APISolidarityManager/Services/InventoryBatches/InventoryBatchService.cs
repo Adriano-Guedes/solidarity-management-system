@@ -51,7 +51,7 @@ namespace APISolidarityManager.Services.InventoryBatches
 
             var inventoryBatches = await _inventoryBatchRepository.GetByItemIdAsync(itemId);
 
-            return _mapper.Map<IEnumerable<InventoryBatchResponse>>(inventoryBatches);
+            return _mapper.Map<IEnumerable<InventoryBatchResponse>>(inventoryBatches.OrderBy(x => x.ExpirationDate));
         }
 
         public async Task<InventoryBatchResponse> UpdateAsync(Guid id, UpdateInventoryBatchRequest request)

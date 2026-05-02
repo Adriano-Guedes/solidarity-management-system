@@ -1,4 +1,4 @@
-﻿using APISolidarityManager.DTOs.Deliveries.Responses;
+using APISolidarityManager.DTOs.Deliveries.Responses;
 using APISolidarityManager.Models;
 using APISolidarityManager.Repositories.Families;
 using APISolidarityManager.Repositories.InventoryBatches;
@@ -12,6 +12,8 @@ namespace APISolidarityManager.Services.Deliveries.DeliverySuggestions
         private readonly IFamilyRepository _familyRepository;
         private readonly IInventoryBatchRepository _inventoryBatchRepository;
         private readonly IFamilyPriorityService _familyPriorityService;
+
+        private const int UrgencyWindowDays = 30;
 
         public DeliverySuggestionService(
             IFamilyRepository familyRepository,
@@ -94,13 +96,12 @@ namespace APISolidarityManager.Services.Deliveries.DeliverySuggestions
             return totalNeeds;
         }
 
-        // NOVA VERSÃO: Busca combinação ótima usando todos os itens do grupo
         private NeedGroupSuggestionResult BuildSuggestionsForNeedGroup(string needGroup, decimal neededQuantity, List<InventoryBatch> availableBatches)
         {
             var result = new NeedGroupSuggestionResult
             {
                 NeedGroup = needGroup,
-                RequiredQuantity = neededQuantity
+                RequiredQuantity = Math.Round(neededQuantity, 2)
             };
 
             if (neededQuantity <= 0)
@@ -109,8 +110,7 @@ namespace APISolidarityManager.Services.Deliveries.DeliverySuggestions
                 return result;
             }
 
-            // Agrupa todos os itens disponíveis do grupo
-            var groupItems = availableBatches
+            var options = availableBatches
                 .Where(x =>
                     x.Item.ItemTemplate.NeedGroup == needGroup &&
                     x.QuantityAvailable > 0 &&
@@ -124,163 +124,90 @@ namespace APISolidarityManager.Services.Deliveries.DeliverySuggestions
                     TotalUnitsAvailable = itemGroup.Sum(x => x.QuantityAvailable),
                     EarliestExpirationDate = itemGroup.Min(x => x.ExpirationDate)
                 })
-                .Where(x => x.TotalUnitsAvailable > 0 && x.Item.PackageQuantity > 0)
-                .OrderBy(x => x.EarliestExpirationDate ?? DateTime.MaxValue)
-                .ThenByDescending(x => x.Item.PackageQuantity)
+                .Where(x => x.TotalUnitsAvailable > 0 && x.Item.TemplateWeight > 0)
                 .ToList();
 
-            if (!groupItems.Any())
+            if (!options.Any())
             {
                 result.SuggestedQuantity = 0;
-                result.MissingQuantity = neededQuantity;
+                result.MissingQuantity = result.RequiredQuantity;
                 result.FullyMet = false;
                 return result;
             }
 
-            // Busca a melhor combinação usando todos os itens do grupo
-            var bestCombination = FindBestCombination(groupItems, neededQuantity);
+            decimal currentTotalWeight = 0;
+            var selectedItemsMap = new Dictionary<Guid, DeliverySuggestionItemResponse>();
+            var pickedTemplateIds = new HashSet<Guid>();
 
-            if (bestCombination is not null)
+            // Enquanto houver necessidade e estoque
+            while (currentTotalWeight < neededQuantity && options.Any(o => o.TotalUnitsAvailable > 0))
             {
-                result.Items = MapCombinationToSuggestionItems(
-                    bestCombination,
-                    needGroup,
-                    "Sugestão otimizada considerando todos os itens disponíveis do grupo.");
-                result.SuggestedQuantity = result.Items.Sum(x => x.TotalSuggestedQuantity);
-                result.MissingQuantity = Math.Max(0, neededQuantity - result.SuggestedQuantity);
-                result.FullyMet = result.SuggestedQuantity >= neededQuantity;
+                var remainingNeed = neededQuantity - currentTotalWeight;
+
+                // 1. Define a janela de urgência atual
+                var minDate = options.Where(o => o.TotalUnitsAvailable > 0).Min(o => o.EarliestExpirationDate) ?? DateTime.MaxValue;
+                var threshold = minDate == DateTime.MaxValue ? DateTime.MaxValue : minDate.AddDays(UrgencyWindowDays);
+
+                // 2. Filtra candidatos no "balde" de urgência
+                var candidates = options
+                    .Where(o => o.TotalUnitsAvailable > 0 && (o.EarliestExpirationDate ?? DateTime.MaxValue) <= threshold)
+                    .ToList();
+
+                if (!candidates.Any()) break;
+
+                // 3. Heurística de Escolha: Variedade + Encaixe de Peso
+                // Priorizamos:
+                // - Templates que ainda não foram escolhidos (Variedade)
+                // - Itens que NÃO estouram a meta (Peso <= remainingNeed)
+                // - Se todos estouram, o que estoura MENOS (Minimizar sobra)
+                var bestCandidate = candidates
+                    .OrderBy(o => pickedTemplateIds.Contains(o.Item.ItemTemplateId)) // Variedade primeiro
+                    .ThenBy(o => o.Item.TemplateWeight > remainingNeed) // Prefere quem cabe no que falta
+                    .ThenBy(o => Math.Abs(o.Item.TemplateWeight - remainingNeed)) // Se couber, o que chega mais perto. Se estourar, o que estoura menos.
+                    .ThenBy(o => o.EarliestExpirationDate ?? DateTime.MaxValue) // Desempate por validade
+                    .First();
+
+                // 4. Adiciona 1 unidade do melhor candidato
+                var unitsToTake = 1; 
+                bestCandidate.TotalUnitsAvailable -= unitsToTake;
+                var weightContribution = unitsToTake * bestCandidate.Item.TemplateWeight;
+
+                if (selectedItemsMap.TryGetValue(bestCandidate.Item.Id, out var existing))
+                {
+                    existing.SuggestedUnits += unitsToTake;
+                    existing.TotalSuggestedQuantity += weightContribution;
+                }
+                else
+                {
+                    selectedItemsMap[bestCandidate.Item.Id] = new DeliverySuggestionItemResponse
+                    {
+                        ItemId = bestCandidate.Item.Id,
+                        ItemName = bestCandidate.Item.Name,
+                        NeedGroup = needGroup,
+                        PackageQuantity = bestCandidate.Item.PackageQuantity,
+                        UnitOfMeasure = bestCandidate.Item.UnitOfMeasure,
+                        SuggestedUnits = unitsToTake,
+                        TotalSuggestedQuantity = weightContribution,
+                        Justification = "Otimização de peso e variedade por validade."
+                    };
+                }
+
+                pickedTemplateIds.Add(bestCandidate.Item.ItemTemplateId);
+                currentTotalWeight += weightContribution;
+
+                // Se já rodamos todos os templates do balde, resetamos o set para permitir repetir na próxima rodada
+                if (candidates.All(c => pickedTemplateIds.Contains(c.Item.ItemTemplateId) || c.TotalUnitsAvailable == 0))
+                {
+                    pickedTemplateIds.Clear();
+                }
             }
-            else
-            {
-                result.SuggestedQuantity = 0;
-                result.MissingQuantity = neededQuantity;
-                result.FullyMet = false;
-            }
+
+            result.Items = selectedItemsMap.Values.ToList();
+            result.SuggestedQuantity = Math.Round(currentTotalWeight, 2);
+            result.MissingQuantity = Math.Round(Math.Max(0, result.RequiredQuantity - currentTotalWeight), 2);
+            result.FullyMet = currentTotalWeight >= neededQuantity;
 
             return result;
-        }
-
-        private SuggestionCombinationResult? FindBestCombination(List<SuggestionItemOption> options, decimal neededQuantity)
-        {
-            SuggestionCombinationResult? bestResult = null;
-
-            void Search(int index, decimal currentTotal, int currentVolumeCount, List<SuggestionSelectedItem> currentItems)
-            {
-                if (currentTotal >= neededQuantity)
-                {
-                    var candidate = new SuggestionCombinationResult
-                    {
-                        TotalQuantity = currentTotal,
-                        VolumeCount = currentVolumeCount,
-                        Items = currentItems
-                            .Where(x => x.SuggestedUnits > 0)
-                            .Select(x => new SuggestionSelectedItem
-                            {
-                                Option = x.Option,
-                                SuggestedUnits = x.SuggestedUnits
-                            })
-                            .ToList()
-                    };
-
-                    if (IsBetterCombination(candidate, bestResult, neededQuantity))
-                        bestResult = candidate;
-
-                    return;
-                }
-
-                if (index >= options.Count)
-                    return;
-
-                var option = options[index];
-
-                for (int units = 0; units <= option.TotalUnitsAvailable; units++)
-                {
-                    var addedQuantity = units * option.Item.PackageQuantity;
-                    var nextTotal = currentTotal + addedQuantity;
-                    var nextVolumeCount = currentVolumeCount + units;
-
-                    currentItems.Add(new SuggestionSelectedItem
-                    {
-                        Option = option,
-                        SuggestedUnits = units
-                    });
-
-                    Search(index + 1, nextTotal, nextVolumeCount, currentItems);
-
-                    currentItems.RemoveAt(currentItems.Count - 1);
-                }
-            }
-
-            Search(0, 0m, 0, new List<SuggestionSelectedItem>());
-
-            return bestResult;
-        }
-
-        private bool IsBetterCombination(SuggestionCombinationResult candidate, SuggestionCombinationResult? currentBest, decimal neededQuantity)
-        {
-            if (currentBest is null)
-                return true;
-
-            var candidateLeftover = candidate.TotalQuantity - neededQuantity;
-            var currentLeftover = currentBest.TotalQuantity - neededQuantity;
-
-            if (candidateLeftover < currentLeftover)
-                return true;
-
-            if (candidateLeftover > currentLeftover)
-                return false;
-
-            if (candidate.VolumeCount < currentBest.VolumeCount)
-                return true;
-
-            if (candidate.VolumeCount > currentBest.VolumeCount)
-                return false;
-
-            var candidateEarliestExpiration = candidate.Items
-                .Select(x => x.Option.EarliestExpirationDate ?? DateTime.MaxValue)
-                .DefaultIfEmpty(DateTime.MaxValue)
-                .Min();
-
-            var currentEarliestExpiration = currentBest.Items
-                .Select(x => x.Option.EarliestExpirationDate ?? DateTime.MaxValue)
-                .DefaultIfEmpty(DateTime.MaxValue)
-                .Min();
-
-            if (candidateEarliestExpiration < currentEarliestExpiration)
-                return true;
-
-            if (candidateEarliestExpiration > currentEarliestExpiration)
-                return false;
-
-            var candidateLargestPackage = candidate.Items
-                .Select(x => x.Option.Item.PackageQuantity)
-                .DefaultIfEmpty(0m)
-                .Max();
-
-            var currentLargestPackage = currentBest.Items
-                .Select(x => x.Option.Item.PackageQuantity)
-                .DefaultIfEmpty(0m)
-                .Max();
-
-            return candidateLargestPackage > currentLargestPackage;
-        }
-
-        private List<DeliverySuggestionItemResponse> MapCombinationToSuggestionItems(SuggestionCombinationResult combination, string needGroup, string justification)
-        {
-            return combination.Items
-                .Where(x => x.SuggestedUnits > 0)
-                .Select(selected => new DeliverySuggestionItemResponse
-                {
-                    ItemId = selected.Option.Item.Id,
-                    ItemName = selected.Option.Item.Name,
-                    NeedGroup = needGroup,
-                    PackageQuantity = selected.Option.Item.PackageQuantity,
-                    UnitOfMeasure = selected.Option.Item.UnitOfMeasure,
-                    SuggestedUnits = selected.SuggestedUnits,
-                    TotalSuggestedQuantity = selected.SuggestedUnits * selected.Option.Item.PackageQuantity,
-                    Justification = justification
-                })
-                .ToList();
         }
 
         private static int CalculateAge(DateTime birthDate)
@@ -299,19 +226,6 @@ namespace APISolidarityManager.Services.Deliveries.DeliverySuggestions
             public Item Item { get; set; } = null!;
             public int TotalUnitsAvailable { get; set; }
             public DateTime? EarliestExpirationDate { get; set; }
-        }
-
-        private class SuggestionSelectedItem
-        {
-            public SuggestionItemOption Option { get; set; } = null!;
-            public int SuggestedUnits { get; set; }
-        }
-
-        private class SuggestionCombinationResult
-        {
-            public decimal TotalQuantity { get; set; }
-            public int VolumeCount { get; set; }
-            public List<SuggestionSelectedItem> Items { get; set; } = new();
         }
 
         private class NeedGroupSuggestionResult

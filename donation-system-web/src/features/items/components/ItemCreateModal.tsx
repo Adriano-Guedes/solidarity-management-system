@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Form, Row, Col } from 'react-bootstrap';
-import { FiX, FiPlus, FiAlertCircle } from 'react-icons/fi';
+import { Modal, Form, Row, Col, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { FiX, FiPlus, FiAlertCircle, FiHelpCircle } from 'react-icons/fi';
 import { getAllItemCategories } from '../../../features/itemCategories/itemCategoryService';
 import { getAllItemTemplates } from '../../../features/itemTemplates/itemTemplateService';
 import type { ItemCategoryResponse } from '../../../types/itemCategory';
@@ -21,6 +21,7 @@ const ItemCreateModal: React.FC<ItemCreateModalProps> = ({ show, onClose, onSave
     categoryId: '',
     itemTemplateId: '',
     packageQuantity: 0,
+    templateWeight: 0,
     unitOfMeasure: '',
     notes: '',
     active: true
@@ -80,6 +81,7 @@ const ItemCreateModal: React.FC<ItemCreateModalProps> = ({ show, onClose, onSave
         categoryId: '',
         itemTemplateId: '',
         packageQuantity: 0,
+        templateWeight: 0,
         unitOfMeasure: '',
         notes: '',
         active: true
@@ -234,7 +236,7 @@ const ItemCreateModal: React.FC<ItemCreateModalProps> = ({ show, onClose, onSave
                 </Form.Group>
               </Col>
 
-              <Col md={12}>
+              <Col md={6}>
                 <Form.Group>
                   <Form.Label style={labelStyle}>
                     Modelo Base (Template) <span style={{ color: 'var(--danger)' }}>*</span>
@@ -265,12 +267,46 @@ const ItemCreateModal: React.FC<ItemCreateModalProps> = ({ show, onClose, onSave
               <Col md={6}>
                 <Form.Group>
                   <Form.Label style={labelStyle}>
-                    Quantidade por Pacote <span style={{ color: 'var(--danger)' }}>*</span>
+                    Peso de Referência <span style={{ color: 'var(--danger)' }}>*</span>
+                    <OverlayTrigger
+                      placement="top"
+                      overlay={
+                        <Tooltip id="weight-tooltip" style={{ zIndex: 30000 }}>
+                          Equivalência deste item frente ao modelo base (ex: 500ml = 0.5 | 5kg = 5.0). Essencial para o cálculo automático de sugestões de entrega.
+                        </Tooltip>
+                      }
+                    >
+                      <span style={{ cursor: 'pointer', marginLeft: '6px', color: 'var(--primary)', display: 'inline-block' }}>
+                        <FiHelpCircle size={14} />
+                      </span>
+                    </OverlayTrigger>
+                  </Form.Label>
+                  <Form.Control
+                    name="templateWeight"
+                    type="number"
+                    step="0.1"
+                    value={form.templateWeight}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    isInvalid={touched.templateWeight && !!errors.templateWeight}
+                    style={inputStyle}
+                    placeholder="Ex: 1.0"
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.templateWeight}
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label style={labelStyle}>
+                    Medida/Quantidade <span style={{ color: 'var(--danger)' }}>*</span>
                   </Form.Label>
                   <Form.Control
                     name="packageQuantity"
                     type="number"
-                    step="0.01"
+                    step="0.1"
                     value={form.packageQuantity}
                     onChange={handleChange}
                     onBlur={handleBlur}

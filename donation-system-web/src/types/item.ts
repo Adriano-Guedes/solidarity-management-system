@@ -7,6 +7,7 @@ export interface ItemResponse {
   name: string;
   brand?: string;
   packageQuantity: number;
+  templateWeight: number;
   unitOfMeasure?: string;
   notes?: string;
   active: boolean;
@@ -19,6 +20,7 @@ export interface ActiveItemResponse {
   name: string;
   brand?: string;
   packageQuantity: number;
+  templateWeight: number;
   unitOfMeasure?: string;
   categoryId: string;
   categoryName: string;
@@ -35,6 +37,7 @@ export interface UpdateItemRequest {
   name: string;
   brand?: string;
   packageQuantity: number;
+  templateWeight: number;
   unitOfMeasure?: string;
   notes?: string;
   active: boolean;
@@ -46,6 +49,7 @@ export interface CreateItemRequest {
   name: string;
   brand?: string;
   packageQuantity: number;
+  templateWeight: number;
   unitOfMeasure?: string;
   notes?: string;
   active: boolean;

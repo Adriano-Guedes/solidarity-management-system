@@ -12,18 +12,22 @@ namespace APISolidarityManager.Repositories.Items
         {
         }
 
-        public async Task<bool> ExistsByNameAndCategoryAsync(string name, Guid categoryId)
+        public async Task<bool> ExistsByNameCategoryAndQuantityAsync(string name, Guid categoryId, decimal packageQuantity)
         {
             return await _context.Items
                 .AsNoTracking()
-                .AnyAsync(i => i.Name.ToLower() == name.ToLower() && i.CategoryId == categoryId);
+                .AnyAsync(i => i.Name.ToLower() == name.ToLower() && 
+                               i.CategoryId == categoryId && 
+                               i.PackageQuantity == packageQuantity);
         }
 
-        public async Task<Item?> GetByNameAndCategoryAsync(string name, Guid categoryId)
+        public async Task<Item?> GetByNameCategoryAndQuantityAsync(string name, Guid categoryId, decimal packageQuantity)
         {
             return await _context.Items
                 .AsNoTracking()
-                .FirstOrDefaultAsync(i => i.Name.ToLower() == name.ToLower() && i.CategoryId == categoryId);
+                .FirstOrDefaultAsync(i => i.Name.ToLower() == name.ToLower() && 
+                                         i.CategoryId == categoryId && 
+                                         i.PackageQuantity == packageQuantity);
         }
 
         public async Task<IEnumerable<Item>> GetAllActiveWithTotalQuantityAsync()
