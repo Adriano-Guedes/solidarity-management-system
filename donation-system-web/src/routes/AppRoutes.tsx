@@ -12,6 +12,7 @@ import ItemDetailPage from '../pages/items/ItemDetailPage';
 import ItemCategoriesPage from '../pages/itemCategories/ItemCategoriesPage';
 import ItemCategoryDetailPage from '../pages/itemCategories/ItemCategoryDetailPage';
 import UsersPage from '../pages/users/UsersPage';
+import SettingsPage from '../pages/settings/SettingsPage';
 import LoginPage from '../pages/auth/LoginPage';
 import MainLayout from '../layouts/MainLayout';
 
@@ -34,9 +35,9 @@ const AppRoutes = () => (
         <Route path="/item-categories" element={<ItemCategoriesPage />} />
         <Route path="/item-categories/:id" element={<ItemCategoryDetailPage />} />
         <Route path="/users" element={<UsersPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </Route>
 
-      {/* Redirect unknown routes to dashboard or login */}
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   </BrowserRouter>

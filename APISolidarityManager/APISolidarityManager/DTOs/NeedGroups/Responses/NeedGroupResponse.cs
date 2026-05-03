@@ -1,0 +1,11 @@
+namespace APISolidarityManager.DTOs.NeedGroups.Responses
+{
+    public class NeedGroupResponse
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; } = null!;
+        public bool Active { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+    }
+}

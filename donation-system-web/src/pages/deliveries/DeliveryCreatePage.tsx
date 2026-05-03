@@ -16,18 +16,15 @@ const DeliveryCreatePage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
-    // Selection states
     const [selectedFamilyId, setSelectedFamilyId] = useState<string>('');
     const [familySearch, setFamilySearch] = useState('');
     const [suggestion, setSuggestion] = useState<DeliverySuggestionResponse | null>(null);
     const [suggestionLoading, setSuggestionLoading] = useState(false);
 
-    // Form states
     const [deliveryDate, setDeliveryDate] = useState(new Date().toISOString().split('T')[0]);
     const [notes, setNotes] = useState('');
     const [cart, setCart] = useState<{ itemId: string; quantity: number; item: ActiveItemResponse }[]>([]);
 
-    // Filter states
     const [itemSearch, setItemSearch] = useState('');
 
     useEffect(() => {
@@ -68,7 +65,7 @@ const DeliveryCreatePage: React.FC = () => {
 
     const handleFamilyChange = async (familyId: string) => {
         setSelectedFamilyId(familyId);
-        setCart([]); // Reset cart when family changes
+        setCart([]);
         if (!familyId) {
             setSuggestion(null);
             return;
@@ -175,8 +172,11 @@ const DeliveryCreatePage: React.FC = () => {
 
         return suggestion.needGroupsSummary.map(summary => {
             const metInCart = cart
-                .filter(c => c.item.needGroup === summary.needGroup)
-                .reduce((acc, curr) => acc + (curr.quantity * (curr.item.templateWeight || 0)), 0);
+                .filter(c => c.item.needGroup?.trim().toLowerCase() === summary.needGroup?.trim().toLowerCase())
+                .reduce((acc, curr) => {
+                    const weight = curr.item.templateWeight > 0 ? curr.item.templateWeight : (curr.item.referenceQuantity || 0);
+                    return acc + (curr.quantity * weight);
+                }, 0);
 
             const requiredQty = summary.requiredQuantity || 0;
             const percentage = requiredQty > 0 
@@ -568,7 +568,10 @@ const DeliveryCreatePage: React.FC = () => {
                                             <div className="d-flex justify-content-between align-items-start mb-2">
                                                 <div className="d-flex flex-column">
                                                     <span style={{ fontSize: '13px', fontWeight: 600 }}>{c.item.name}</span>
-                                                    <span className="text-muted" style={{ fontSize: '10px' }}>{c.item.needGroup}</span>
+                                                    <div className="d-flex gap-1 align-items-center">
+                                                        <span className="text-muted" style={{ fontSize: '10px' }}>{c.item.categoryName}</span>
+                                                        <span className="text-muted" style={{ fontSize: '10px' }}>• {c.item.needGroup}</span>
+                                                    </div>
                                                 </div>
                                                 <button 
                                                     className="btn btn-sm text-danger p-0" 
@@ -598,7 +601,7 @@ const DeliveryCreatePage: React.FC = () => {
                                                     </button>
                                                 </div>
                                                 <div className="text-muted" style={{ fontSize: '11px' }}>
-                                                    Sub: {(c.quantity * (c.item.templateWeight || 0)).toFixed(1)}
+                                                    Sub: {(c.quantity * (c.item.templateWeight > 0 ? c.item.templateWeight : (c.item.referenceQuantity || 0))).toFixed(1)}
                                                 </div>
                                             </div>
                                         </div>

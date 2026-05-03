@@ -1,4 +1,5 @@
 ﻿using APISolidarityManager.Services;
+using APISolidarityManager.Services.AgeRanges;
 using APISolidarityManager.Services.Deliveries;
 using APISolidarityManager.Services.Deliveries.DeliverySuggestions;
 using APISolidarityManager.Services.DeliveryInventoryItems;
@@ -12,6 +13,8 @@ using APISolidarityManager.Services.ItemCategories;
 using APISolidarityManager.Services.Items;
 using APISolidarityManager.Services.ItemTemplates;
 using APISolidarityManager.Services.Logs;
+using APISolidarityManager.Services.NeedGroups;
+using APISolidarityManager.Services.NeedRules;
 using APISolidarityManager.Services.Users;
 
 namespace APISolidarityManager.Extensions
@@ -32,6 +35,9 @@ namespace APISolidarityManager.Extensions
             services.AddScoped<IItemCategoryService, ItemCategoryService>();
             services.AddScoped<IItemTemplateService, ItemTemplateService>();
             services.AddScoped<IItemService, ItemService>();
+            services.AddScoped<INeedGroupService, NeedGroupService>();
+            services.AddScoped<IAgeRangeService, AgeRangeService>();
+            services.AddScoped<INeedRuleService, NeedRuleService>();
             services.AddScoped<ILogService, LogService>();
             services.AddScoped<IUserService, UserService>();
 

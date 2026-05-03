@@ -1,4 +1,4 @@
-﻿using APISolidarityManager.Models;
+using APISolidarityManager.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace APISolidarityManager.Context
@@ -10,6 +10,10 @@ namespace APISolidarityManager.Context
         public DbSet<FamilyMember> FamilyMembers { get; set; }
         public DbSet<ItemCategory> ItemCategories { get; set; }
         public DbSet<Item> Items { get; set; }
+        public DbSet<ItemTemplate> ItemTemplates { get; set; }
+        public DbSet<NeedGroup> NeedGroups { get; set; }
+        public DbSet<AgeRange> AgeRanges { get; set; }
+        public DbSet<NeedRule> NeedRules { get; set; }
         public DbSet<InventoryBatch> InventoryBatches { get; set; }
         public DbSet<Donation> Donations { get; set; }
         public DbSet<DonationInventoryItem> DonationInventoryItems { get; set; }
@@ -29,6 +33,9 @@ namespace APISolidarityManager.Context
             ConfigureFamilies(modelBuilder);
             ConfigureFamilyMembers(modelBuilder);
             ConfigureItemCategories(modelBuilder);
+            ConfigureNeedGroups(modelBuilder);
+            ConfigureAgeRanges(modelBuilder);
+            ConfigureNeedRules(modelBuilder);
             ConfigureItemTemplates(modelBuilder);
             ConfigureItems(modelBuilder);
             ConfigureInventoryBatches(modelBuilder);
@@ -252,6 +259,120 @@ namespace APISolidarityManager.Context
             });
         }
 
+        private static void ConfigureNeedGroups(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<NeedGroup>(entity =>
+            {
+                entity.ToTable("need_groups");
+
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Id)
+                    .HasColumnName("id");
+
+                entity.Property(x => x.Name)
+                    .HasColumnName("name")
+                    .HasMaxLength(100)
+                    .IsRequired();
+
+                entity.HasIndex(x => x.Name)
+                    .IsUnique();
+
+                entity.Property(x => x.Active)
+                    .HasColumnName("active")
+                    .HasDefaultValue(true)
+                    .IsRequired();
+
+                entity.Property(x => x.CreatedAt)
+                    .HasColumnName("created_at")
+                    .IsRequired();
+
+                entity.Property(x => x.UpdatedAt)
+                    .HasColumnName("updated_at");
+            });
+        }
+
+        private static void ConfigureAgeRanges(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<AgeRange>(entity =>
+            {
+                entity.ToTable("age_ranges");
+
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Id)
+                    .HasColumnName("id");
+
+                entity.Property(x => x.Name)
+                    .HasColumnName("name")
+                    .HasMaxLength(100)
+                    .IsRequired();
+
+                entity.Property(x => x.MinAge)
+                    .HasColumnName("min_age")
+                    .IsRequired();
+
+                entity.Property(x => x.MaxAge)
+                    .HasColumnName("max_age")
+                    .IsRequired();
+
+                entity.Property(x => x.Active)
+                    .HasColumnName("active")
+                    .HasDefaultValue(true)
+                    .IsRequired();
+
+                entity.Property(x => x.CreatedAt)
+                    .HasColumnName("created_at")
+                    .IsRequired();
+
+                entity.Property(x => x.UpdatedAt)
+                    .HasColumnName("updated_at");
+            });
+        }
+
+        private static void ConfigureNeedRules(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<NeedRule>(entity =>
+            {
+                entity.ToTable("need_rules");
+
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Id)
+                    .HasColumnName("id");
+
+                entity.Property(x => x.AgeRangeId)
+                    .HasColumnName("age_range_id")
+                    .IsRequired();
+
+                entity.Property(x => x.NeedGroupId)
+                    .HasColumnName("need_group_id")
+                    .IsRequired();
+
+                entity.Property(x => x.Value)
+                    .HasColumnName("value")
+                    .HasColumnType("decimal(18,2)")
+                    .IsRequired();
+
+                entity.Property(x => x.CreatedAt)
+                    .HasColumnName("created_at")
+                    .IsRequired();
+
+                entity.Property(x => x.UpdatedAt)
+                    .HasColumnName("updated_at");
+
+                entity.HasOne(x => x.AgeRange)
+                    .WithMany(x => x.NeedRules)
+                    .HasForeignKey(x => x.AgeRangeId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(x => x.NeedGroup)
+                    .WithMany(x => x.NeedRules)
+                    .HasForeignKey(x => x.NeedGroupId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+        }
+
         private static void ConfigureItems(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Item>(entity =>
@@ -347,14 +468,13 @@ namespace APISolidarityManager.Context
                     .HasColumnName("category_id")
                     .IsRequired();
 
+                entity.Property(x => x.NeedGroupId)
+                    .HasColumnName("need_group_id")
+                    .IsRequired();
+
                 entity.Property(x => x.Name)
                     .HasColumnName("name")
                     .HasMaxLength(150)
-                    .IsRequired();
-
-                entity.Property(x => x.NeedGroup)
-                    .HasColumnName("need_group")
-                    .HasMaxLength(100)
                     .IsRequired();
 
                 entity.Property(x => x.IsPerishable)
@@ -403,6 +523,11 @@ namespace APISolidarityManager.Context
                 entity.HasOne(x => x.Category)
                     .WithMany(x => x.ItemTemplates)
                     .HasForeignKey(x => x.CategoryId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.NeedGroup)
+                    .WithMany(x => x.ItemTemplates)
+                    .HasForeignKey(x => x.NeedGroupId)
                     .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasMany(x => x.Items)
