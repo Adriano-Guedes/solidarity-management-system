@@ -16,7 +16,7 @@ namespace APISolidarityManager.Repositories.InventoryBatches
         {
             return await _context.InventoryBatches
                 .AsNoTracking()
-                .Where(ib => ib.ItemId == itemId)
+                .Where(ib => ib.ItemId == itemId && ib.QuantityAvailable > 0)
                 .ToListAsync();
         }
 

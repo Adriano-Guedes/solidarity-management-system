@@ -42,7 +42,7 @@ namespace APISolidarityManager.Services.AgeRanges
 
         public async Task<AgeRangeResponse> CreateAsync(CreateAgeRangeRequest request)
         {
-            ValidateAgeRange(request.MinAge, request.MaxAge);
+            await ValidateAgeRange(request.MinAge, request.MaxAge);
 
             var normalizedName = request.Name.NormalizeSpaces();
             var range = _mapper.Map<AgeRange>(request);
@@ -61,7 +61,7 @@ namespace APISolidarityManager.Services.AgeRanges
             var range = await _ageRangeRepository.GetByIdAsync(id);
             if (range == null) throw new Exception("Faixa etária não encontrada.");
 
-            ValidateAgeRange(request.MinAge, request.MaxAge);
+            await ValidateAgeRange(request.MinAge, request.MaxAge, id);
 
             var normalizedName = request.Name.NormalizeSpaces();
             _mapper.Map(request, range);
@@ -88,9 +88,12 @@ namespace APISolidarityManager.Services.AgeRanges
             return _mapper.Map<AgeRangeResponse>(range);
         }
 
-        private void ValidateAgeRange(int min, int max)
+        private async Task ValidateAgeRange(int min, int max, Guid? excludeId = null)
         {
             if (min > max) throw new Exception("A idade mínima não pode ser maior que a idade máxima.");
+
+            var existsOverlap = await _ageRangeRepository.ExistsOverlapAsync(min, max, excludeId);
+            if (existsOverlap) throw new Exception("As idades informadas entram em conflito com outra faixa etária já cadastrada.");
         }
     }
 }

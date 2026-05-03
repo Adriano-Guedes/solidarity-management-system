@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { getFamiliesPriorityRanking, getFamilyDeliverySuggestion } from '../../features/families/familyService';
 import { getAllActiveItems } from '../../features/items/itemService';
 import { createDelivery } from '../../features/deliveries/deliveryService';
@@ -12,6 +12,7 @@ import { Dropdown } from 'react-bootstrap';
 
 const DeliveryCreatePage: React.FC = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [families, setFamilies] = useState<FamilyPriorityListItemResponse[]>([]);
     const [activeItems, setActiveItems] = useState<ActiveItemResponse[]>([]);
     const [loading, setLoading] = useState(true);
@@ -32,6 +33,24 @@ const DeliveryCreatePage: React.FC = () => {
         fetchInitialData();
     }, []);
 
+    const fetchSuggestion = async (familyId: string) => {
+        if (!familyId) {
+            setSuggestion(null);
+            return;
+        }
+
+        setSuggestionLoading(true);
+        try {
+            const data = await getFamilyDeliverySuggestion(familyId);
+            setSuggestion(data);
+        } catch (err) {
+            notificationService.error('Erro ao buscar sugestão de entrega.');
+            setSuggestion(null);
+        } finally {
+            setSuggestionLoading(false);
+        }
+    };
+
     async function fetchInitialData() {
         setLoading(true);
         try {
@@ -41,6 +60,13 @@ const DeliveryCreatePage: React.FC = () => {
             ]);
             setFamilies(familiesData || []);
             setActiveItems(itemsData || []);
+
+            // Check if familyId was passed via navigation state
+            const stateFamilyId = location.state?.familyId;
+            if (stateFamilyId) {
+                setSelectedFamilyId(stateFamilyId);
+                fetchSuggestion(stateFamilyId);
+            }
         } catch (err) {
             notificationService.error(err);
         } finally {
@@ -67,21 +93,7 @@ const DeliveryCreatePage: React.FC = () => {
     const handleFamilyChange = async (familyId: string) => {
         setSelectedFamilyId(familyId);
         setCart([]);
-        if (!familyId) {
-            setSuggestion(null);
-            return;
-        }
-
-        setSuggestionLoading(true);
-        try {
-            const data = await getFamilyDeliverySuggestion(familyId);
-            setSuggestion(data);
-        } catch (err) {
-            notificationService.error('Erro ao buscar sugestão de entrega.');
-            setSuggestion(null);
-        } finally {
-            setSuggestionLoading(false);
-        }
+        fetchSuggestion(familyId);
     };
 
     const handleAddToCart = (item: ActiveItemResponse) => {
