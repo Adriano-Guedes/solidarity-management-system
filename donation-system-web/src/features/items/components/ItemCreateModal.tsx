@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Form, Row, Col, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FiX, FiPlus, FiAlertCircle, FiHelpCircle } from 'react-icons/fi';
-import { getAllItemCategories } from '../../../features/itemCategories/itemCategoryService';
-import { getAllItemTemplates } from '../../../features/itemTemplates/itemTemplateService';
+import { getActiveItemCategories } from '../../../features/itemCategories/itemCategoryService';
+import { getActiveItemTemplates } from '../../../features/itemTemplates/itemTemplateService';
 import type { ItemCategoryResponse } from '../../../types/itemCategory';
 import type { ItemTemplateResponse } from '../../../types/itemTemplate';
 import type { CreateItemRequest } from '../../../types/item';
@@ -72,8 +72,8 @@ const ItemCreateModal: React.FC<ItemCreateModalProps> = ({ show, onClose, onSave
 
   useEffect(() => {
     if (show) {
-      getAllItemCategories().then(setCategories);
-      getAllItemTemplates().then(setTemplates);
+      getActiveItemCategories().then(setCategories);
+      getActiveItemTemplates().then(setTemplates);
       // Reset form and validation state when opening
       setForm({
         name: '',

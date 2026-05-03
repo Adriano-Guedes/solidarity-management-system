@@ -6,6 +6,7 @@ namespace APISolidarityManager.Services.ItemCategories
     public interface IItemCategoryService
     {
         Task<IEnumerable<ItemCategoryResponse>> GetAllAsync();
+        Task<IEnumerable<ItemCategoryResponse>> GetAllActiveAsync();
         Task<ItemCategoryResponse> GetByIdAsync(Guid id);
         Task<ItemCategoryResponse> CreateAsync(CreateItemCategoryRequest request);
         Task<ItemCategoryResponse> UpdateAsync(Guid id, UpdateItemCategoryRequest request);

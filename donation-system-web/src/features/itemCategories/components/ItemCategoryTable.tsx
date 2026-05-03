@@ -52,14 +52,14 @@ const ItemCategoryTable: React.FC<ItemCategoryTableProps> = ({ itemCategories, o
                             <td className="text-end">
                                 <div className="d-flex justify-content-end gap-2">
                                     <button
-                                        className="btn-icon-sm"
+                                        className="btn-icon-sm text-primary"
                                         title="Ver detalhes"
                                         onClick={() => navigate(`/item-categories/${cat.id}`)}
                                     >
                                         <FiEye />
                                     </button>
                                     <button
-                                        className={`btn-icon-sm ${cat.active ? 'danger' : 'text-success'}`}
+                                        className={`btn-icon-sm ${cat.active ? 'text-danger' : 'text-success'}`}
                                         title={cat.active ? "Inativar categoria" : "Ativar categoria"}
                                         onClick={() => handleToggleStatus(cat.id, cat.name, cat.active)}
                                     >
