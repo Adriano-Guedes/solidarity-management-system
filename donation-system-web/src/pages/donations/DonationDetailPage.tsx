@@ -138,10 +138,10 @@ const DonationDetailPage: React.FC = () => {
                         <thead>
                             <tr>
                                 <th>Item</th>
-                                <th>Marca</th>
                                 <th>Quantidade</th>
-                                <th>Validade</th>
+                                <th>Marca</th>
                                 <th>Categoria</th>
+                                <th>Validade</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -152,19 +152,19 @@ const DonationDetailPage: React.FC = () => {
                                         <td>
                                             <strong>{itemDetail?.name || 'Item não encontrado'}</strong>
                                         </td>
-                                        <td className="td-muted">{itemDetail?.brand || '-'}</td>
                                         <td>
                                             <span className="badge-status badge-delivered" style={{ background: 'var(--primary-light)', color: 'var(--primary)' }}>
                                                 {item.quantity} unidades
                                             </span>
                                         </td>
-                                        <td className="td-muted">
-                                            {item.expirationDate ? formatDateBR(item.expirationDate) : 'N/A'}
-                                        </td>
+                                        <td className="td-muted">{itemDetail?.brand || '-'}</td>
                                         <td>
                                             <span className="category-pill">
                                                 {itemDetail?.categoryName || '-'}
                                             </span>
+                                        </td>
+                                        <td className="td-muted">
+                                            {item.expirationDate ? formatDateBR(item.expirationDate) : 'N/A'}
                                         </td>
                                     </tr>
                                 );

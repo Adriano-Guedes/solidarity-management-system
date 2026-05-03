@@ -66,14 +66,14 @@ const ItemTable: React.FC<ItemTableProps> = ({ items, onRefresh }) => {
                             <td className="text-end">
                                 <div className="d-flex justify-content-end gap-2">
                                     <button
-                                        className="btn-icon-sm"
+                                        className="btn-icon-sm text-primary"
                                         title="Ver detalhes"
                                         onClick={() => navigate(`/items/${item.id}`)}
                                     >
                                         <FiEye />
                                     </button>
                                     <button
-                                        className={`btn-icon-sm ${item.active ? 'danger' : 'text-success'}`}
+                                        className={`btn-icon-sm ${item.active ? 'text-danger' : 'text-success'}`}
                                         title={item.active ? "Inativar item" : "Ativar item"}
                                         onClick={() => handleToggleStatus(item.id, item.name, item.active)}
                                     >

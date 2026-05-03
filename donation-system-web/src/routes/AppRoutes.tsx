@@ -9,6 +9,8 @@ import DeliveryDetailPage from '../pages/deliveries/DeliveryDetailPage';
 import DeliveryCreatePage from '../pages/deliveries/DeliveryCreatePage';
 import ItemsPage from '../pages/items/ItemsPage';
 import ItemDetailPage from '../pages/items/ItemDetailPage';
+import ItemTemplatesPage from '../pages/itemTemplates/ItemTemplatesPage';
+import ItemTemplateDetailPage from '../pages/itemTemplates/ItemTemplateDetailPage';
 import ItemCategoriesPage from '../pages/itemCategories/ItemCategoriesPage';
 import ItemCategoryDetailPage from '../pages/itemCategories/ItemCategoryDetailPage';
 import UsersPage from '../pages/users/UsersPage';
@@ -32,6 +34,8 @@ const AppRoutes = () => (
         <Route path="/deliveries/:id" element={<DeliveryDetailPage />} />
         <Route path="/items" element={<ItemsPage />} />
         <Route path="/items/:id" element={<ItemDetailPage />} />
+        <Route path="/item-templates" element={<ItemTemplatesPage />} />
+        <Route path="/item-templates/:id" element={<ItemTemplateDetailPage />} />
         <Route path="/item-categories" element={<ItemCategoriesPage />} />
         <Route path="/item-categories/:id" element={<ItemCategoryDetailPage />} />
         <Route path="/users" element={<UsersPage />} />

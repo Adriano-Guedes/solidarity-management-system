@@ -51,7 +51,7 @@ const DonationTable: React.FC<DonationTableProps> = ({ donations }) => {
                                 <td className="text-end">
                                     <div className="d-flex justify-content-end gap-2">
                                         <button
-                                            className="btn-icon-sm"
+                                            className="btn-icon-sm text-primary"
                                             title="Ver detalhes"
                                             onClick={() => navigate(`/donations/${donation.id}`)}
                                         >

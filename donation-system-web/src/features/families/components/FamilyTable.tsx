@@ -61,14 +61,14 @@ const FamilyTable: React.FC<FamilyTableProps> = ({ families, onRefresh }) => {
                 <td className="text-end">
                   <div className="d-flex justify-content-end gap-2">
                     <button
-                      className="btn-icon-sm"
+                      className="btn-icon-sm text-primary"
                       title="Ver detalhes"
                       onClick={() => navigate(`/families/${family.id}`)}
                     >
                       <FiEye />
                     </button>
                     <button
-                      className={`btn-icon-sm ${family.active ? 'danger' : 'text-success'}`}
+                      className={`btn-icon-sm ${family.active ? 'text-danger' : 'text-success'}`}
                       title={family.active ? "Inativar família" : "Ativar família"}
                       onClick={() => handleToggleStatus(family.id, family.responsibleName, family.active)}
                     >

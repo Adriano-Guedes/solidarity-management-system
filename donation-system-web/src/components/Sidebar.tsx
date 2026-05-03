@@ -7,7 +7,8 @@ import {
   FiBox, 
   FiTag, 
   FiHeart,
-  FiSettings
+  FiSettings,
+  FiLayers
 } from 'react-icons/fi';
 
 interface SidebarProps {
@@ -33,6 +34,7 @@ const menuSections = [
     label: 'Estoque',
     items: [
       { label: 'Itens', path: '/items', icon: <FiBox /> },
+      { label: 'Modelos', path: '/item-templates', icon: <FiLayers /> },
       { label: 'Categorias', path: '/item-categories', icon: <FiTag /> },
     ]
   },

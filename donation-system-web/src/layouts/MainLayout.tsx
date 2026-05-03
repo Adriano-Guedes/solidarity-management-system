@@ -41,7 +41,8 @@ const MainLayout = () => {
     location.pathname.includes('/families/') || 
     location.pathname.includes('/deliveries/') || 
     location.pathname.includes('/members') ||
-    location.pathname.includes('/settings');
+    location.pathname.includes('/settings') || 
+    location.pathname.includes('/item-templates');
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--body-bg)' }}>

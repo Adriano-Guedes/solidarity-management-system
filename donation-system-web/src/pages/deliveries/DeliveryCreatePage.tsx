@@ -8,6 +8,7 @@ import type { DeliverySuggestionResponse, CreateDeliveryRequest } from '../../ty
 import type { ActiveItemResponse } from '../../types/item';
 import { FiArrowLeft, FiSave, FiSearch, FiPlus, FiMinus, FiTrash2, FiAlertCircle, FiCheckCircle, FiTruck, FiInfo, FiPackage, FiActivity } from 'react-icons/fi';
 import { notificationService } from '../../utils/toastUtils';
+import { Dropdown } from 'react-bootstrap';
 
 const DeliveryCreatePage: React.FC = () => {
     const navigate = useNavigate();
@@ -265,8 +266,8 @@ const DeliveryCreatePage: React.FC = () => {
                     <div className="card border-0 shadow-sm p-4 h-100">
                         <div className="card-title mb-4">Informações Básicas</div>
                         <div className="row g-3">
-                            <div className="col-md-6">
-                                <label className="form-label text-muted" style={{ fontSize: '13px', fontWeight: 600 }}>Família Beneficiária</label>
+                            <div className="col-md-12">
+                                <label className="form-label text-muted" style={{ fontSize: '13px', fontWeight: 600 }}>Família</label>
                                 <div className="input-group mb-2">
                                     <span className="input-group-text bg-white border-end-0"><FiSearch className="text-muted" size={14} /></span>
                                     <input 
@@ -287,7 +288,7 @@ const DeliveryCreatePage: React.FC = () => {
                                     <option value="">Selecione uma família...</option>
                                     {filteredFamilies.map(f => (
                                         <option key={f.familyId} value={f.familyId}>
-                                            {f.responsibleName} (Prioridade: {f.priorityLevel})
+                                            {f.responsibleName} - (Prioridade: {f.priorityLevel})
                                         </option>
                                     ))}
                                 </select>

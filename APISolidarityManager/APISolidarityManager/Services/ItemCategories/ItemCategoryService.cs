@@ -33,6 +33,12 @@ namespace APISolidarityManager.Services.ItemCategories
             return _mapper.Map<IEnumerable<ItemCategoryResponse>>(categories.OrderBy(c => c.Name));
         }
 
+        public async Task<IEnumerable<ItemCategoryResponse>> GetAllActiveAsync()
+        {
+            var categories = await _itemCategoryRepository.FindAsync(c => c.Active);
+            return _mapper.Map<IEnumerable<ItemCategoryResponse>>(categories.OrderBy(c => c.Name));
+        }
+
         public async Task<ItemCategoryResponse> GetByIdAsync(Guid id)
         {
             var itemCategory = await _itemCategoryRepository.GetByIdAsync(id);

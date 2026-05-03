@@ -138,8 +138,8 @@ const DeliveryDetailPage: React.FC = () => {
                         <thead>
                             <tr>
                                 <th>Item</th>
+                                <th className="text-start">Quantidade</th>
                                 <th>Categoria</th>
-                                <th className="text-end">Quantidade</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -148,14 +148,14 @@ const DeliveryDetailPage: React.FC = () => {
                                     <td>
                                         <strong>{item.itemName}</strong>
                                     </td>
+                                    <td className="text-start">
+                                        <span className="badge-status badge-delivered" style={{ background: 'var(--primary-light)', color: 'var(--primary)' }}>
+                                            {item.quantity} unidades
+                                        </span>
+                                    </td>
                                     <td>
                                         <span className="category-pill">
                                             {item.itemCategoryName}
-                                        </span>
-                                    </td>
-                                    <td className="text-end">
-                                        <span className="badge-status badge-delivered" style={{ background: 'var(--primary-light)', color: 'var(--primary)' }}>
-                                            {item.quantity} unidades
                                         </span>
                                     </td>
                                 </tr>

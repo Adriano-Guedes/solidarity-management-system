@@ -55,7 +55,7 @@ const NeedRuleTable: React.FC<NeedRuleTableProps> = ({ needRules, ageRanges, onE
                 <thead>
                   <tr>
                     <th>Faixa Etária</th>
-                    <th>Valor Base</th>
+                    <th className="text-center">Valor Base</th>
                     <th className="text-end">Ações</th>
                   </tr>
                 </thead>
@@ -63,7 +63,7 @@ const NeedRuleTable: React.FC<NeedRuleTableProps> = ({ needRules, ageRanges, onE
                   {groupedRules[groupName].map(nr => (
                     <tr key={nr.id}>
                       <td><strong>{nr.ageRangeName}</strong></td>
-                      <td className="fw-bold text-primary">{nr.value} kg</td>
+                      <td className="fw-bold text-center text-primary">{nr.value}</td>
                       <td className="text-end">
                         <div className="d-flex justify-content-end gap-2">
                           <button className="btn-icon-sm text-primary" onClick={() => onEdit(nr)} title="Editar">
