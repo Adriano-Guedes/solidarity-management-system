@@ -1,5 +1,6 @@
 ﻿using APISolidarityManager.Services;
 using APISolidarityManager.Services.AgeRanges;
+using APISolidarityManager.Services.Dashboard;
 using APISolidarityManager.Services.Deliveries;
 using APISolidarityManager.Services.Deliveries.DeliverySuggestions;
 using APISolidarityManager.Services.DeliveryInventoryItems;
@@ -24,6 +25,7 @@ namespace APISolidarityManager.Extensions
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddScoped<IDeliveryService, DeliveryService>();
+            services.AddScoped<IDashboardService, DashboardService>();
             services.AddScoped<IDeliveryInventoryItemService, DeliveryInventoryItemService>();
             services.AddScoped<IDeliverySuggestionService, DeliverySuggestionService>();
             services.AddScoped<IDonationInventoryItemService, DonationInventoryItemService>();

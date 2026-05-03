@@ -346,11 +346,20 @@ const FamilyDetailPage: React.FC = () => {
                 {/* Deliveries Table */}
                 <div className="col-12 col-xl-6">
                     <div className="card h-100">
-                        <div className="card-header-custom border-0 pb-3">
+                        <div className="card-header-custom border-0 pb-3" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div>
                                 <div className="card-title">Histórico de Entregas</div>
                                 <div className="card-subtitle">Últimos atendimentos realizados</div>
                             </div>
+                            {family.active && (
+                                <button
+                                    className="btn-primary-custom"
+                                    style={{ padding: '8px 12px', fontSize: '12px', background: 'var(--warning)', border: 'none' }}
+                                    onClick={() => navigate('/deliveries/create', { state: { familyId: family.id } })}
+                                >
+                                    <FiTruck /> Nova Entrega
+                                </button>
+                            )}
                         </div>
                         <div className="table-wrapper">
                             <table>

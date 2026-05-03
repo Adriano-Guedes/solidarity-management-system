@@ -12,7 +12,7 @@ namespace APISolidarityManager.Extensions
 
                 var mapperConfig = new MapperConfiguration(cfg =>
                 {
-                    cfg.AddMaps(AppDomain.CurrentDomain.GetAssemblies());
+                    cfg.AddMaps(typeof(AutoMapperCollectionExtension).Assembly);
                 }, loggerFactory);
 
                 return mapperConfig;
