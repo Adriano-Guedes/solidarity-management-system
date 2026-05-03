@@ -76,14 +76,14 @@ const DeliveryCreatePage: React.FC = () => {
 
     const filteredFamilies = useMemo(() => {
         if (!families) return [];
-        return families.filter(f => 
+        return families.filter(f =>
             f.responsibleName?.toLowerCase().includes(familySearch.toLowerCase())
         );
     }, [families, familySearch]);
 
     const filteredItems = useMemo(() => {
         if (!activeItems) return [];
-        return activeItems.filter(i => 
+        return activeItems.filter(i =>
             i.name?.toLowerCase().includes(itemSearch.toLowerCase()) ||
             i.categoryName?.toLowerCase().includes(itemSearch.toLowerCase()) ||
             i.needGroup?.toLowerCase().includes(itemSearch.toLowerCase())
@@ -133,7 +133,7 @@ const DeliveryCreatePage: React.FC = () => {
 
     const handleAddAllSuggestions = () => {
         if (!suggestion || !suggestion.suggestedItems) return;
-        
+
         const newCart = [...cart];
         let addedCount = 0;
 
@@ -142,7 +142,7 @@ const DeliveryCreatePage: React.FC = () => {
             if (activeItem) {
                 const existingIndex = newCart.findIndex(i => i.itemId === activeItem.id);
                 const suggestedQty = suggestedItem.suggestedUnits || 0;
-                
+
                 if (existingIndex > -1) {
                     const existing = newCart[existingIndex];
                     const canAdd = Math.max(0, Math.min(suggestedQty - existing.quantity, activeItem.totalQuantity - existing.quantity));
@@ -192,8 +192,8 @@ const DeliveryCreatePage: React.FC = () => {
                 }, 0);
 
             const requiredQty = summary.requiredQuantity || 0;
-            const percentage = requiredQty > 0 
-                ? Math.min((metInCart / requiredQty) * 100, 100) 
+            const percentage = requiredQty > 0
+                ? Math.min((metInCart / requiredQty) * 100, 100)
                 : 100;
 
             return {
@@ -282,18 +282,18 @@ const DeliveryCreatePage: React.FC = () => {
                                 <label className="form-label text-muted" style={{ fontSize: '13px', fontWeight: 600 }}>Família</label>
                                 <div className="input-group mb-2">
                                     <span className="input-group-text bg-white border-end-0"><FiSearch className="text-muted" size={14} /></span>
-                                    <input 
-                                        type="text" 
-                                        className="form-control border-start-0" 
-                                        placeholder="Pesquisar família por nome..." 
+                                    <input
+                                        type="text"
+                                        className="form-control border-start-0"
+                                        placeholder="Pesquisar família por nome..."
                                         value={familySearch}
                                         onChange={(e) => setFamilySearch(e.target.value)}
                                         style={{ fontSize: '14px' }}
                                     />
                                 </div>
-                                <select 
-                                    className="form-select" 
-                                    value={selectedFamilyId} 
+                                <select
+                                    className="form-select"
+                                    value={selectedFamilyId}
                                     onChange={(e) => handleFamilyChange(e.target.value)}
                                     style={{ borderRadius: '8px', padding: '10px' }}
                                 >
@@ -307,19 +307,19 @@ const DeliveryCreatePage: React.FC = () => {
                             </div>
                             <div className="col-md-6">
                                 <label className="form-label text-muted" style={{ fontSize: '13px', fontWeight: 600 }}>Data da Entrega</label>
-                                <input 
-                                    type="date" 
-                                    className="form-control" 
-                                    value={deliveryDate} 
+                                <input
+                                    type="date"
+                                    className="form-control"
+                                    value={deliveryDate}
                                     onChange={(e) => setDeliveryDate(e.target.value)}
                                     style={{ borderRadius: '8px', padding: '10px' }}
                                 />
                             </div>
                             <div className="col-12">
                                 <label className="form-label text-muted" style={{ fontSize: '13px', fontWeight: 600 }}>Observações</label>
-                                <textarea 
-                                    className="form-control" 
-                                    rows={2} 
+                                <textarea
+                                    className="form-control"
+                                    rows={2}
                                     placeholder="Notas adicionais sobre esta entrega..."
                                     value={notes}
                                     onChange={(e) => setNotes(e.target.value)}
@@ -352,7 +352,7 @@ const DeliveryCreatePage: React.FC = () => {
                                 </>
                             )}
                         </div>
-                        
+
                         {suggestionLoading ? (
                             <div className="d-flex justify-content-center p-4">
                                 <div className="spinner-border spinner-border-sm text-primary" role="status"></div>
@@ -361,21 +361,23 @@ const DeliveryCreatePage: React.FC = () => {
                             <div className="d-flex flex-column gap-3">
                                 {needGroupsProgress.length > 0 ? (
                                     needGroupsProgress.map((group, idx) => (
-                                        <div key={idx}>
-                                            <div className="d-flex justify-content-between mb-1" style={{ fontSize: '12px' }}>
-                                                <span>{group.needGroup}</span>
-                                                <span className={group.fullyMet ? 'text-success fw-bold' : 'text-muted'}>
-                                                    {(group.metInCart || 0).toFixed(1)} / {(group.requiredQuantity || 0).toFixed(1)}
-                                                </span>
-                                            </div>
-                                            <div className="progress" style={{ height: '8px', borderRadius: '4px' }}>
-                                                <div 
-                                                    className={`progress-bar ${group.fullyMet ? 'bg-success' : 'bg-primary'}`} 
-                                                    role="progressbar" 
-                                                    style={{ width: `${group.percentage}%` }}
-                                                ></div>
-                                            </div>
-                                        </div>
+                                        group.requiredQuantity <= 0 ? null : (
+                                            <div key={idx}>
+                                                <div className="d-flex justify-content-between mb-1" style={{ fontSize: '12px' }}>
+                                                    <span>{group.needGroup}</span>
+                                                    <span className={group.fullyMet ? 'text-success fw-bold' : 'text-muted'}>
+                                                            {(group.metInCart || 0).toFixed(1)} / {(group.requiredQuantity || 0).toFixed(1)}
+                                                        </span>
+                                                    </div>
+                                                    <div className="progress" style={{ height: '8px', borderRadius: '4px' }}>
+                                                        <div
+                                                            className={`progress-bar ${group.fullyMet ? 'bg-success' : 'bg-primary'}`}
+                                                            role="progressbar"
+                                                            style={{ width: `${group.percentage}%` }}
+                                                        ></div>
+                                                    </div>
+                                                </div>
+                                            )
                                     ))
                                 ) : (
                                     <div className="text-center py-4 text-muted" style={{ fontSize: '13px' }}>
@@ -403,8 +405,8 @@ const DeliveryCreatePage: React.FC = () => {
                                 <span className="fw-bold">Sugestões</span>
                             </div>
                             {suggestion && suggestion.suggestedItems && suggestion.suggestedItems.length > 0 && (
-                                <button 
-                                    className="btn btn-sm btn-outline-primary py-1 px-2" 
+                                <button
+                                    className="btn btn-sm btn-outline-primary py-1 px-2"
                                     style={{ fontSize: '11px', borderRadius: '6px' }}
                                     onClick={handleAddAllSuggestions}
                                     disabled={suggestionLoading}
@@ -412,7 +414,7 @@ const DeliveryCreatePage: React.FC = () => {
                                     Adicionar todos
                                 </button>
                             )}                        </div>
-                        
+
                         {suggestionLoading ? (
                             <div className="d-flex justify-content-center p-4">
                                 <div className="spinner-border spinner-border-sm text-primary" role="status"></div>
@@ -432,8 +434,8 @@ const DeliveryCreatePage: React.FC = () => {
                                                                 <span className="badge bg-light text-dark">{suggestedItem.suggestedUnits} un.</span>
                                                             </div>
                                                         </div>
-                                                        <button 
-                                                            className="btn-icon-sm ms-1" 
+                                                        <button
+                                                            className="btn-icon-sm ms-1"
                                                             style={{ width: '24px', height: '24px' }}
                                                             onClick={() => activeItem && handleAddToCart(activeItem)}
                                                             disabled={!activeItem || activeItem.totalQuantity <= 0}
@@ -479,10 +481,10 @@ const DeliveryCreatePage: React.FC = () => {
                             <div className="fw-bold">Itens Disponíveis</div>
                             <div className="input-group input-group-sm" style={{ width: '180px' }}>
                                 <span className="input-group-text bg-white border-end-0"><FiSearch className="text-muted" /></span>
-                                <input 
-                                    type="text" 
-                                    className="form-control border-start-0" 
-                                    placeholder="Filtrar..." 
+                                <input
+                                    type="text"
+                                    className="form-control border-start-0"
+                                    placeholder="Filtrar..."
                                     value={itemSearch}
                                     onChange={(e) => setItemSearch(e.target.value)}
                                 />
@@ -502,7 +504,7 @@ const DeliveryCreatePage: React.FC = () => {
                                     {filteredItems.map(item => {
                                         const inCart = cart.find(c => c.itemId === item.id);
                                         const remaining = (item.totalQuantity || 0) - (inCart?.quantity || 0);
-                                        
+
                                         return (
                                             <tr key={item.id}>
                                                 <td>
@@ -527,8 +529,8 @@ const DeliveryCreatePage: React.FC = () => {
                                                     </div>
                                                 </td>
                                                 <td className="text-end">
-                                                    <button 
-                                                        className="btn-icon-sm" 
+                                                    <button
+                                                        className="btn-icon-sm"
                                                         onClick={() => handleAddToCart(item)}
                                                         disabled={remaining <= 0}
                                                     >
@@ -556,9 +558,9 @@ const DeliveryCreatePage: React.FC = () => {
                             <FiTruck className="text-primary" />
                             <span className="fw-bold">No Carrinho</span>
                             <span className="badge bg-primary rounded-pill ms-auto">{cart.length}</span>
-                            
+
                             {cart.length > 0 && (
-                                <button 
+                                <button
                                     className="btn btn-sm btn-ghost text-danger p-1 d-flex align-items-center gap-1"
                                     style={{ fontSize: '11px' }}
                                     onClick={handleClearCart}
@@ -567,7 +569,7 @@ const DeliveryCreatePage: React.FC = () => {
                                 </button>
                             )}
                         </div>
-                        
+
                         <div className="card-body p-0 d-flex flex-column">
                             {cart.length === 0 ? (
                                 <div className="d-flex flex-column align-items-center justify-content-center flex-grow-1 text-muted p-5 text-center">
@@ -586,8 +588,8 @@ const DeliveryCreatePage: React.FC = () => {
                                                         <span className="text-muted" style={{ fontSize: '10px' }}>• {c.item.needGroup}</span>
                                                     </div>
                                                 </div>
-                                                <button 
-                                                    className="btn btn-sm text-danger p-0" 
+                                                <button
+                                                    className="btn btn-sm text-danger p-0"
                                                     onClick={() => handleRemoveFromCart(c.itemId)}
                                                 >
                                                     <FiTrash2 size={14} />
@@ -595,8 +597,8 @@ const DeliveryCreatePage: React.FC = () => {
                                             </div>
                                             <div className="d-flex align-items-center justify-content-between">
                                                 <div className="d-flex align-items-center gap-2">
-                                                    <button 
-                                                        className="btn btn-outline-secondary btn-xs p-0 d-flex align-items-center justify-content-center" 
+                                                    <button
+                                                        className="btn btn-outline-secondary btn-xs p-0 d-flex align-items-center justify-content-center"
                                                         style={{ width: '20px', height: '20px', borderRadius: '4px' }}
                                                         onClick={() => handleUpdateQuantity(c.itemId, -1)}
                                                     >
@@ -605,8 +607,8 @@ const DeliveryCreatePage: React.FC = () => {
                                                     <span className="fw-bold px-1" style={{ fontSize: '13px', minWidth: '24px', textAlign: 'center' }}>
                                                         {c.quantity}
                                                     </span>
-                                                    <button 
-                                                        className="btn btn-outline-secondary btn-xs p-0 d-flex align-items-center justify-content-center" 
+                                                    <button
+                                                        className="btn btn-outline-secondary btn-xs p-0 d-flex align-items-center justify-content-center"
                                                         style={{ width: '20px', height: '20px', borderRadius: '4px' }}
                                                         onClick={() => handleUpdateQuantity(c.itemId, 1)}
                                                     >
