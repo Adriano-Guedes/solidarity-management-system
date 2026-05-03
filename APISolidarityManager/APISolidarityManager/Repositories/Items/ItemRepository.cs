@@ -36,6 +36,7 @@ namespace APISolidarityManager.Repositories.Items
                 .AsNoTracking()
                 .Include(i => i.Category)
                 .Include(i => i.ItemTemplate)
+                    .ThenInclude(it => it.NeedGroup)
                 .Include(i => i.InventoryBatches)
                 .Where(i => i.Active)
                 .ToListAsync();

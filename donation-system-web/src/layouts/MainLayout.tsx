@@ -40,7 +40,8 @@ const MainLayout = () => {
     location.pathname.includes('/donations/') || 
     location.pathname.includes('/families/') || 
     location.pathname.includes('/deliveries/') || 
-    location.pathname.includes('/members');
+    location.pathname.includes('/members') ||
+    location.pathname.includes('/settings');
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--body-bg)' }}>

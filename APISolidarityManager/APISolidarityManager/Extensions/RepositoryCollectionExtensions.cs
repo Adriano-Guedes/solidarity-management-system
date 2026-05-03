@@ -1,4 +1,5 @@
-﻿using APISolidarityManager.Repositories.Base;
+﻿using APISolidarityManager.Repositories.AgeRanges;
+using APISolidarityManager.Repositories.Base;
 using APISolidarityManager.Repositories.Deliveries;
 using APISolidarityManager.Repositories.DeliveryInventoryItems;
 using APISolidarityManager.Repositories.DonationInventoryItems;
@@ -10,6 +11,8 @@ using APISolidarityManager.Repositories.ItemCategories;
 using APISolidarityManager.Repositories.Items;
 using APISolidarityManager.Repositories.ItemTemplates;
 using APISolidarityManager.Repositories.Logs;
+using APISolidarityManager.Repositories.NeedGroups;
+using APISolidarityManager.Repositories.NeedRules;
 using APISolidarityManager.Repositories.UnitOfWork;
 using APISolidarityManager.Repositories.Users;
 
@@ -31,6 +34,9 @@ namespace APISolidarityManager.Extensions
             services.AddScoped<IItemCategoryRepository, ItemCategoryRepository>();
             services.AddScoped<IItemTemplateRepository, ItemTemplateRepository>();
             services.AddScoped<IItemRepository, ItemRepository>();
+            services.AddScoped<INeedGroupRepository, NeedGroupRepository>();
+            services.AddScoped<IAgeRangeRepository, AgeRangeRepository>();
+            services.AddScoped<INeedRuleRepository, NeedRuleRepository>();
             services.AddScoped<ILogRepository, LogRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
 
