@@ -68,7 +68,6 @@ namespace APISolidarityManager.Services.ItemTemplates
             await _itemTemplateRepository.AddAsync(template);
             await _unitOfWork.SaveChangesAsync();
 
-            // Busca novamente para retornar com os nomes dos relacionamentos
             var createdTemplate = await _itemTemplateRepository.GetByIdWithDetailsAsync(template.Id);
             return _mapper.Map<ItemTemplateResponse>(createdTemplate);
         }
@@ -87,6 +86,10 @@ namespace APISolidarityManager.Services.ItemTemplates
                 t.Id != id)).Any();
             
             if (exists) throw new Exception("Já existe outro template com este nome para a categoria informada.");
+
+            // Limpa as propriedades de navegação para garantir que o EF atualize as FKs
+            template.Category = null!;
+            template.NeedGroup = null!;
 
             _mapper.Map(request, template);
             template.Name = normalizedName;

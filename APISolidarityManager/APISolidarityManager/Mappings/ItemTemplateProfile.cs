@@ -12,7 +12,9 @@ namespace APISolidarityManager.Mappings
         {
             #region REQUEST
             CreateMap<CreateItemTemplateRequest, ItemTemplate>();
-            CreateMap<UpdateItemTemplateRequest, ItemTemplate>();
+            CreateMap<UpdateItemTemplateRequest, ItemTemplate>()
+                .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId))
+                .ForMember(dest => dest.NeedGroupId, opt => opt.MapFrom(src => src.NeedGroupId));
             #endregion
 
             #region RESPONSE
