@@ -11,6 +11,7 @@ export interface ItemResponse {
   unitOfMeasure?: string;
   notes?: string;
   active: boolean;
+  totalQuantity: number;
   createdAt: string;
   updatedAt?: string;
 }

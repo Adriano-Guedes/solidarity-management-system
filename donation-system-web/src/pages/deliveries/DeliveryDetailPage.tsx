@@ -106,7 +106,7 @@ const DeliveryDetailPage: React.FC = () => {
                         <div className="stat-body">
                             <div className="stat-label">Total de Itens</div>
                             <div className="stat-value" style={{ fontSize: '18px' }}>
-                                {delivery.items.reduce((acc, curr) => acc + curr.quantity, 0)} unidades
+                                {delivery.items.reduce((acc, curr) => acc + curr.totalQuantity, 0)} unidades
                             </div>
                             <div className="stat-trend neutral">{delivery.items.length} tipos de itens</div>
                         </div>
@@ -138,24 +138,40 @@ const DeliveryDetailPage: React.FC = () => {
                         <thead>
                             <tr>
                                 <th>Item</th>
-                                <th className="text-start">Quantidade</th>
-                                <th>Categoria</th>
+                                <th className="text-start">Lotes Utilizados</th>
+                                <th className="text-start">Quantidade Total</th>
                             </tr>
                         </thead>
                         <tbody>
                             {delivery.items.map((item, index) => (
                                 <tr key={index}>
                                     <td>
-                                        <strong>{item.itemName}</strong>
+                                        <div><strong>{item.itemName}</strong></div>
+                                        <div className="mt-1">
+                                            <span className="category-pill" style={{ fontSize: '10px', padding: '2px 8px' }}>
+                                                {item.itemCategoryName}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {item.batches && item.batches.length > 0 ? (
+                                            <ul className="list-unstyled mb-0">
+                                                {item.batches.map((batch, bIdx) => (
+                                                    <li key={bIdx} className="d-flex align-items-center gap-2 mb-1" style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                                                        <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: 'var(--border)' }}></div>
+                                                        <span><strong>{batch.quantity}</strong> un.</span>
+                                                        <span className="mx-1">•</span>
+                                                        <span>Val: {batch.expirationDate ? formatDateBR(batch.expirationDate) : 'S/ Validade'}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <span className="text-muted" style={{ fontSize: '12px' }}>Nenhum lote detalhado</span>
+                                        )}
                                     </td>
                                     <td className="text-start">
                                         <span className="badge-status badge-delivered" style={{ background: 'var(--primary-light)', color: 'var(--primary)' }}>
-                                            {item.quantity} unidades
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span className="category-pill">
-                                            {item.itemCategoryName}
+                                            {item.totalQuantity} unidades
                                         </span>
                                     </td>
                                 </tr>
