@@ -20,6 +20,7 @@ namespace APISolidarityManager.Mappings
             CreateMap<Item, ItemResponse>()
                 .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name))
                 .ForMember(dest => dest.ItemTemplateName, opt => opt.MapFrom(src => src.ItemTemplate.Name))
+                .ForMember(dest => dest.TotalQuantity, opt => opt.MapFrom(src => src.InventoryBatches.Sum(ib => ib.QuantityAvailable)))
                 .ForMember(dest => dest.CreatedAt,
                     opt => opt.MapFrom(src => src.CreatedAt.ToSaoPauloTime()))
                 .ForMember(dest => dest.UpdatedAt,

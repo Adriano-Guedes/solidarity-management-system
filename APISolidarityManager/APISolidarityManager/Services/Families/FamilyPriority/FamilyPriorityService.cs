@@ -87,10 +87,12 @@ namespace APISolidarityManager.Services
                 .Where(x => x.Active)
                 .ToList();
 
-            result.PriorityScore += activeMembers.Count * 2;
+            result.PriorityScore += 5;
+            result.Reasons.Add("Base de cadastro ativo.");
 
-            if (activeMembers.Any())
-                result.Reasons.Add($"Composição familiar: {activeMembers.Count} membro(s) ativo(s).");
+            int memberPoints = Math.Min(activeMembers.Count, 6);
+            result.PriorityScore += memberPoints;
+            result.Reasons.Add($"Composição familiar: {activeMembers.Count} membro(s) ativo(s).");
 
             foreach (var member in activeMembers)
             {
@@ -100,39 +102,49 @@ namespace APISolidarityManager.Services
 
                     if (age < 2)
                     {
-                        result.PriorityScore += 4;
+                        result.PriorityScore += 5;
                         result.RequiresManualAnalysis = true;
-                        result.Reasons.Add($"Membro {member.Name} com menos de 2 anos.");
+                        result.Reasons.Add($"Membro {member.Name} com menos de 2 anos (Necessidades especiais).");
                     }
                     else if (age >= 2 && age <= 12)
                     {
-                        result.PriorityScore += 2;
+                        result.PriorityScore += 3;
                         result.Reasons.Add($"Membro {member.Name} é criança entre 2 e 12 anos.");
                     }
                     else if (age >= 60)
                     {
-                        result.PriorityScore += 3;
+                        result.PriorityScore += 4;
                         result.Reasons.Add($"Membro {member.Name} é idoso.");
                     }
                 }
 
                 if (member.HasDisability)
                 {
-                    result.PriorityScore += 4;
+                    result.PriorityScore += 5;
                     result.Reasons.Add($"Membro {member.Name} possui deficiência.");
                 }
 
                 if (member.HasChronicDisease)
                 {
-                    result.PriorityScore += 3;
+                    result.PriorityScore += 4;
                     result.Reasons.Add($"Membro {member.Name} possui doença crônica.");
+                }
+            }
+
+            if (family.MonthlyIncome.HasValue && activeMembers.Any())
+            {
+                var perCapita = family.MonthlyIncome.Value / activeMembers.Count;
+                if (perCapita <= 218)
+                {
+                    result.PriorityScore += 10;
+                    result.Reasons.Add($"Baixa renda per capita: R$ {perCapita:F2}.");
                 }
             }
 
             if (!lastDeliveryDate.HasValue)
             {
-                result.PriorityScore += 10;
-                result.Reasons.Add("Família sem histórico de entrega.");
+                result.PriorityScore += 100;
+                result.Reasons.Add("Família nunca recebeu uma entrega.");
             }
             else
             {
@@ -140,18 +152,22 @@ namespace APISolidarityManager.Services
 
                 if (daysWithoutDelivery > 90)
                 {
-                    result.PriorityScore += 8;
+                    result.PriorityScore += 60;
                     result.Reasons.Add($"Família sem receber entrega há {daysWithoutDelivery} dias.");
                 }
                 else if (daysWithoutDelivery > 60)
                 {
-                    result.PriorityScore += 6;
+                    result.PriorityScore += 40;
                     result.Reasons.Add($"Família sem receber entrega há {daysWithoutDelivery} dias.");
                 }
                 else if (daysWithoutDelivery > 30)
                 {
-                    result.PriorityScore += 3;
+                    result.PriorityScore += 20;
                     result.Reasons.Add($"Família sem receber entrega há {daysWithoutDelivery} dias.");
+                }
+                else
+                {
+                    result.Reasons.Add($"Recebeu entrega recentemente ({daysWithoutDelivery} dias).");
                 }
             }
 
@@ -173,13 +189,13 @@ namespace APISolidarityManager.Services
 
         private static string GetPriorityLevel(int score)
         {
-            if (score >= 25)
+            if (score >= 100)
                 return "Urgente";
 
-            if (score >= 18)
+            if (score >= 60)
                 return "Alta";
 
-            if (score >= 10)
+            if (score >= 30)
                 return "Média";
 
             return "Baixa";

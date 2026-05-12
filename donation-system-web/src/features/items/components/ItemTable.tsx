@@ -31,12 +31,12 @@ const ItemTable: React.FC<ItemTableProps> = ({ items, onRefresh }) => {
             <table>
                 <thead>
                     <tr>
-                        <th>Nome</th>
-                        <th>Marca</th>
+                        <th>Item</th>
                         <th>Pacote</th>
-                        <th>Status</th>
-                        <th>Categoria</th>
+                        <th>Total</th>
                         <th>Modelo Base</th>
+                        <th>Categoria</th>
+                        <th>Status</th>
                         <th className="text-end">Ações</th>
                     </tr>
                 </thead>
@@ -44,13 +44,18 @@ const ItemTable: React.FC<ItemTableProps> = ({ items, onRefresh }) => {
                     {items.map(item => (
                         <tr key={item.id}>
                             <td>
-                                <strong>{item.name}</strong>
+                                <div><strong>{item.name}</strong></div>
+                                {item.brand && <div className="td-muted" style={{ fontSize: '12px', marginTop: '2px' }}>{item.brand}</div>}
                             </td>
-                            <td className="td-muted">{item.brand}</td>
                             <td className="td-muted">{item.packageQuantity} {item.unitOfMeasure}</td>
                             <td>
-                                <span className={`badge-status ${item.active ? 'badge-delivered' : 'badge-cancelled'}`}>
-                                    {item.active ? 'Ativo' : 'Inativo'}
+                                <span className={`badge-status ${item.totalQuantity > 0 ? 'badge-delivered' : 'badge-cancelled'}`}>
+                                    {item.totalQuantity}
+                                </span>
+                            </td>
+                            <td>
+                                <span className="category-pill">
+                                    {item.itemTemplateName}
                                 </span>
                             </td>
                             <td>
@@ -59,8 +64,8 @@ const ItemTable: React.FC<ItemTableProps> = ({ items, onRefresh }) => {
                                 </span>
                             </td>
                             <td>
-                                <span className="category-pill">
-                                    {item.itemTemplateName}
+                                <span className={`badge-status ${item.active ? 'badge-delivered' : 'badge-cancelled'}`}>
+                                    {item.active ? 'Ativo' : 'Inativo'}
                                 </span>
                             </td>
                             <td className="text-end">

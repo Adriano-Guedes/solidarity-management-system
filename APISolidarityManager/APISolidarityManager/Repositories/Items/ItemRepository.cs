@@ -30,6 +30,27 @@ namespace APISolidarityManager.Repositories.Items
                                          i.PackageQuantity == packageQuantity);
         }
 
+        public async Task<IEnumerable<Item>> GetAllWithTotalQuantityAsync()
+        {
+            return await _context.Items
+                .AsNoTracking()
+                .Include(i => i.Category)
+                .Include(i => i.ItemTemplate)
+                .Include(i => i.InventoryBatches)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Item>> GetByCategoryWithTotalQuantityAsync(Guid categoryId)
+        {
+            return await _context.Items
+                .AsNoTracking()
+                .Include(i => i.Category)
+                .Include(i => i.ItemTemplate)
+                .Include(i => i.InventoryBatches)
+                .Where(i => i.CategoryId == categoryId)
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<Item>> GetAllActiveWithTotalQuantityAsync()
         {
             return await _context.Items

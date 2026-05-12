@@ -95,10 +95,6 @@ const ItemDetailPage: React.FC = () => {
         }
     };
 
-    function countTotalAvailableQuantity() {
-        return batches.reduce((total, batch) => total + batch.quantityAvailable, 0);
-    }
-
     if (loading && !item) return (
         <div className="d-flex justify-content-center p-5">
             <div className="spinner-border text-primary" role="status"></div>
@@ -151,7 +147,7 @@ const ItemDetailPage: React.FC = () => {
                         <div className="stat-icon info"><FiLayers /></div>
                         <div className="stat-body">
                             <div className="stat-label">Quantidade Total</div>
-                            <div className="stat-value">{countTotalAvailableQuantity()}</div>
+                            <div className="stat-value">{item.totalQuantity}</div>
                             <div className="stat-trend neutral">Unidades disponíveis</div>
                         </div>
                     </div>

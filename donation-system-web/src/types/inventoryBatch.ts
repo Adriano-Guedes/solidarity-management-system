@@ -17,3 +17,9 @@ export interface CreateInventoryBatchRequest {
   itemId: string;
   expirationDate?: string;
 }
+
+export interface DeliveryBatchResponse {
+  inventoryBatchId: string;
+  quantity: number;
+  expirationDate?: string;
+}

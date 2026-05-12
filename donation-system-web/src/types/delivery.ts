@@ -1,3 +1,5 @@
+import type { DeliveryBatchResponse } from "./inventoryBatch";
+
 export interface DeliverySuggestionNeedGroupResponse {
   needGroup: string;
   requiredQuantity: number;
@@ -34,7 +36,8 @@ export interface DeliveryItemResponse {
   itemName: string;
   itemCategoryId: string;
   itemCategoryName: string;
-  quantity: number;
+  totalQuantity: number;
+  batches: DeliveryBatchResponse[];
 }
 
 export interface DeliveryResponse {

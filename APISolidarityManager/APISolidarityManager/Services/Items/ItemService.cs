@@ -39,7 +39,7 @@ namespace APISolidarityManager.Services.Items
         {
             try
             {
-                var items = await _itemRepository.GetAllAsync();
+                var items = await _itemRepository.GetAllWithTotalQuantityAsync();
                 return _mapper.Map<IEnumerable<ItemResponse>>(items.OrderBy(i => i.Name));
             }
             catch (Exception ex)
@@ -65,7 +65,7 @@ namespace APISolidarityManager.Services.Items
         {
             try
             {
-                var items = await _itemRepository.FindAsync(p => p.CategoryId == categoryId);
+                var items = await _itemRepository.GetByCategoryWithTotalQuantityAsync(categoryId);
                 return _mapper.Map<IEnumerable<ItemResponse>>(items.OrderBy(i => i.Name));
             }
             catch (Exception ex)
