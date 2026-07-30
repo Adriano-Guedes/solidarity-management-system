@@ -40,7 +40,7 @@ const NeedRuleEditModal: React.FC<NeedRuleEditModalProps> = ({ show, onClose, on
     return newErrors;
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<any>) => {
     const { name, value } = e.target;
     setForm(prev => ({
       ...prev,

@@ -5,3 +5,5 @@ obj/
 *.user
 *.suo
 "@ > .gitignore
+APISolidarityManager/APISolidarityManager/publish
+donation-system-web/dist

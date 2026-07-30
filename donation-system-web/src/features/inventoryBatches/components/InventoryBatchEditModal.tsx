@@ -62,7 +62,7 @@ const InventoryBatchEditModal: React.FC<InventoryBatchEditModalProps> = ({ show,
       onHide={onClose} 
       centered 
       backdrop="static" 
-      size="md"
+      size="lg"
       contentClassName="border-0 shadow-lg"
       style={{ zIndex: 20001 }}
     >

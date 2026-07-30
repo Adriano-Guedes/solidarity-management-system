@@ -110,8 +110,7 @@ namespace APISolidarityManager.Context
                     .HasMaxLength(20);
 
                 entity.HasIndex(x => x.ResponsibleDocument)
-                    .IsUnique()
-                    .HasFilter("[responsible_document] IS NOT NULL");
+                    .IsUnique();
 
                 entity.Property(x => x.PhoneNumber)
                     .HasColumnName("phone_number")
@@ -351,7 +350,7 @@ namespace APISolidarityManager.Context
 
                 entity.Property(x => x.Value)
                     .HasColumnName("value")
-                    .HasColumnType("decimal(18,2)")
+                    .HasPrecision(18, 2)
                     .IsRequired();
 
                 entity.Property(x => x.CreatedAt)
@@ -403,12 +402,12 @@ namespace APISolidarityManager.Context
 
                 entity.Property(x => x.PackageQuantity)
                     .HasColumnName("package_quantity")
-                    .HasColumnType("decimal(18,2)")
+                    .HasPrecision(18, 2)
                     .IsRequired();
 
                 entity.Property(x => x.TemplateWeight)
                     .HasColumnName("template_weight")
-                    .HasColumnType("decimal(18,2)")
+                    .HasPrecision(18, 2)
                     .IsRequired();
 
                 entity.Property(x => x.UnitOfMeasure)
@@ -499,7 +498,7 @@ namespace APISolidarityManager.Context
 
                 entity.Property(x => x.ReferenceQuantity)
                     .HasColumnName("reference_quantity")
-                    .HasColumnType("decimal(18,2)");
+                    .HasPrecision(18, 2);
 
                 entity.Property(x => x.Notes)
                     .HasColumnName("notes")
@@ -734,13 +733,12 @@ namespace APISolidarityManager.Context
                     .HasMaxLength(50)
                     .IsRequired();
 
+                // Removidos os .HasColumnType("nvarchar(max)")
                 entity.Property(x => x.OldValues)
-                    .HasColumnName("old_values")
-                    .HasColumnType("nvarchar(max)");
+                    .HasColumnName("old_values");
 
                 entity.Property(x => x.NewValues)
-                    .HasColumnName("new_values")
-                    .HasColumnType("nvarchar(max)");
+                    .HasColumnName("new_values");
 
                 entity.Property(x => x.Description)
                     .HasColumnName("description")

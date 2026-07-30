@@ -30,7 +30,7 @@ const DeliveriesPage: React.FC = () => {
   useEffect(() => {
     fetchDeliveries();
     setOnAddClick(() => () => navigate('/deliveries/create'));
-    return () => setOnAddClick(null);
+    return () => setOnAddClick(() => () => {});
   }, [navigate, setOnAddClick]);
 
   function searchHandler() {

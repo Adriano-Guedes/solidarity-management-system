@@ -18,15 +18,15 @@ builder.Services
 
 var app = builder.Build();
 
+app.UseSwagger();
+app.UseSwaggerUI();
+app.UseCors("AllowFrontend");
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
     app.ConfigureExceptionHandler();
-    app.UseCors("AllowFrontend");
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();

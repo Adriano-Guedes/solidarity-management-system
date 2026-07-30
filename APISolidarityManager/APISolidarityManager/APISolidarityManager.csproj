@@ -26,6 +26,7 @@
     <Folder Include="Data\" />
     <Folder Include="DTOs\ItemTemplates\Requests\" />
     <Folder Include="DTOs\Logs\Requests\" />
+    <Folder Include="Migrations\" />
     <Folder Include="Notes\" />
   </ItemGroup>
 

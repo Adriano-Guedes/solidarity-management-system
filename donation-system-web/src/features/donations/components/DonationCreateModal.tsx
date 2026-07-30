@@ -25,7 +25,7 @@ const DonationCreateModal: React.FC<DonationCreateModalProps> = ({ show, onClose
 
   useEffect(() => {
     if (show) {
-      getAllActiveItems().then(setActiveItems);
+      getAllActiveItems().then(data => setActiveItems(data as unknown as ItemResponse[]));
       setForm({
         receivedDate: new Date().toISOString().split('T')[0],
         notes: '',

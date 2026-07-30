@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiSearch, FiX, FiRefreshCw, FiPlus } from 'react-icons/fi';
+import { FiSearch, FiX, FiRefreshCw } from 'react-icons/fi';
 
 interface SearchBarProps {
     search: string;
